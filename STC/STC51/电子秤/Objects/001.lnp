@@ -1,0 +1,6 @@
+".\Objects\main.obj",
+".\Objects\IIC.obj",
+".\Objects\delay.obj",
+".\Objects\OLED.obj" 
+TO ".\Objects\001" 
+PRINT(".\Listings\001.m51") RAMSIZE(256) 
