@@ -1,0 +1,443 @@
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    10/07/2022  21:05:47  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
+D:\STM32\C51\BIN\BL51.EXE .\Objects\fingerprint.obj, .\Objects\main.obj TO .\Objects\door PRINT (.\Listings\door.m51) RA
+>> MSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\fingerprint.obj (FINGERPRINT)
+  .\Objects\main.obj (MAIN)
+  D:\STM32\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\STM32\C51\LIB\C51S.LIB (?C?MEMSET)
+  D:\STM32\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  .\Objects\door (FINGERPRINT)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0014H     UNIT         ?DT?MAIN
+            DATA    001CH     0006H     UNIT         ?DT?FINGERPRINT
+            IDATA   0022H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     001CH     UNIT         ?PR?_DELAY_MS?MAIN
+                    001FH     0004H                  *** GAP ***
+            CODE    0023H     0003H     ABSOLUTE     
+            CODE    0026H     00E6H     UNIT         ?PR?MAIN?MAIN
+            CODE    010CH     008CH     UNIT         ?C_C51STARTUP
+            CODE    0198H     004DH     UNIT         ?PR?USERCOMPARE?FINGERPRINT
+            CODE    01E5H     004DH     UNIT         ?PR?COLOR?FINGERPRINT
+            CODE    0232H     004DH     UNIT         ?PR?CLOSECOLOR?FINGERPRINT
+            CODE    027FH     0041H     UNIT         ?PR?USERINTERRUPT?FINGERPRINT
+            CODE    02C0H     0034H     UNIT         ?PR?USART?MAIN
+            CODE    02F4H     002CH     UNIT         ?C?LIB_CODE
+            CODE    0320H     0023H     UNIT         ?PR?USART_WAITRECIVE?MAIN
+            CODE    0343H     001BH     UNIT         ?PR?_DELAY_S?MAIN
+            CODE    035EH     0016H     UNIT         ?PR?USARTINIT?MAIN
+            CODE    0374H     0015H     UNIT         ?C_INITSEG
+            CODE    0389H     0015H     UNIT         ?PR?CLEANUSARTBUF?MAIN
+            CODE    039EH     000BH     UNIT         ?PR?_DELAY?MAIN
+            CODE    03A9H     0007H     UNIT         ?PR?INIT?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\door (FINGERPRINT)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/07/2022  21:05:47  PAGE 2
+
+
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN
+  +--> ?PR?INIT?MAIN
+  +--> ?PR?USARTINIT?MAIN
+  +--> ?PR?CLOSECOLOR?FINGERPRINT
+  +--> ?PR?_DELAY_MS?MAIN
+  +--> ?PR?USART_WAITRECIVE?MAIN
+  +--> ?PR?CLEANUSARTBUF?MAIN
+  +--> ?PR?USERCOMPARE?FINGERPRINT
+  +--> ?PR?COLOR?FINGERPRINT
+  +--> ?PR?_DELAY?MAIN
+  +--> ?PR?_DELAY_S?MAIN
+
+?PR?_DELAY_MS?MAIN
+  +--> ?PR?_DELAY?MAIN
+
+?PR?_DELAY_S?MAIN
+  +--> ?PR?_DELAY_MS?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\door (FINGERPRINT)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        FINGERPRINT
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  C:01E5H         PUBLIC        Color
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  B:0098H.1       PUBLIC        TI
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:001CH         PUBLIC        flag1
+  D:001EH         PUBLIC        flag2
+  D:0020H         PUBLIC        flag3
+  D:00C8H         PUBLIC        T2CON
+  C:0198H         PUBLIC        UserCompare
+  C:027FH         PUBLIC        UserInterrupt
+  D:00D0H         PUBLIC        PSW
+  C:0232H         PUBLIC        CloseColor
+  -------         PROC          USERCOMPARE
+  C:0198H         LINE#         7
+  C:0198H         LINE#         8
+  C:0198H         LINE#         9
+  C:019EH         LINE#         10
+  C:019EH         LINE#         11
+  C:01A1H         LINE#         12
+  C:01A6H         LINE#         13
+  C:01A9H         LINE#         14
+  C:01AEH         LINE#         15
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/07/2022  21:05:47  PAGE 3
+
+
+  C:01B1H         LINE#         16
+  C:01B6H         LINE#         17
+  C:01B9H         LINE#         18
+  C:01BEH         LINE#         19
+  C:01C1H         LINE#         20
+  C:01C6H         LINE#         21
+  C:01C9H         LINE#         22
+  C:01CEH         LINE#         23
+  C:01D1H         LINE#         24
+  C:01D6H         LINE#         25
+  C:01D9H         LINE#         26
+  C:01DEH         LINE#         28
+  C:01E4H         LINE#         30
+  C:01E4H         LINE#         32
+  -------         ENDPROC       USERCOMPARE
+  -------         PROC          COLOR
+  C:01E5H         LINE#         34
+  C:01E5H         LINE#         35
+  C:01E5H         LINE#         36
+  C:01EBH         LINE#         37
+  C:01EBH         LINE#         39
+  C:01EEH         LINE#         40
+  C:01F3H         LINE#         41
+  C:01F6H         LINE#         42
+  C:01FBH         LINE#         43
+  C:01FEH         LINE#         44
+  C:0203H         LINE#         45
+  C:0206H         LINE#         46
+  C:020BH         LINE#         47
+  C:020EH         LINE#         48
+  C:0213H         LINE#         49
+  C:0216H         LINE#         50
+  C:021BH         LINE#         51
+  C:021EH         LINE#         52
+  C:0223H         LINE#         53
+  C:0226H         LINE#         54
+  C:022BH         LINE#         56
+  C:0231H         LINE#         58
+  C:0231H         LINE#         59
+  -------         ENDPROC       COLOR
+  -------         PROC          CLOSECOLOR
+  C:0232H         LINE#         61
+  C:0232H         LINE#         62
+  C:0232H         LINE#         63
+  C:0238H         LINE#         64
+  C:0238H         LINE#         66
+  C:023BH         LINE#         67
+  C:0240H         LINE#         68
+  C:0243H         LINE#         69
+  C:0248H         LINE#         70
+  C:024BH         LINE#         71
+  C:0250H         LINE#         72
+  C:0253H         LINE#         73
+  C:0258H         LINE#         74
+  C:025BH         LINE#         75
+  C:0260H         LINE#         76
+  C:0263H         LINE#         77
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/07/2022  21:05:47  PAGE 4
+
+
+  C:0268H         LINE#         78
+  C:026BH         LINE#         79
+  C:0270H         LINE#         80
+  C:0273H         LINE#         81
+  C:0278H         LINE#         83
+  C:027EH         LINE#         85
+  C:027EH         LINE#         86
+  -------         ENDPROC       CLOSECOLOR
+  -------         PROC          USERINTERRUPT
+  C:027FH         LINE#         88
+  C:027FH         LINE#         89
+  C:027FH         LINE#         91
+  C:0282H         LINE#         92
+  C:0287H         LINE#         93
+  C:028AH         LINE#         94
+  C:028FH         LINE#         95
+  C:0292H         LINE#         96
+  C:0297H         LINE#         97
+  C:029AH         LINE#         98
+  C:029FH         LINE#         99
+  C:02A2H         LINE#         100
+  C:02A7H         LINE#         101
+  C:02AAH         LINE#         102
+  C:02AFH         LINE#         103
+  C:02B2H         LINE#         104
+  C:02B7H         LINE#         105
+  C:02BAH         LINE#         106
+  C:02BFH         LINE#         108
+  -------         ENDPROC       USERINTERRUPT
+  -------         ENDMOD        FINGERPRINT
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:0008H         PUBLIC        usart_cntPre
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  C:0320H         PUBLIC        usart_WaitRecive
+  D:00A8H         PUBLIC        IE
+  C:02C0H         PUBLIC        Usart
+  C:039EH         PUBLIC        _delay
+  B:00A8H.4       PUBLIC        ES
+  D:00B8H         PUBLIC        IP
+  B:0098H.0       PUBLIC        RI
+  C:0026H         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0087H         PUBLIC        PCON
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  C:03A9H         PUBLIC        init
+  C:0389H         PUBLIC        cleanUsartBuf
+  C:035EH         PUBLIC        USARTinit
+  B:00A0H.0       PUBLIC        light1
+  B:00A0H.1       PUBLIC        light2
+  D:008DH         PUBLIC        TH1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/07/2022  21:05:47  PAGE 5
+
+
+  D:000AH         PUBLIC        usart_buf
+  D:008BH         PUBLIC        TL1
+  C:0007H         PUBLIC        _delay_ms
+  B:0090H.0       PUBLIC        pwm
+  B:0088H.6       PUBLIC        TR1
+  D:001AH         PUBLIC        usart_cnt
+  C:0343H         PUBLIC        _delay_s
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          MAIN
+  C:0026H         LINE#         13
+  C:0026H         LINE#         14
+  C:0026H         LINE#         15
+  C:0029H         LINE#         16
+  C:002CH         LINE#         17
+  C:002CH         LINE#         18
+  C:002CH         LINE#         19
+  C:002FH         LINE#         20
+  C:0032H         LINE#         21
+  C:0038H         LINE#         22
+  C:0038H         LINE#         23
+  C:0042H         LINE#         24
+  C:0042H         LINE#         25
+  C:0046H         LINE#         26
+  C:0048H         LINE#         27
+  C:0048H         LINE#         28
+  C:004BH         LINE#         29
+  C:004BH         LINE#         30
+  C:0053H         LINE#         31
+  C:0055H         LINE#         33
+  C:0055H         LINE#         34
+  C:0055H         LINE#         35
+  C:0058H         LINE#         36
+  C:005BH         LINE#         37
+  C:0064H         LINE#         38
+  C:0064H         LINE#         39
+  C:0074H         LINE#         40
+  C:0074H         LINE#         41
+  C:0074H         LINE#         42
+  C:0074H         LINE#         43
+  C:0077H         LINE#         44
+  C:007AH         LINE#         45
+  C:0080H         LINE#         46
+  C:0080H         LINE#         47
+  C:008AH         LINE#         48
+  C:008AH         LINE#         49
+  C:008AH         LINE#         50
+  C:008AH         LINE#         51
+  C:008CH         LINE#         52
+  C:0093H         LINE#         53
+  C:0095H         LINE#         54
+  C:009CH         LINE#         55
+  C:009FH         LINE#         56
+  C:009FH         LINE#         57
+  C:00A6H         LINE#         58
+  C:00A6H         LINE#         59
+  C:00A6H         LINE#         60
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/07/2022  21:05:47  PAGE 6
+
+
+  C:00A8H         LINE#         61
+  C:00AFH         LINE#         62
+  C:00B1H         LINE#         63
+  C:00B8H         LINE#         64
+  C:00BBH         LINE#         65
+  C:00BBH         LINE#         66
+  C:00BBH         LINE#         67
+  C:00BBH         LINE#         68
+  C:00BBH         LINE#         69
+  C:00BBH         LINE#         71
+  C:00BBH         LINE#         72
+  C:00BBH         LINE#         73
+  C:00BEH         LINE#         74
+  C:00C1H         LINE#         75
+  C:00C7H         LINE#         76
+  C:00C7H         LINE#         77
+  C:00D1H         LINE#         78
+  C:00D1H         LINE#         79
+  C:00D5H         LINE#         80
+  C:00D7H         LINE#         81
+  C:00D7H         LINE#         82
+  C:00DAH         LINE#         83
+  C:00DAH         LINE#         84
+  C:00E2H         LINE#         85
+  C:00E4H         LINE#         87
+  C:00E9H         LINE#         88
+  C:00EBH         LINE#         89
+  C:00EBH         LINE#         90
+  C:00EEH         LINE#         91
+  C:00EEH         LINE#         92
+  C:00F6H         LINE#         93
+  C:00F9H         LINE#         94
+  C:00FEH         LINE#         95
+  C:00FEH         LINE#         96
+  C:0101H         LINE#         97
+  C:0101H         LINE#         98
+  C:0109H         LINE#         99
+  -------         ENDPROC       MAIN
+  -------         PROC          USART_WAITRECIVE
+  C:0320H         LINE#         102
+  C:0320H         LINE#         103
+  C:0320H         LINE#         104
+  C:0326H         LINE#         105
+  C:0328H         LINE#         107
+  C:0332H         LINE#         108
+  C:0332H         LINE#         109
+  C:0337H         LINE#         110
+  C:033AH         LINE#         111
+  C:033AH         LINE#         113
+  C:0340H         LINE#         115
+  C:0342H         LINE#         116
+  -------         ENDPROC       USART_WAITRECIVE
+  -------         PROC          CLEANUSARTBUF
+  C:0389H         LINE#         118
+  C:0389H         LINE#         119
+  C:0389H         LINE#         120
+  C:0398H         LINE#         121
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/07/2022  21:05:47  PAGE 7
+
+
+  C:039DH         LINE#         122
+  -------         ENDPROC       CLEANUSARTBUF
+  -------         PROC          USART
+  C:02C0H         LINE#         124
+  C:02C9H         LINE#         126
+  C:02CCH         LINE#         127
+  C:02CCH         LINE#         128
+  C:02D7H         LINE#         129
+  C:02DDH         LINE#         130
+  C:02EBH         LINE#         131
+  C:02EDH         LINE#         132
+  C:02EDH         LINE#         133
+  -------         ENDPROC       USART
+  -------         PROC          USARTINIT
+  C:035EH         LINE#         135
+  C:035EH         LINE#         136
+  C:035EH         LINE#         137
+  C:0361H         LINE#         138
+  C:0364H         LINE#         139
+  C:0367H         LINE#         140
+  C:0369H         LINE#         141
+  C:036CH         LINE#         142
+  C:036FH         LINE#         143
+  C:0371H         LINE#         144
+  C:0373H         LINE#         146
+  -------         ENDPROC       USARTINIT
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  C:039EH         LINE#         148
+  C:039EH         LINE#         149
+  C:039EH         LINE#         150
+  C:03A8H         LINE#         151
+  -------         ENDPROC       _DELAY
+  C:0003H         SYMBOL        L?0052
+  -------         PROC          L?0051
+  -------         ENDPROC       L?0051
+  C:0003H         SYMBOL        L?0052
+  -------         PROC          _DELAY_MS
+  D:0002H         SYMBOL        i
+  C:0007H         LINE#         153
+  C:000BH         LINE#         154
+  C:000BH         LINE#         155
+  C:0015H         LINE#         156
+  C:0015H         LINE#         157
+  C:001CH         LINE#         158
+  C:001EH         LINE#         159
+  -------         ENDPROC       _DELAY_MS
+  -------         PROC          _DELAY_S
+  D:0082H         SYMBOL        i
+  C:0343H         LINE#         161
+  C:0347H         LINE#         162
+  C:0347H         LINE#         163
+  C:0354H         LINE#         164
+  C:0354H         LINE#         165
+  C:035BH         LINE#         166
+  C:035DH         LINE#         167
+  -------         ENDPROC       _DELAY_S
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/07/2022  21:05:47  PAGE 8
+
+
+  -------         PROC          INIT
+  C:03A9H         LINE#         170
+  C:03A9H         LINE#         171
+  C:03A9H         LINE#         172
+  C:03ABH         LINE#         173
+  C:03ADH         LINE#         174
+  C:03AFH         LINE#         175
+  -------         ENDPROC       INIT
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        ?C?MEMSET
+  C:02F4H         PUBLIC        ?C?MEMSET
+  -------         ENDMOD        ?C?MEMSET
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?USERINTERRUPT?FINGERPRINT
+
+Program Size: data=35.0 xdata=0 code=940
+LINK/LOCATE RUN COMPLETE.  1 WARNING(S),  0 ERROR(S)

@@ -18,6 +18,13 @@ int num = 0;
 //define a variable to store the vlaue of counter
 int counter = 0;
 
+uint8_t mystrlen(const char* buf)
+{
+  uint8_t len = strlen(buf);
+
+  return len;
+}
+
 void setup() {
   //initialize serial communication
   Serial.begin(9600);
@@ -39,6 +46,9 @@ void loop() {
       for(int i = 0;i < n;i++){
         Serial.print("SSID:");
         Serial.print(WiFi.SSID(i));
+        Serial.print("\t");
+        //Serial.print(strlen(WiFi.SSID(i).c_str()));
+        Serial.print(mystrlen(WiFi.SSID(i).c_str()));
         Serial.print("\t");
         Serial.print("RSSI:");
         Serial.print(WiFi.RSSI(i));

@@ -1,0 +1,5 @@
+".\Objects\main.obj",
+".\Objects\ET2046.obj",
+".\Objects\NixieTube.obj" 
+TO ".\Objects\DC_DC" 
+PRINT(".\Listings\DC_DC.m51") RAMSIZE(256) 
