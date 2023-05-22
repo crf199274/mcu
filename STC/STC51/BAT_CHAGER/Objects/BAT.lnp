@@ -1,0 +1,9 @@
+".\Objects\main.obj",
+".\Objects\adc.obj",
+".\Objects\delay.obj",
+".\Objects\IIC.obj",
+".\Objects\OLED.obj",
+".\Objects\key.obj",
+".\Objects\time.obj" 
+TO ".\Objects\BAT" 
+PRINT(".\Listings\BAT.m51") RAMSIZE(256) 

@@ -1,0 +1,200 @@
+C51 COMPILER V9.60.7.0   OLED                                                              04/05/2023 18:53:35 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE OLED
+OBJECT MODULE PLACED IN .\Objects\OLED.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE OLED.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\DC_DC) DEBUG O
+                    -BJECTEXTEND PRINT(.\Listings\OLED.lst) TABS(2) OBJECT(.\Objects\OLED.obj)
+
+line level    source
+
+   1          #include "OLED.h"
+   2          #include "IIC.h"
+   3          #include "DC_DC.h"
+   4          #include "delay.h"
+   5          #include "ascll.h"
+   6          #include "stdio.h"
+   7          #include "string.h"
+   8          
+   9          float VIN = 0;
+  10          float VOUT = 0;
+  11          float BAT_I = 0;
+  12          float VOUT_I = 0;
+  13          float OCC = 0;
+  14          uint16_t Value = 0;
+  15          
+  16          void oled_write_cmd(unsigned char cmd)
+  17          {
+  18   1        iic_start();
+  19   1        iic_send_byte(0x78);
+  20   1        iic_wait_ack();
+  21   1        iic_send_byte(0x00);
+  22   1        iic_wait_ack();
+  23   1        iic_send_byte(cmd);
+  24   1        iic_wait_ack();
+  25   1        iic_stop();
+  26   1      }
+  27          
+  28          void oled_write_data(unsigned char mdata)
+  29          {
+  30   1        iic_start();
+  31   1        iic_send_byte(0x78);
+  32   1        iic_wait_ack();
+  33   1        iic_send_byte(0x40);
+  34   1        iic_wait_ack();
+  35   1        iic_send_byte(mdata);
+  36   1        iic_wait_ack();
+  37   1        iic_stop();
+  38   1      }
+  39          
+  40          void oled_screen_fill(unsigned char cmd)
+  41          {
+  42   1        unsigned int i,j;
+  43   1        for(i=0;i<8;i++)
+  44   1        {
+  45   2          oled_write_cmd(0xb0+i);
+  46   2          oled_write_cmd(0x00);
+  47   2          oled_write_cmd(0x10);
+  48   2          for(j=0;j<128;j++)
+  49   2          {
+  50   3            oled_write_data(cmd);
+  51   3          }
+  52   2        }
+  53   1      }
+  54          
+C51 COMPILER V9.60.7.0   OLED                                                              04/05/2023 18:53:35 PAGE 2   
+
+  55          void oled_init(void)
+  56          {
+  57   1        Delay500ms();
+  58   1        
+  59   1        oled_write_cmd(0xAE); //display off
+  60   1        oled_write_cmd(0x20); //Set Memory Addressing Mode  
+  61   1        oled_write_cmd(0x10); //00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode
+             - (RESET);11,Invalid
+  62   1        oled_write_cmd(0xb0); //Set Page Start Address for Page Addressing Mode,0-7
+  63   1        oled_write_cmd(0xc8); //Set COM Output Scan Direction
+  64   1        oled_write_cmd(0x00); //---set low column address
+  65   1        oled_write_cmd(0x10); //---set high column address
+  66   1        oled_write_cmd(0x40); //--set start line address
+  67   1        oled_write_cmd(0x81); //--set contrast control register
+  68   1        oled_write_cmd(0xff); //亮度调节 0x00~0xff
+  69   1        oled_write_cmd(0xa1); //--set segment re-map 0 to 127
+  70   1        oled_write_cmd(0xa6); //--set normal display
+  71   1        oled_write_cmd(0xa8); //--set multiplex ratio(1 to 64)
+  72   1        oled_write_cmd(0x3F); //
+  73   1        oled_write_cmd(0xa4); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
+  74   1        oled_write_cmd(0xd3); //-set display offset
+  75   1        oled_write_cmd(0x00); //-not offset
+  76   1        oled_write_cmd(0xd5); //--set display clock divide ratio/oscillator frequency
+  77   1        oled_write_cmd(0xf0); //--set divide ratio
+  78   1        oled_write_cmd(0xd9); //--set pre-charge period
+  79   1        oled_write_cmd(0x22); //
+  80   1        oled_write_cmd(0xda); //--set com pins hardware configuration
+  81   1        oled_write_cmd(0x12);
+  82   1        oled_write_cmd(0xdb); //--set vcomh
+  83   1        oled_write_cmd(0x20); //0x20,0.77xVcc
+  84   1        oled_write_cmd(0x8d); //--set DC-DC enable
+  85   1        oled_write_cmd(0x14); //
+  86   1        oled_write_cmd(0xaf); //--turn on oled panel
+  87   1        
+  88   1        oled_screen_fill(0x00);
+  89   1        
+  90   1      }
+  91          
+  92          //void oled_screen_init(void)
+  93          //{
+  94          //  OLED_ON();
+  95          //  oled_screen_fill(0xff);
+  96          ////  delay_ms(3000);
+  97          ////  oled_screen_fill(0x00);
+  98          ////  delay_ms(3000);
+  99          //}
+ 100          
+ 101          void oled_Set_pos(unsigned char x,unsigned char y)
+ 102          {
+ 103   1        oled_write_cmd(0xb0+y);
+ 104   1        oled_write_cmd(((x&0xf0)>>4)|0x10);
+ 105   1        oled_write_cmd((x&0x0f)|0x01);
+ 106   1      }
+ 107          
+ 108          void oled_write_size_16x8(unsigned char x,unsigned char y,const char *const ch)
+ 109          {
+ 110   1        unsigned char i=0,j=0;
+ 111   1        unsigned int N=0;
+ 112   1        unsigned int addr=0;
+ 113   1        while(ch[i]!='\0')
+ 114   1        {
+ 115   2          N++;
+C51 COMPILER V9.60.7.0   OLED                                                              04/05/2023 18:53:35 PAGE 3   
+
+ 116   2          i++;
+ 117   2        }
+ 118   1        
+ 119   1        for(j=0;j<N;j++)
+ 120   1        {
+ 121   2          addr=(ch[j]-32)*16;
+ 122   2          if(x>120)
+ 123   2          {
+ 124   3            x=0;
+ 125   3            y++;
+ 126   3          }
+ 127   2          oled_Set_pos(x,y);
+ 128   2          for(i=0;i<8;i++)
+ 129   2          {
+ 130   3            oled_write_data(F8X16[addr]);
+ 131   3            addr=addr+1;
+ 132   3          }
+ 133   2          oled_Set_pos(x,y+1);
+ 134   2          for(i=0;i<8;i++)
+ 135   2          {
+ 136   3            oled_write_data(F8X16[addr]);
+ 137   3            addr=addr+1;
+ 138   3          }
+ 139   2          x+=8;
+ 140   2        }
+ 141   1      }
+ 142          
+ 143          void updata_OLED(void)
+ 144          {
+ 145   1        char buf[16];
+ 146   1        
+ 147   1        memset(buf,0,16);
+ 148   1        sprintf(buf,"VIN: %5.2f V",VIN);
+ 149   1        oled_write_size_16x8(0,0,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 150   1        
+ 151   1        memset(buf,0,16);
+ 152   1        sprintf(buf,"VOUT: %5.2f V",VOUT);
+ 153   1        oled_write_size_16x8(0,2,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 154   1        
+ 155   1        memset(buf,0,16);
+ 156   1        sprintf(buf,"BAT_I: %5.2f A",BAT_I);
+ 157   1        oled_write_size_16x8(0,4,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 158   1        
+ 159   1        memset(buf,0,16);
+ 160   1        sprintf(buf,"VOUT_I: %5.2f A",VOUT_I);
+ 161   1        oled_write_size_16x8(0,6,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 162   1        
+ 163   1        
+ 164   1      }
+ 165          
+ 166          void tip_OLED(char str[])
+ 167          {
+ 168   1        oled_write_size_16x8(0,0,str);//第一行 -- 8x16的显示单元显示ASCII码
+ 169   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    948    ----
+   CONSTANT SIZE    =   1578    ----
+   XDATA SIZE       =     22      35
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V9.60.7.0   OLED                                                              04/05/2023 18:53:35 PAGE 4   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

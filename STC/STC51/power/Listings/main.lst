@@ -1,0 +1,224 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/15/2023 05:03:15 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT
+                    -(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "stc15.h"
+   2          #include "lcd_init.h"
+   3          #include "lcd.h"
+   4          #include "string.h"
+   5          #include "stdio.h"
+   6          #include "math.h"
+   7          
+   8          #define I_Value       0.03223
+   9          #define VCC_I         0.03545
+  10          #define VCC_O         0.03545
+  11          #define DA            0.00645
+  12          #define DS            0.00645
+  13          
+  14          typedef unsigned char uint8_t;
+  15          typedef unsigned int uint16_t;
+  16          
+  17          #define ADC_POWER   0x80            //ADC电源控制位
+  18          #define ADC_FLAG    0x10            //ADC完成标志
+  19          #define ADC_START   0x08            //ADC起始控制位
+  20          #define ADC_STOP    0x00            //ADC暂停
+  21          #define ADC_SPEEDLL 0x00            //540个时钟
+  22          #define ADC_SPEEDL  0x20            //360个时钟
+  23          #define ADC_SPEEDH  0x40            //180个时钟
+  24          #define ADC_SPEEDHH 0x60            //90个时钟
+  25          
+  26          int AD_Value = 0;
+  27          
+  28          void updata_LCD(void);
+  29          void Delay_ADC(uint16_t n);
+  30          void InitADC(void);
+  31          
+  32          void Delay1ms();    //@24.000MHz
+  33          
+  34          //电流
+  35          float I = 0;
+  36          //输入电压
+  37          float VIN = 0;
+  38          //输出电压
+  39          float VOUT = 0;
+  40          //D+
+  41          float D_A = 0;
+  42          //D-
+  43          float D_S = 0;
+  44          //功率
+  45          float PW = 0;
+  46          
+  47          uint8_t ch = 0;                        //ADCí¨μào?
+  48          
+  49          void main()
+  50          {
+  51   1        P0M0=0;
+  52   1        P0M1=0;
+  53   1        P1M0=0;
+  54   1        P1M1=0;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/15/2023 05:03:15 PAGE 2   
+
+  55   1        P2M0=0;
+  56   1        P2M1=0;
+  57   1        P3M0=0;
+  58   1        P3M1=0;
+  59   1        P4M0=0;
+  60   1        P4M1=0;
+  61   1        P5M0=0;
+  62   1        P5M1=0;
+  63   1        
+  64   1        LCD_Init();//LCD初始化
+  65   1        
+  66   1        LCD_Fill(0,0,LCD_W,LCD_H,BLACK);
+  67   1        
+  68   1        InitADC();
+  69   1        IE = 0xa0;                      //使能ADC中断
+  70   1                                        //开始AD转换
+  71   1        
+  72   1        while(1)
+  73   1        {
+  74   2          updata_LCD();
+  75   2          Delay1ms();
+  76   2        } 
+  77   1      }
+  78          
+  79          void CP_GET(char *p)
+  80          {
+  81   1        memset(p,0,20);
+  82   1        
+  83   1        if(fabs(D_A-D_S)<=0.1)
+  84   1        {
+  85   2          if(D_A>=0.4&&D_A<=1.0)//12V
+  86   2            sprintf(p,"%-6.5s","QC2.0");
+  87   2          else if(D_A>=0.3)
+  88   2            sprintf(p,"%-6.5s","DCP");
+  89   2          else
+  90   2            sprintf(p,"%-6.5s","???");
+  91   2        }
+  92   1        else if(D_A>3.0&&(D_S>0.4&&D_S<1.0))//9V
+  93   1          sprintf(p,"%-6.5s","QC2.0");
+  94   1        else if(D_A>3.0&&D_S>3.0)//20V
+  95   1          sprintf(p,"%-6.5s","QC2.0");
+  96   1        else if((D_A>0.4&&D_A<1.0)&&(D_S>0.0&&D_S<0.1))//5V
+  97   1          sprintf(p,"%-6.5s","QC2.0");
+  98   1        else if((D_A>0.4&&D_A<1.0)&&D_S>3.0)
+  99   1          sprintf(p,"%-6.5s","QC3.0");
+ 100   1        else
+ 101   1          sprintf(p,"%-6.5s","???");
+ 102   1        
+ 103   1      }
+ 104          
+ 105          void updata_LCD(void)
+ 106          {
+ 107   1        char buf[20];
+ 108   1        
+ 109   1        CP_GET(buf);
+ 110   1        LCD_ShowString(104,0,buf,YELLOW,BLACK,16,0);//第一行 -- 8x16的显示单元显示ASCII码
+ 111   1        
+ 112   1        memset(buf,0,20);
+ 113   1        sprintf(buf,"VIN: %4.1f V",VIN);
+ 114   1        LCD_ShowString(0,0,buf,BLUE,BLACK,16,0);//第一行 -- 8x16的显示单元显示ASCII码
+ 115   1        
+ 116   1        memset(buf,0,20);
+C51 COMPILER V9.60.7.0   MAIN                                                              02/15/2023 05:03:15 PAGE 3   
+
+ 117   1        sprintf(buf,"VOUT: %4.1f V",VOUT);
+ 118   1        LCD_ShowString(0,20,buf,BLUE,BLACK,16,0);//第一行 -- 8x16的显示单元显示ASCII码
+ 119   1        
+ 120   1        memset(buf,0,20);
+ 121   1        PW=VIN*I;
+ 122   1        sprintf(buf,"I: %4.1f A P: %4.1f W",I,PW);
+ 123   1        LCD_ShowString(0,40,buf,BLUE,BLACK,16,0);//第一行 -- 8x16的显示单元显示ASCII码
+ 124   1        
+ 125   1        memset(buf,0,20);
+ 126   1        sprintf(buf,"DA: %3.1f V DS: %3.1f V",D_A,D_S);
+ 127   1        LCD_ShowString(0,60,buf,BLUE,BLACK,16,0);//第一行 -- 8x16的显示单元显示ASCII码
+ 128   1        
+ 129   1      }
+ 130          
+ 131          /*----------------------------
+ 132          软件延时
+ 133          ----------------------------*/
+ 134          void Delay_ADC(uint16_t n)
+ 135          {
+ 136   1          uint16_t x;
+ 137   1      
+ 138   1          while (n--)
+ 139   1          {
+ 140   2              x = 5000;
+ 141   2              while (x--);
+ 142   2          }
+ 143   1      }
+ 144          
+ 145          /*----------------------------
+ 146          初始化ADC
+ 147          ----------------------------*/
+ 148          void InitADC(void)
+ 149          {
+ 150   1          P1ASF = 0xff;                   //设置P1口为AD口
+ 151   1          ADC_RES = 0;                    //清除结果寄存器
+ 152   1          ADC_CONTR = ADC_POWER | ADC_SPEEDLL | ADC_START | ch;
+ 153   1          Delay_ADC(2);                       //ADC上电并延时
+ 154   1      }
+ 155          
+ 156          /*----------------------------
+ 157          ADC中断服务程序
+ 158          ----------------------------*/
+ 159          void adc_isr() interrupt 5
+ 160          {
+ 161   1          ADC_CONTR &= !ADC_FLAG;         //清除ADC中断标志
+ 162   1          
+ 163   1          AD_Value = ADC_RES<<2;
+ 164   1          AD_Value = AD_Value|(ADC_RESL&0x03);
+ 165   1        
+ 166   1          if(ch==0)
+ 167   1            I = AD_Value*I_Value;
+ 168   1          else if(ch==1)
+ 169   1            VIN = AD_Value*VCC_I;
+ 170   1          else if(ch==2)
+ 171   1            VOUT = AD_Value*VCC_O;
+ 172   1          else if(ch==3)
+ 173   1            D_A = AD_Value*DA;
+ 174   1          else if(ch==4)
+ 175   1            D_S = AD_Value*DS;
+ 176   1        
+ 177   1          if(++ch>4)
+ 178   1            ch = 0;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/15/2023 05:03:15 PAGE 4   
+
+ 179   1          ADC_CONTR = ADC_POWER | ADC_SPEEDLL | ADC_START | ch;
+ 180   1      
+ 181   1          
+ 182   1      }
+ 183          
+ 184          void Delay1ms()   //@24.000MHz
+ 185          {
+ 186   1        unsigned char i, j;
+ 187   1      
+ 188   1        i = 24;
+ 189   1        j = 85;
+ 190   1        do
+ 191   1        {
+ 192   2          while (--j);
+ 193   2        } while (--i);
+ 194   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1591    ----
+   CONSTANT SIZE    =    100    ----
+   XDATA SIZE       =     27      23
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

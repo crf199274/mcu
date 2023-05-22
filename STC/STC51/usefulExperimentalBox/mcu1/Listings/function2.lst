@@ -1,0 +1,86 @@
+C51 COMPILER V9.60.7.0   FUNCTION2                                                         04/26/2023 01:52:59 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE FUNCTION2
+OBJECT MODULE PLACED IN .\Objects\function2.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE function2\function2.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\
+                    -functionSwitching;.\function1;.\LCD;.\Delay;.\ADC;.\function2;.\function3) DEBUG OBJECTEXTEND PRINT(.\Listings\function2
+                    -.lst) TABS(2) OBJECT(.\Objects\function2.obj)
+
+line level    source
+
+   1          #include "function2.h"
+   2          
+   3          void updata_LCD2(void);
+   4          void updataPwmFreq(void);
+   5          
+   6          void function2()
+   7          {
+   8   1        
+   9   1        LCD_Fill(0,0,LCD_W,LCD_H,BLACK);
+  10   1        
+  11   1        while(1)
+  12   1        {
+  13   2          
+  14   2          updata_LCD2();
+  15   2          
+  16   2          if(falg1)
+  17   2          {
+  18   3            falg1 = 0;
+  19   3            updataPwmFreq();
+  20   3          }
+  21   2          
+  22   2          if(MODE!=1)
+  23   2            break;
+  24   2        }
+  25   1        
+  26   1        P_SW2 = 0x80;
+  27   1        PWMCFG = 0x00;          //停止PWM模块
+  28   1        PWM0CR = 0x00;          //失能PWM0 输出
+  29   1        P_SW2 = 0x00;
+  30   1        
+  31   1      }
+  32          
+  33          void updata_LCD2(void)
+  34          {
+  35   1        char buf[20];
+  36   1        
+  37   1        memset(buf,0,20);
+  38   1        sprintf(buf,"Freg: %-5d HZ",SW_Freq);
+  39   1        LCD_ShowString(0,0,buf,BLUE,BLACK,16,0);//第一行 -- 8x16的显示单元显示ASCII码
+  40   1        
+  41   1        
+  42   1      }
+  43          
+  44          void updataPwmFreq(void)
+  45          {
+  46   1        
+  47   1        PWMSET = 0x01;          //使能PWM模块(必须先使能模块后面的设置才有效)
+  48   1        
+  49   1        P_SW2 = 0x80;
+  50   1        PWMCKS = 0x0f;          //PWM时钟为系统时钟
+  51   1        PWMC = ((1500000/SW_Freq)&0x07ff);            //设置PWM周期为1000H 个PWM时钟
+  52   1        PWM0T1 = ((1500000/SW_Freq)&0x07ff)/2;        //在计数值为0000H 地方PWM0 通道输出低电平
+  53   1        PWM0T2 = 0x0000;        //在计数值为0000H 地方PWM0 通道输出高电平
+C51 COMPILER V9.60.7.0   FUNCTION2                                                         04/26/2023 01:52:59 PAGE 2   
+
+  54   1        PWM0CR = 0x80;          //使能PWM0 输出
+  55   1        P_SW2 = 0x00;
+  56   1        
+  57   1        PWMCFG = 0x01;          //启动PWM模块
+  58   1        
+  59   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    255    ----
+   CONSTANT SIZE    =     14    ----
+   XDATA SIZE       =   ----      20
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

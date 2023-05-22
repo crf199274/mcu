@@ -1,0 +1,103 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2023 00:51:07 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\DC_DC) DEBUG OBJECTE
+                    -XTEND PRINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "DC_DC.h"
+   2          #include "key.h"
+   3          #include "lcd.h"
+   4          #include "adc.h"
+   5          #include "delay.h"
+   6          #include "DC_DC.h"
+   7          
+   8          uint8_t mode1 = 1;
+   9          uint8_t mode2 = 0;
+  10          
+  11          void main()
+  12          {
+  13   1        
+  14   1        lcd_init();
+  15   1        adcInit();
+  16   1        DC_DC_PWM_Init();
+  17   1        keyInit();
+  18   1        
+  19   1        EA = 1;
+  20   1        
+  21   1      //  LoadPWM(PWM_HIGH_MIN);
+  22   1      //  LoadPWM(PWM_HIGH_MAX);
+  23   1        
+  24   1        while(1)
+  25   1        {
+  26   2          if(mode_key!=0)
+  27   2          {
+  28   3            switch(mode_key)
+  29   3            {
+  30   4              case 1:
+  31   4                if(mode1)
+  32   4                  VOL -= 1;
+  33   4                else
+  34   4                  VOL -= 0.1;
+  35   4                if(VOL<VOL_MIN)
+  36   4                  VOL = VOL_MIN;
+  37   4                break;
+  38   4              case 2:
+  39   4                if(mode1)
+  40   4                  VOL += 1;
+  41   4                else
+  42   4                  VOL += 0.1;
+  43   4                if(VOL>VOL_MAX)
+  44   4                  VOL = VOL_MAX;
+  45   4                break;
+  46   4              case 3:
+  47   4                if(mode2==0)
+  48   4                {
+  49   5                  VOL = VOL_MIN;
+  50   5                  mode2 = 1 - mode2;
+  51   5                }
+  52   4                else
+  53   4                {
+  54   5                  VOL = VOL_MAX;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2023 00:51:07 PAGE 2   
+
+  55   5                  mode2 = 1 - mode2;
+  56   5                }
+  57   4                break;
+  58   4              case 4:
+  59   4                mode1 = 1 - mode1;
+  60   4                break;
+  61   4            }
+  62   3            
+  63   3            pwm = VOL_OCC(VOL);
+  64   3            
+  65   3            LoadPWM(pwm);
+  66   3            
+  67   3            mode_key = 0;
+  68   3            
+  69   3          }
+  70   2          
+  71   2          updata_LCD();
+  72   2          
+  73   2          Delay1ms();
+  74   2          
+  75   2        }
+  76   1        
+  77   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    267    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

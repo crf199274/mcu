@@ -1,0 +1,137 @@
+C51 COMPILER V9.60.7.0   FINGERPRINT                                                       03/19/2023 16:14:03 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE FINGERPRINT
+OBJECT MODULE PLACED IN .\Objects\fingerprint.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE fingerprint.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\fingerprint.lst) TABS(2) OBJECT(.\Objects\fingerprint.obj)
+
+line level    source
+
+   1          #include "fingerprint.h"
+   2          
+   3          unsigned int flag1 = 0;
+   4          unsigned int flag2 = 0;
+   5          unsigned int flag3 = 0;
+   6          
+   7          void UserCompare()
+   8          {
+   9   1        if(flag1==0)
+  10   1        {
+  11   2          SBUF=0xF5;
+  12   2          while(TI==0);TI=0;
+  13   2          SBUF=0x0C;
+  14   2          while(TI==0);TI=0;
+  15   2          SBUF=0x00;
+  16   2          while(TI==0);TI=0;
+  17   2          SBUF=0x00;
+  18   2          while(TI==0);TI=0;
+  19   2          SBUF=0x00;
+  20   2          while(TI==0);TI=0;
+  21   2          SBUF=0x00;
+  22   2          while(TI==0);TI=0;
+  23   2          SBUF=0x0C;
+  24   2          while(TI==0);TI=0;
+  25   2          SBUF=0xF5;
+  26   2          while(TI==0);TI=0;
+  27   2          
+  28   2          flag1 = 100;
+  29   2          
+  30   2        }
+  31   1        
+  32   1      }
+  33          
+  34          void Color()
+  35          {
+  36   1        if(flag2==0)
+  37   1        {
+  38   2          //---红蓝渐变
+  39   2          SBUF=0xF5;
+  40   2          while(TI==0);TI=0;
+  41   2          SBUF=0xC3;
+  42   2          while(TI==0);TI=0;
+  43   2          SBUF=0x03;
+  44   2          while(TI==0);TI=0;
+  45   2          SBUF=0x06;
+  46   2          while(TI==0);TI=0;
+  47   2          SBUF=0x96;
+  48   2          while(TI==0);TI=0;
+  49   2          SBUF=0x00;
+  50   2          while(TI==0);TI=0;
+  51   2          SBUF=0x50;
+  52   2          while(TI==0);TI=0;
+  53   2          SBUF=0xF5;
+  54   2          while(TI==0);TI=0;
+C51 COMPILER V9.60.7.0   FINGERPRINT                                                       03/19/2023 16:14:03 PAGE 2   
+
+  55   2          
+  56   2          flag2 = 10;
+  57   2          
+  58   2        }
+  59   1      }
+  60          
+  61          void CloseColor()
+  62          {
+  63   1        if(flag3==0)
+  64   1        {
+  65   2          //---关灯
+  66   2          SBUF=0xF5;
+  67   2          while(TI==0);TI=0;
+  68   2          SBUF=0xC3;
+  69   2          while(TI==0);TI=0;
+  70   2          SBUF=0x07;
+  71   2          while(TI==0);TI=0;
+  72   2          SBUF=0x07;
+  73   2          while(TI==0);TI=0;
+  74   2          SBUF=0x96;
+  75   2          while(TI==0);TI=0;
+  76   2          SBUF=0x00;
+  77   2          while(TI==0);TI=0;
+  78   2          SBUF=0x55;
+  79   2          while(TI==0);TI=0;
+  80   2          SBUF=0xF5;
+  81   2          while(TI==0);TI=0;
+  82   2          
+  83   2          flag3 = 10;
+  84   2          
+  85   2        }
+  86   1      }
+  87          
+  88          void UserInterrupt(void)
+  89          {
+  90   1        
+  91   1        SBUF=0xF5;
+  92   1        while(TI==0);TI=0;
+  93   1        SBUF=0xFE;
+  94   1        while(TI==0);TI=0;
+  95   1        SBUF=0x00;
+  96   1        while(TI==0);TI=0;
+  97   1        SBUF=0x00;
+  98   1        while(TI==0);TI=0;
+  99   1        SBUF=0x00;
+ 100   1        while(TI==0);TI=0;
+ 101   1        SBUF=0x00;
+ 102   1        while(TI==0);TI=0;
+ 103   1        SBUF=0xFE;
+ 104   1        while(TI==0);TI=0;
+ 105   1        SBUF=0xF5;
+ 106   1        while(TI==0);TI=0;
+ 107   1        
+ 108   1      }
+ 109          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    296    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.7.0   FINGERPRINT                                                       03/19/2023 16:14:03 PAGE 3   
+
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

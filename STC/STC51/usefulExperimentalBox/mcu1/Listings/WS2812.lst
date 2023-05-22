@@ -1,0 +1,91 @@
+C51 COMPILER V9.60.7.0   WS2812                                                            04/26/2023 01:52:59 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE WS2812
+OBJECT MODULE PLACED IN .\Objects\WS2812.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE function1\WS2812.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\fun
+                    -ctionSwitching;.\function1;.\LCD;.\Delay;.\ADC;.\function2;.\function3) DEBUG OBJECTEXTEND PRINT(.\Listings\WS2812.lst) 
+                    -TABS(2) OBJECT(.\Objects\WS2812.obj)
+
+line level    source
+
+   1          #include "ws2812.h"
+   2          
+   3          void Delay300us()   //@24.000MHz
+   4          {
+   5   1        unsigned char i, j;
+   6   1      
+   7   1        i = 10;
+   8   1        j = 87;
+   9   1        do
+  10   1        {
+  11   2          while (--j);
+  12   2        } while (--i);
+  13   1      }
+  14          
+  15          void LightCube_Reset(void)
+  16          {
+  17   1        Delay300us();
+  18   1      }
+  19          
+  20          void WS2812_bit(bit data_bit)
+  21          {
+  22   1        if(data_bit)
+  23   1        {
+  24   2          WS2812B=1;
+  25   2          _nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+  26   2          _nop_();_nop_();_nop_();_nop_();_nop_();
+  27   2          WS2812B=0;  
+  28   2        }
+  29   1        else
+  30   1        {
+  31   2          WS2812B=1;
+  32   2          _nop_();_nop_();_nop_();_nop_();
+  33   2          WS2812B=0;
+  34   2          _nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();
+  35   2          _nop_();_nop_();
+  36   2        }
+  37   1      }
+  38          
+  39          void WS2812_rand_color(unsigned char R,unsigned char G,unsigned char B)
+  40          {
+  41   1        WS2812_bit(G&0X80);WS2812_bit(G&0X40);WS2812_bit(G&0X20);WS2812_bit(G&0X10);
+  42   1        WS2812_bit(G&0X08);WS2812_bit(G&0X04);WS2812_bit(G&0X02);WS2812_bit(G&0X01);
+  43   1        
+  44   1        WS2812_bit(R&0X80);WS2812_bit(R&0X40);WS2812_bit(R&0X20);WS2812_bit(R&0X10);
+  45   1        WS2812_bit(R&0X08);WS2812_bit(R&0X04);WS2812_bit(R&0X02);WS2812_bit(R&0X01);
+  46   1        
+  47   1        WS2812_bit(B&0X80);WS2812_bit(B&0X40);WS2812_bit(B&0X20);WS2812_bit(B&0X10);
+  48   1        WS2812_bit(B&0X08);WS2812_bit(B&0X04);WS2812_bit(B&0X02);WS2812_bit(B&0X01);
+  49   1      }
+  50          
+  51          void ws2812bWriteAColor(WsColor wsColor)
+  52          {
+  53   1        WS2812_rand_color(wsColor.R,wsColor.G,wsColor.B);
+C51 COMPILER V9.60.7.0   WS2812                                                            04/26/2023 01:52:59 PAGE 2   
+
+  54   1      }
+  55          
+  56          void ws2812b_INIT(void)
+  57          {
+  58   1        P4M0 |= 0x10;                                
+  59   1        P4M1 |= 0x00;
+  60   1        
+  61   1        WS2812_rand_color(0,0,0);
+  62   1        LightCube_Reset();
+  63   1        
+  64   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    247    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

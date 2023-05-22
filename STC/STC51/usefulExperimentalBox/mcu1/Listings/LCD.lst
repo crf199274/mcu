@@ -1,0 +1,141 @@
+C51 COMPILER V9.60.7.0   LCD                                                               04/26/2023 01:52:59 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\Objects\LCD.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE LCD\LCD.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\functionSwit
+                    -ching;.\function1;.\LCD;.\Delay;.\ADC;.\function2;.\function3) DEBUG OBJECTEXTEND PRINT(.\Listings\LCD.lst) TABS(2) OBJE
+                    -CT(.\Objects\LCD.obj)
+
+line level    source
+
+   1          #include "LCD.h"
+   2          #include "lcdfont.h"
+   3          
+   4          /******************************************************************************
+   5                函数说明：在指定区域填充颜色
+   6                入口数据：xsta,ysta   起始坐标
+   7                          xend,yend   终止坐标
+   8                          color       要填充的颜色
+   9                返回值：  无
+  10          ******************************************************************************/
+  11          void LCD_Fill(unsigned int xsta,unsigned int ysta,unsigned int xend,unsigned int yend,unsigned int color)
+  12          {          
+  13   1        unsigned int i,j; 
+  14   1        LCD_Address_Set(xsta,ysta,xend-1,yend-1);//设置显示范围
+  15   1        for(i=ysta;i<yend;i++)
+  16   1        {                               
+  17   2          for(j=xsta;j<xend;j++)
+  18   2          {
+  19   3            LCD_WR_DATA(color);
+  20   3          }
+  21   2        }                   
+  22   1      }
+  23          
+  24          /******************************************************************************
+  25                函数说明：在指定位置画点
+  26                入口数据：x,y 画点坐标
+  27                          color 点的颜色
+  28                返回值：  无
+  29          ******************************************************************************/
+  30          void LCD_DrawPoint(unsigned int x,unsigned int y,unsigned int color)
+  31          {
+  32   1        LCD_Address_Set(x,y,x,y);//设置光标位置 
+  33   1        LCD_WR_DATA(color);
+  34   1      }
+  35          
+  36          /******************************************************************************
+  37                函数说明：显示单个字符
+  38                入口数据：x,y显示坐标
+  39                          num 要显示的字符
+  40                          fc 字的颜色
+  41                          bc 字的背景色
+  42                          sizey 字号
+  43                          mode:  0非叠加模式  1叠加模式
+  44                返回值：  无
+  45          ******************************************************************************/
+  46          void LCD_ShowChar(unsigned int x,unsigned int y,unsigned char num,unsigned int fc,unsigned int bc,unsigned
+             - char sizey,unsigned char mode)
+  47          {
+  48   1        unsigned char temp,sizex,t,m=0;
+  49   1        unsigned int i,TypefaceNum;//一个字符所占字节大小
+  50   1        unsigned int x0=x;
+  51   1        sizex=sizey/2;
+  52   1        TypefaceNum=(sizex/8+((sizex%8)?1:0))*sizey;
+C51 COMPILER V9.60.7.0   LCD                                                               04/26/2023 01:52:59 PAGE 2   
+
+  53   1        num=num-' ';    //得到偏移后的值
+  54   1        LCD_Address_Set(x,y,x+sizex-1,y+sizey-1);  //设置光标位置 
+  55   1        for(i=0;i<TypefaceNum;i++)
+  56   1        { 
+  57   2          temp=ascii_1608[num][i];     //调用8x16字体
+  58   2      //    if(sizey==12)temp=ascii_1206[num][i];          //调用6x12字体
+  59   2      //    else if(sizey==16)temp=ascii_1608[num][i];     //调用8x16字体
+  60   2      //    else if(sizey==24)temp=ascii_2412[num][i];     //调用12x24字体
+  61   2      //    else if(sizey==32)temp=ascii_3216[num][i];     //调用16x32字体
+  62   2      //    else return;
+  63   2          for(t=0;t<8;t++)
+  64   2          {
+  65   3            if(!mode)//非叠加模式
+  66   3            {
+  67   4              if(temp&(0x01<<t))LCD_WR_DATA(fc);
+  68   4              else LCD_WR_DATA(bc);
+  69   4              m++;
+  70   4              if(m%sizex==0)
+  71   4              {
+  72   5                m=0;
+  73   5                break;
+  74   5              }
+  75   4            }
+  76   3            else//叠加模式
+  77   3            {
+  78   4              if(temp&(0x01<<t))LCD_DrawPoint(x,y,fc);//画一个点
+  79   4              x++;
+  80   4              if((x-x0)==sizex)
+  81   4              {
+  82   5                x=x0;
+  83   5                y++;
+  84   5                break;
+  85   5              }
+  86   4            }
+  87   3          }
+  88   2        }         
+  89   1      }
+  90          
+  91          
+  92          /******************************************************************************
+  93                函数说明：显示字符串
+  94                入口数据：x,y显示坐标
+  95                          *p 要显示的字符串
+  96                          fc 字的颜色
+  97                          bc 字的背景色
+  98                          sizey 字号
+  99                          mode:  0非叠加模式  1叠加模式
+ 100                返回值：  无
+ 101          ******************************************************************************/
+ 102          void LCD_ShowString(unsigned int x,unsigned int y,const unsigned char *p,unsigned int fc,unsigned int bc,u
+             -nsigned char sizey,unsigned char mode)
+ 103          {         
+ 104   1        while(*p!='\0')
+ 105   1        {       
+ 106   2          LCD_ShowChar(x,y,*p,fc,bc,sizey,mode);
+ 107   2          x+=sizey/2;
+ 108   2          p++;
+ 109   2        }  
+ 110   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V9.60.7.0   LCD                                                               04/26/2023 01:52:59 PAGE 3   
+
+   CODE SIZE        =    853    ----
+   CONSTANT SIZE    =   1520    ----
+   XDATA SIZE       =   ----      54
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

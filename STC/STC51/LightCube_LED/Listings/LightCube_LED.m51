@@ -1,0 +1,1372 @@
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                    04/17/2023  23:05:23  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.4.0, INVOKED BY:
+E:\SOFTWARE\KEIL5_V5\C51\BIN\BL51.EXE .\Objects\main.obj, .\Objects\WS2812.obj TO .\Objects\LightCube_LED PRINT (.\Listi
+>> ngs\LightCube_LED.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\main.obj (MAIN)
+  .\Objects\WS2812.obj (WS2812)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C?COPY)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C?SCDIV)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C?CLDOPTR)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C?CILDOPTR)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C?CSTOPTR)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C?IMUL)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C?CCASE)
+  E:\SOFTWARE\KEIL5_V5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  .\Objects\LightCube_LED (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0010H     UNIT         _DATA_GROUP_
+            DATA    0018H     0008H     UNIT         ?DT?MAIN
+            BIT     0020H.0   0000H.1   UNIT         _BIT_GROUP_
+                    0020H.1   0000H.7                *** GAP ***
+            IDATA   0021H     0001H     UNIT         ?STACK
+
+            * * * * * * *  X D A T A   M E M O R Y  * * * * * * *
+            XDATA   0000H     0034H     UNIT         _XDATA_GROUP_
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0006H     UNIT         ?PR?WS2812B_INIT?WS2812
+                    0009H     0002H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     000CH     UNIT         ?PR?TM0_INIT?MAIN
+                    001AH     0001H                  *** GAP ***
+            CODE    001BH     0003H     ABSOLUTE     
+            CODE    001EH     003FH     UNIT         ?PR?LIGHTCUBETYPE0?MAIN
+                    005DH     0006H                  *** GAP ***
+            CODE    0063H     0003H     ABSOLUTE     
+            CODE    0066H     0393H     UNIT         ?PR?LIGHTCUBETYPE5?MAIN
+            CODE    03F9H     0280H     UNIT         ?PR?LIGHTCUBETYPE9?MAIN
+            CODE    0679H     01FBH     UNIT         ?PR?_GETSNAKE?MAIN
+            CODE    0874H     01D2H     UNIT         ?C?LIB_CODE
+            CODE    0A46H     01A6H     UNIT         ?PR?_LIGHTCUBETYPE8_LAYER?MAIN
+            CODE    0BECH     016FH     UNIT         ?PR?LIGHTCUBETYPE3?MAIN
+            CODE    0D5BH     012DH     UNIT         ?PR?LIGHTSTATUS?MAIN
+            CODE    0E88H     0115H     UNIT         ?CO?MAIN
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 2
+
+
+            CODE    0F9DH     0103H     UNIT         ?PR?LIGHTCUBETYPE10?MAIN
+            CODE    10A0H     00F6H     UNIT         ?PR?LIGHTCUBETYPE7?MAIN
+            CODE    1196H     00EBH     UNIT         ?PR?LIGHTCUBETYPE4?MAIN
+            CODE    1281H     00A7H     UNIT         ?PR?LIGHTCUBETYPE6?MAIN
+            CODE    1328H     009CH     UNIT         ?PR?_WS2812_RAND_COLOR?WS2812
+            CODE    13C4H     008CH     UNIT         ?C_C51STARTUP
+            CODE    1450H     0074H     UNIT         ?PR?LIGHTCUBETYPE1?MAIN
+            CODE    14C4H     0058H     UNIT         ?PR?LIGHTCUBETYPE8?MAIN
+            CODE    151CH     004CH     UNIT         ?PR?GETKEYVALUE?MAIN
+            CODE    1568H     003FH     UNIT         ?PR?LIGHTCUBETYPE2?MAIN
+            CODE    15A7H     0035H     UNIT         ?PR?MAIN?MAIN
+            CODE    15DCH     0034H     UNIT         ?PR?WS2812_BIT?WS2812
+            CODE    1610H     0032H     UNIT         ?PR?TM2_ISR?MAIN
+            CODE    1642H     0029H     UNIT         ?PR?LIGHTSTATUSSEL?MAIN
+            CODE    166BH     0025H     UNIT         ?PR?TM0_ISR?MAIN
+            CODE    1690H     0025H     UNIT         ?PR?TM1_ISR?MAIN
+            CODE    16B5H     0020H     UNIT         ?PR?IO_INIT?MAIN
+            CODE    16D5H     0020H     UNIT         ?PR?LIGHTSTATUSALL?MAIN
+            CODE    16F5H     001FH     UNIT         ?PR?RCC_INIT?MAIN
+            CODE    1714H     0018H     UNIT         ?PR?_DELAY_MS?MAIN
+            CODE    172CH     0015H     UNIT         ?C_INITSEG
+            CODE    1741H     0014H     UNIT         ?PR?DELAY_1MS?MAIN
+            CODE    1755H     000FH     UNIT         ?PR?TM2_INIT?MAIN
+            CODE    1764H     000EH     UNIT         ?PR?TM1_INIT?MAIN
+            CODE    1772H     000BH     UNIT         ?PR?LIGHTCUBE_RESET?WS2812
+            CODE    177DH     0009H     UNIT         ?PR?DELAY100US?MAIN
+            CODE    1786H     0009H     UNIT         ?PR?WS2812_DELAY100US?WS2812
+            CODE    178FH     0009H     UNIT         ?PR?WS2812BWRITEACOLOR?WS2812
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\LightCube_LED (MAIN)
+
+
+SEGMENT                                   BIT_GROUP          DATA_GROUP          XDATA_GROUP
+  +--> CALLED SEGMENT                  START    LENGTH     START    LENGTH     START    LENGTH
+----------------------------------------------------------------------------------------------
+?PR?TM2_ISR?MAIN                       -----    -----      -----    -----      -----    -----
+  +--> ?PR?GETKEYVALUE?MAIN
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP                          -----    -----      -----    -----      -----    -----
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN                          -----    -----      -----    -----      -----    -----
+  +--> ?PR?RCC_INIT?MAIN
+  +--> ?PR?IO_INIT?MAIN
+  +--> ?PR?_DELAY_MS?MAIN
+  +--> ?PR?TM0_INIT?MAIN
+  +--> ?PR?TM1_INIT?MAIN
+  +--> ?PR?TM2_INIT?MAIN
+  +--> ?PR?WS2812B_INIT?WS2812
+  +--> ?PR?LIGHTCUBETYPE0?MAIN
+  +--> ?PR?LIGHTSTATUSALL?MAIN
+  +--> ?PR?LIGHTSTATUS?MAIN
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 3
+
+
+
+?PR?_DELAY_MS?MAIN                     -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY_1MS?MAIN
+
+?PR?DELAY_1MS?MAIN                     -----    -----      -----    -----      -----    -----
+  +--> ?PR?DELAY100US?MAIN
+
+?PR?WS2812B_INIT?WS2812                -----    -----      -----    -----      -----    -----
+  +--> ?PR?LIGHTCUBE_RESET?WS2812
+
+?PR?LIGHTCUBE_RESET?WS2812             -----    -----      -----    -----      -----    -----
+  +--> ?PR?WS2812_DELAY100US?WS2812
+
+?PR?LIGHTCUBETYPE0?MAIN                -----    -----      0008H    0004H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?WS2812BWRITEACOLOR?WS2812          -----    -----      0012H    0003H      -----    -----
+  +--> ?PR?_WS2812_RAND_COLOR?WS2812
+
+?PR?_WS2812_RAND_COLOR?WS2812          -----    -----      -----    -----      -----    -----
+  +--> ?PR?WS2812_BIT?WS2812
+
+?PR?WS2812_BIT?WS2812                  0020H.0  0000H.1    -----    -----      -----    -----
+
+?PR?LIGHTSTATUSALL?MAIN                -----    -----      -----    -----      -----    -----
+  +--> ?PR?LIGHTCUBETYPE1?MAIN
+  +--> ?PR?LIGHTCUBETYPE2?MAIN
+  +--> ?PR?LIGHTCUBETYPE3?MAIN
+  +--> ?PR?LIGHTCUBETYPE4?MAIN
+  +--> ?PR?LIGHTCUBETYPE5?MAIN
+  +--> ?PR?LIGHTCUBETYPE9?MAIN
+  +--> ?PR?LIGHTCUBETYPE7?MAIN
+  +--> ?PR?LIGHTCUBETYPE10?MAIN
+  +--> ?PR?LIGHTCUBETYPE6?MAIN
+  +--> ?PR?LIGHTCUBETYPE8?MAIN
+
+?PR?LIGHTCUBETYPE1?MAIN                -----    -----      0008H    0009H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?LIGHTCUBETYPE2?MAIN                -----    -----      0008H    0004H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?LIGHTCUBETYPE3?MAIN                -----    -----      0008H    000AH      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?LIGHTCUBETYPE4?MAIN                -----    -----      0008H    000AH      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 4
+
+
+
+?PR?LIGHTCUBETYPE5?MAIN                -----    -----      0008H    0008H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?LIGHTCUBETYPE9?MAIN                -----    -----      0008H    0008H      0000H    0024H
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?LIGHTCUBE_RESET?WS2812
+  +--> ?PR?_GETSNAKE?MAIN
+
+?PR?_GETSNAKE?MAIN                     -----    -----      0010H    0008H      0024H    0010H
+  +--> ?CO?MAIN
+
+?PR?LIGHTCUBETYPE7?MAIN                -----    -----      0008H    0006H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?LIGHTCUBE_RESET?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?LIGHTCUBETYPE10?MAIN               -----    -----      0008H    0008H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?LIGHTCUBETYPE6?MAIN                -----    -----      0008H    0003H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?LIGHTCUBETYPE8?MAIN                -----    -----      0008H    0002H      -----    -----
+  +--> ?PR?_LIGHTCUBETYPE8_LAYER?MAIN
+  +--> ?PR?LIGHTCUBE_RESET?WS2812
+
+?PR?_LIGHTCUBETYPE8_LAYER?MAIN         -----    -----      000AH    0008H      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+
+?PR?LIGHTSTATUS?MAIN                   -----    -----      -----    -----      -----    -----
+  +--> ?CO?MAIN
+  +--> ?PR?LIGHTSTATUSSEL?MAIN
+
+?PR?LIGHTSTATUSSEL?MAIN                -----    -----      0008H    0004H      -----    -----
+  +--> ?PR?WS2812BWRITEACOLOR?WS2812
+  +--> ?PR?LIGHTCUBE_RESET?WS2812
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\LightCube_LED (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0093H         PUBLIC        P0M1
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 5
+
+
+  D:0092H         PUBLIC        P1M0
+  D:0096H         PUBLIC        P2M0
+  D:0091H         PUBLIC        P1M1
+  D:0080H         PUBLIC        P0
+  D:00B2H         PUBLIC        P3M0
+  D:0095H         PUBLIC        P2M1
+  D:0090H         PUBLIC        P1
+  D:00B4H         PUBLIC        P4M0
+  D:00B1H         PUBLIC        P3M1
+  D:00A0H         PUBLIC        P2
+  D:00CAH         PUBLIC        P5M0
+  D:00B3H         PUBLIC        P4M1
+  D:00B0H         PUBLIC        P3
+  C:0D5BH         PUBLIC        LightStatus
+  C:0F9DH         PUBLIC        LightCubeType10
+  D:00C9H         PUBLIC        P5M1
+  D:00C0H         PUBLIC        P4
+  C:1741H         PUBLIC        delay_1ms
+  D:00C8H         PUBLIC        P5
+  D:00E8H         PUBLIC        P6
+  B:00A8H.7       PUBLIC        EA
+  D:00F8H         PUBLIC        P7
+  D:00BAH         PUBLIC        P_SW2
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  C:16D5H         PUBLIC        LightStatusAll
+  C:15A7H         PUBLIC        main
+  D:0018H         PUBLIC        status
+  C:16B5H         PUBLIC        IO_INIT
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  C:0679H         PUBLIC        _getSnake
+  D:00AFH         PUBLIC        IE2
+  D:008EH         PUBLIC        AUXR
+  C:0F3CH         SYMBOL        _?ix1000
+  D:00C7H         PUBLIC        IAP_CONTR
+  C:0F5AH         SYMBOL        _?ix1010
+  C:0F3FH         SYMBOL        _?ix1001
+  C:0F5DH         SYMBOL        _?ix1011
+  C:0F42H         SYMBOL        _?ix1002
+  C:0F60H         SYMBOL        _?ix1012
+  C:0F45H         SYMBOL        _?ix1003
+  D:0019H         PUBLIC        keyT_cnt
+  C:0F70H         SYMBOL        _?ix1013
+  C:0F48H         SYMBOL        _?ix1004
+  C:0F7CH         SYMBOL        _?ix1014
+  C:0F4BH         SYMBOL        _?ix1005
+  C:0F88H         SYMBOL        _?ix1015
+  C:0F4EH         SYMBOL        _?ix1006
+  B:00A8H.1       PUBLIC        ET0
+  C:0F94H         SYMBOL        _?ix1016
+  C:0F51H         SYMBOL        _?ix1007
+  D:001BH         PUBLIC        key
+  B:00A8H.3       PUBLIC        ET1
+  C:0F97H         SYMBOL        _?ix1017
+  C:0F54H         SYMBOL        _?ix1008
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 6
+
+
+  C:0F9AH         SYMBOL        _?ix1018
+  C:0F57H         SYMBOL        _?ix1009
+  D:008CH         PUBLIC        TH0
+  D:001CH         PUBLIC        flag1
+  D:008DH         PUBLIC        TH1
+  D:001DH         PUBLIC        flag2
+  D:00D6H         PUBLIC        T2H
+  D:008AH         PUBLIC        TL0
+  D:008BH         PUBLIC        TL1
+  C:001EH         PUBLIC        LightCubeType0
+  D:00D7H         PUBLIC        T2L
+  C:1450H         PUBLIC        LightCubeType1
+  C:1718H         PUBLIC        _delay_ms
+  C:1568H         PUBLIC        LightCubeType2
+  C:0BECH         PUBLIC        LightCubeType3
+  C:1196H         PUBLIC        LightCubeType4
+  B:0088H.4       PUBLIC        TR0
+  C:0066H         PUBLIC        LightCubeType5
+  B:0088H.6       PUBLIC        TR1
+  D:001EH         PUBLIC        time_cnt
+  C:1281H         PUBLIC        LightCubeType6
+  C:10A0H         PUBLIC        LightCubeType7
+  D:009FH         PUBLIC        IRTRIM
+  C:14C4H         PUBLIC        LightCubeType8
+  C:0E88H         PUBLIC        Type6
+  C:0A46H         PUBLIC        _LightCubeType8_layer
+  C:03F9H         PUBLIC        LightCubeType9
+  C:166BH         PUBLIC        TM0_Isr
+  C:1690H         PUBLIC        TM1_Isr
+  C:1610H         PUBLIC        TM2_Isr
+  D:00A6H         PUBLIC        VRTRIM
+  C:000EH         PUBLIC        TM0_INIT
+  C:1764H         PUBLIC        TM1_INIT
+  C:1642H         PUBLIC        LightStatusSEL
+  C:1755H         PUBLIC        TM2_INIT
+  C:177DH         PUBLIC        Delay100us
+  C:151CH         PUBLIC        getKeyValue
+  C:16F5H         PUBLIC        RCC_INIT
+  D:009DH         PUBLIC        IRCBAND
+  B:0090H.1       PUBLIC        key0
+  D:00D0H         PUBLIC        PSW
+  B:00B0H.7       PUBLIC        key1
+  B:00B0H.6       PUBLIC        key3
+  D:0094H         PUBLIC        P0M0
+  -------         PROC          MAIN
+  C:15A7H         LINE#         36
+  C:15A7H         LINE#         37
+  C:15A7H         LINE#         38
+  C:15AAH         LINE#         39
+  C:15ADH         LINE#         40
+  C:15B4H         LINE#         41
+  C:15B7H         LINE#         42
+  C:15BAH         LINE#         43
+  C:15BDH         LINE#         44
+  C:15C0H         LINE#         46
+  C:15C7H         LINE#         48
+  C:15CAH         LINE#         50
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 7
+
+
+  C:15CAH         LINE#         51
+  C:15CAH         LINE#         52
+  C:15D2H         LINE#         53
+  C:15D2H         LINE#         54
+  C:15D7H         LINE#         55
+  -------         ENDPROC       MAIN
+  -------         PROC          RCC_INIT
+  C:16F5H         LINE#         62
+  C:16F5H         LINE#         63
+  C:16F5H         LINE#         65
+  C:16F8H         LINE#         66
+  C:16FEH         LINE#         67
+  C:1705H         LINE#         68
+  C:170CH         LINE#         69
+  C:170FH         LINE#         70
+  C:1713H         LINE#         71
+  -------         ENDPROC       RCC_INIT
+  -------         PROC          IO_INIT
+  C:16B5H         LINE#         73
+  C:16B5H         LINE#         74
+  C:16B5H         LINE#         75
+  C:16B8H         LINE#         76
+  C:16BAH         LINE#         77
+  C:16BCH         LINE#         78
+  C:16BEH         LINE#         79
+  C:16C0H         LINE#         80
+  C:16C2H         LINE#         81
+  C:16C4H         LINE#         82
+  C:16C6H         LINE#         83
+  C:16C8H         LINE#         84
+  C:16CAH         LINE#         85
+  C:16CCH         LINE#         86
+  C:16CEH         LINE#         88
+  C:16D0H         LINE#         89
+  C:16D2H         LINE#         90
+  C:16D4H         LINE#         92
+  -------         ENDPROC       IO_INIT
+  -------         PROC          TM0_INIT
+  C:000EH         LINE#         94
+  C:000EH         LINE#         95
+  C:000EH         LINE#         96
+  C:0011H         LINE#         97
+  C:0014H         LINE#         98
+  C:0017H         LINE#         100
+  C:0019H         LINE#         102
+  -------         ENDPROC       TM0_INIT
+  -------         PROC          TM1_INIT
+  C:1764H         LINE#         104
+  C:1764H         LINE#         105
+  C:1764H         LINE#         106
+  C:1767H         LINE#         107
+  C:176AH         LINE#         108
+  C:176DH         LINE#         110
+  C:176FH         LINE#         111
+  C:1771H         LINE#         112
+  -------         ENDPROC       TM1_INIT
+  -------         PROC          TM2_INIT
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 8
+
+
+  C:1755H         LINE#         114
+  C:1755H         LINE#         115
+  C:1755H         LINE#         116
+  C:1758H         LINE#         117
+  C:175BH         LINE#         118
+  C:175EH         LINE#         119
+  C:1761H         LINE#         120
+  C:1763H         LINE#         121
+  -------         ENDPROC       TM2_INIT
+  -------         PROC          LIGHTCUBETYPE0
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        Type1Color
+  -------         ENDDO         
+  C:001EH         LINE#         123
+  C:001EH         LINE#         124
+  C:001EH         LINE#         125
+  C:0021H         LINE#         126
+  C:0032H         LINE#         127
+  C:0035H         LINE#         128
+  C:0035H         LINE#         129
+  C:004BH         LINE#         130
+  C:0056H         LINE#         131
+  -------         ENDPROC       LIGHTCUBETYPE0
+  -------         PROC          LIGHTCUBETYPE1
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  D:000AH         SYMBOL        num
+  D:000BH         SYMBOL        Type1Color
+  D:000EH         SYMBOL        LightsOut
+  -------         ENDDO         
+  C:1450H         LINE#         134
+  C:1450H         LINE#         135
+  C:1450H         LINE#         136
+  C:1456H         LINE#         137
+  C:1459H         LINE#         138
+  C:146AH         LINE#         139
+  C:147DH         LINE#         140
+  C:1480H         LINE#         141
+  C:1480H         LINE#         142
+  C:1483H         LINE#         143
+  C:1483H         LINE#         144
+  C:1490H         LINE#         145
+  C:1496H         LINE#         147
+  C:14A4H         LINE#         148
+  C:14AFH         LINE#         149
+  C:14B1H         LINE#         150
+  C:14B8H         LINE#         151
+  C:14C3H         LINE#         152
+  -------         ENDPROC       LIGHTCUBETYPE1
+  -------         PROC          LIGHTCUBETYPE2
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        Type1Color
+  -------         ENDDO         
+  C:1568H         LINE#         154
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 9
+
+
+  C:1568H         LINE#         155
+  C:1568H         LINE#         156
+  C:156BH         LINE#         157
+  C:157CH         LINE#         158
+  C:157FH         LINE#         159
+  C:157FH         LINE#         160
+  C:1595H         LINE#         161
+  C:15A0H         LINE#         162
+  -------         ENDPROC       LIGHTCUBETYPE2
+  -------         PROC          LIGHTCUBETYPE3
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  D:000AH         SYMBOL        k
+  D:000BH         SYMBOL        num
+  D:000CH         SYMBOL        Type1Color
+  D:000FH         SYMBOL        LightsOut
+  -------         ENDDO         
+  C:0BECH         LINE#         165
+  C:0BECH         LINE#         166
+  C:0BECH         LINE#         167
+  C:0BF3H         LINE#         168
+  C:0BF5H         LINE#         169
+  C:0C06H         LINE#         170
+  C:0C19H         LINE#         171
+  C:0C1CH         LINE#         172
+  C:0C1CH         LINE#         173
+  C:0C2EH         LINE#         174
+  C:0C2EH         LINE#         175
+  C:0C2EH         LINE#         176
+  C:0C30H         LINE#         177
+  C:0C33H         LINE#         178
+  C:0C33H         LINE#         179
+  C:0C36H         LINE#         180
+  C:0C36H         LINE#         181
+  C:0C47H         LINE#         182
+  C:0C55H         LINE#         184
+  C:0C6BH         LINE#         185
+  C:0C76H         LINE#         186
+  C:0C84H         LINE#         187
+  C:0C84H         LINE#         188
+  C:0C84H         LINE#         189
+  C:0C86H         LINE#         190
+  C:0C89H         LINE#         191
+  C:0C89H         LINE#         192
+  C:0C8CH         LINE#         193
+  C:0C8CH         LINE#         194
+  C:0CC7H         LINE#         195
+  C:0CD5H         LINE#         197
+  C:0CEBH         LINE#         198
+  C:0CF6H         LINE#         199
+  C:0D03H         LINE#         200
+  C:0D03H         LINE#         201
+  C:0D03H         LINE#         202
+  C:0D06H         LINE#         203
+  C:0D09H         LINE#         204
+  C:0D09H         LINE#         205
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 10
+
+
+  C:0D1AH         LINE#         206
+  C:0D28H         LINE#         208
+  C:0D3EH         LINE#         209
+  C:0D49H         LINE#         210
+  C:0D49H         LINE#         211
+  C:0D49H         LINE#         212
+  C:0D4CH         LINE#         213
+  C:0D5AH         LINE#         215
+  -------         ENDPROC       LIGHTCUBETYPE3
+  -------         PROC          LIGHTCUBETYPE4
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  D:000AH         SYMBOL        k
+  D:000BH         SYMBOL        num
+  D:000CH         SYMBOL        Type1Color
+  D:000FH         SYMBOL        LightsOut
+  -------         ENDDO         
+  C:1196H         LINE#         217
+  C:1196H         LINE#         218
+  C:1196H         LINE#         219
+  C:119EH         LINE#         220
+  C:11A0H         LINE#         221
+  C:11B1H         LINE#         222
+  C:11C4H         LINE#         223
+  C:11C7H         LINE#         224
+  C:11C7H         LINE#         225
+  C:11CAH         LINE#         226
+  C:11CAH         LINE#         227
+  C:11CDH         LINE#         228
+  C:11CDH         LINE#         229
+  C:11F1H         LINE#         230
+  C:11F3H         LINE#         231
+  C:1229H         LINE#         232
+  C:1237H         LINE#         234
+  C:124DH         LINE#         235
+  C:125BH         LINE#         236
+  C:1269H         LINE#         237
+  C:126BH         LINE#         238
+  C:1272H         LINE#         239
+  C:1280H         LINE#         240
+  -------         ENDPROC       LIGHTCUBETYPE4
+  -------         PROC          LIGHTCUBETYPE5
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  D:000AH         SYMBOL        Type1Color
+  D:000DH         SYMBOL        LightsOut
+  -------         ENDDO         
+  C:0066H         LINE#         242
+  C:0066H         LINE#         243
+  C:0066H         LINE#         244
+  C:006BH         LINE#         245
+  C:007CH         LINE#         246
+  C:008FH         LINE#         247
+  C:0092H         LINE#         248
+  C:0092H         LINE#         250
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 11
+
+
+  C:0095H         LINE#         251
+  C:0095H         LINE#         252
+  C:00C4H         LINE#         253
+  C:00D2H         LINE#         255
+  C:00E8H         LINE#         256
+  C:00F3H         LINE#         258
+  C:00F6H         LINE#         259
+  C:00F6H         LINE#         260
+  C:0125H         LINE#         261
+  C:0133H         LINE#         263
+  C:0149H         LINE#         264
+  C:0154H         LINE#         266
+  C:0157H         LINE#         267
+  C:0157H         LINE#         268
+  C:016EH         LINE#         269
+  C:017CH         LINE#         271
+  C:0192H         LINE#         272
+  C:019DH         LINE#         274
+  C:01A0H         LINE#         275
+  C:01A0H         LINE#         276
+  C:01CFH         LINE#         277
+  C:01DDH         LINE#         279
+  C:01F3H         LINE#         280
+  C:01FEH         LINE#         282
+  C:0201H         LINE#         283
+  C:0201H         LINE#         284
+  C:0230H         LINE#         285
+  C:023EH         LINE#         287
+  C:0254H         LINE#         288
+  C:025FH         LINE#         289
+  C:0262H         LINE#         291
+  C:0265H         LINE#         292
+  C:0265H         LINE#         293
+  C:027CH         LINE#         294
+  C:028AH         LINE#         296
+  C:02A0H         LINE#         297
+  C:02ABH         LINE#         299
+  C:02AEH         LINE#         300
+  C:02AEH         LINE#         301
+  C:02C5H         LINE#         302
+  C:02D3H         LINE#         304
+  C:02E9H         LINE#         305
+  C:02F4H         LINE#         307
+  C:02F7H         LINE#         308
+  C:02F7H         LINE#         309
+  C:0326H         LINE#         310
+  C:0334H         LINE#         312
+  C:034AH         LINE#         313
+  C:0355H         LINE#         315
+  C:0358H         LINE#         316
+  C:0358H         LINE#         317
+  C:036FH         LINE#         318
+  C:037DH         LINE#         320
+  C:0393H         LINE#         321
+  C:039EH         LINE#         323
+  C:03A1H         LINE#         324
+  C:03A1H         LINE#         325
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 12
+
+
+  C:03B8H         LINE#         326
+  C:03C6H         LINE#         328
+  C:03DCH         LINE#         329
+  C:03E7H         LINE#         330
+  C:03EAH         LINE#         331
+  C:03F8H         LINE#         332
+  -------         ENDPROC       LIGHTCUBETYPE5
+  -------         PROC          LIGHTCUBETYPE6
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  D:000AH         SYMBOL        k
+  -------         ENDDO         
+  C:1281H         LINE#         334
+  C:1281H         LINE#         335
+  C:1281H         LINE#         336
+  C:1288H         LINE#         337
+  C:128AH         LINE#         338
+  C:128AH         LINE#         339
+  C:128DH         LINE#         340
+  C:128DH         LINE#         341
+  C:129AH         LINE#         342
+  C:129AH         LINE#         343
+  C:129DH         LINE#         344
+  C:129DH         LINE#         345
+  C:12C5H         LINE#         346
+  C:12D2H         LINE#         347
+  C:12D2H         LINE#         349
+  C:12D2H         LINE#         350
+  C:12D5H         LINE#         351
+  C:12D5H         LINE#         352
+  C:12FDH         LINE#         353
+  C:1308H         LINE#         354
+  C:1308H         LINE#         355
+  C:1316H         LINE#         356
+  C:1319H         LINE#         357
+  C:1327H         LINE#         358
+  -------         ENDPROC       LIGHTCUBETYPE6
+  -------         PROC          LIGHTCUBETYPE7
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  D:000AH         SYMBOL        k
+  D:000BH         SYMBOL        LightsOut
+  -------         ENDDO         
+  C:10A0H         LINE#         360
+  C:10A0H         LINE#         361
+  C:10A0H         LINE#         362
+  C:10A7H         LINE#         363
+  C:10B8H         LINE#         364
+  C:10BBH         LINE#         365
+  C:10BBH         LINE#         366
+  C:10BEH         LINE#         367
+  C:10BEH         LINE#         368
+  C:10C1H         LINE#         369
+  C:10C1H         LINE#         370
+  C:10D7H         LINE#         371
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 13
+
+
+  C:10D7H         LINE#         372
+  C:10EDH         LINE#         373
+  C:1103H         LINE#         374
+  C:1119H         LINE#         375
+  C:112FH         LINE#         376
+  C:114FH         LINE#         377
+  C:1165H         LINE#         378
+  C:1165H         LINE#         379
+  C:1173H         LINE#         380
+  C:1181H         LINE#         381
+  C:1184H         LINE#         382
+  C:1187H         LINE#         383
+  C:1195H         LINE#         384
+  -------         ENDPROC       LIGHTCUBETYPE7
+  -------         PROC          _LIGHTCUBETYPE8_LAYER
+  D:000AH         SYMBOL        layer
+  D:000BH         SYMBOL        num
+  D:000CH         SYMBOL        color
+  -------         DO            
+  D:000DH         SYMBOL        i
+  D:000EH         SYMBOL        j
+  D:000FH         SYMBOL        LightsOut
+  -------         ENDDO         
+  C:0A46H         LINE#         386
+  C:0A4CH         LINE#         387
+  C:0A4CH         LINE#         388
+  C:0A51H         LINE#         389
+  C:0A62H         LINE#         390
+  C:0A6BH         LINE#         391
+  C:0A6BH         LINE#         392
+  C:0A6DH         LINE#         393
+  C:0A6DH         LINE#         394
+  C:0A73H         LINE#         395
+  C:0A73H         LINE#         396
+  C:0A76H         LINE#         397
+  C:0A76H         LINE#         398
+  C:0AB2H         LINE#         399
+  C:0ABFH         LINE#         400
+  C:0ABFH         LINE#         402
+  C:0ABFH         LINE#         403
+  C:0AC2H         LINE#         404
+  C:0AC2H         LINE#         405
+  C:0AD8H         LINE#         406
+  C:0AE3H         LINE#         407
+  C:0AE3H         LINE#         408
+  C:0AF2H         LINE#         409
+  C:0AFBH         LINE#         410
+  C:0AFBH         LINE#         411
+  C:0AFDH         LINE#         412
+  C:0AFDH         LINE#         413
+  C:0B03H         LINE#         414
+  C:0B03H         LINE#         415
+  C:0B06H         LINE#         416
+  C:0B06H         LINE#         417
+  C:0B42H         LINE#         418
+  C:0B50H         LINE#         419
+  C:0B50H         LINE#         420
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 14
+
+
+  C:0B6DH         LINE#         421
+  C:0B6DH         LINE#         422
+  C:0B70H         LINE#         423
+  C:0B70H         LINE#         424
+  C:0BACH         LINE#         425
+  C:0BB9H         LINE#         426
+  C:0BB9H         LINE#         428
+  C:0BB9H         LINE#         429
+  C:0BBCH         LINE#         430
+  C:0BBCH         LINE#         431
+  C:0BD2H         LINE#         432
+  C:0BDDH         LINE#         433
+  C:0BDDH         LINE#         434
+  C:0BEBH         LINE#         435
+  C:0BEBH         LINE#         436
+  -------         ENDPROC       _LIGHTCUBETYPE8_LAYER
+  -------         PROC          LIGHTCUBETYPE8
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        j
+  -------         ENDDO         
+  C:14C4H         LINE#         438
+  C:14C4H         LINE#         439
+  C:14C4H         LINE#         440
+  C:14C9H         LINE#         441
+  C:14CDH         LINE#         442
+  C:14CFH         LINE#         443
+  C:14D1H         LINE#         444
+  C:14D1H         LINE#         445
+  C:14D1H         LINE#         446
+  C:14D1H         LINE#         447
+  C:14D4H         LINE#         448
+  C:14D4H         LINE#         449
+  C:14E0H         LINE#         450
+  C:14E0H         LINE#         451
+  C:14E8H         LINE#         452
+  C:14F0H         LINE#         453
+  C:14F9H         LINE#         454
+  C:14F9H         LINE#         455
+  C:14FCH         LINE#         456
+  C:1507H         LINE#         457
+  C:150BH         LINE#         458
+  C:150BH         LINE#         459
+  C:150EH         LINE#         460
+  C:150EH         LINE#         461
+  C:150EH         LINE#         462
+  C:150EH         LINE#         463
+  C:1519H         LINE#         464
+  C:151BH         LINE#         465
+  -------         ENDPROC       LIGHTCUBETYPE8
+  -------         PROC          _GETSNAKE
+  D:0010H         SYMBOL        snake_list
+  D:0013H         SYMBOL        snakeElementLayer
+  D:0016H         SYMBOL        snake_size
+  -------         DO            
+  D:0017H         SYMBOL        i
+  X:0024H         SYMBOL        head_element
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 15
+
+
+  -------         ENDDO         
+  C:0679H         LINE#         478
+  C:067FH         LINE#         479
+  C:067FH         LINE#         480
+  C:0682H         LINE#         481
+  C:0694H         LINE#         482
+  C:069DH         LINE#         483
+  C:069DH         LINE#         484
+  C:06C4H         LINE#         485
+  C:06C4H         LINE#         487
+  C:06C4H         LINE#         488
+  C:06C7H         LINE#         489
+  C:06C7H         LINE#         490
+  C:0712H         LINE#         491
+  C:0712H         LINE#         492
+  C:0721H         LINE#         493
+  C:0736H         LINE#         494
+  C:074BH         LINE#         495
+  C:0760H         LINE#         496
+  C:0775H         LINE#         497
+  C:078AH         LINE#         498
+  C:079FH         LINE#         499
+  C:07B4H         LINE#         500
+  C:07C8H         LINE#         501
+  C:07DCH         LINE#         502
+  C:07F0H         LINE#         503
+  C:0804H         LINE#         504
+  C:0818H         LINE#         505
+  C:082CH         LINE#         506
+  C:0843H         LINE#         507
+  C:0868H         LINE#         508
+  C:0868H         LINE#         509
+  C:0873H         LINE#         510
+  C:0873H         LINE#         511
+  -------         ENDPROC       _GETSNAKE
+  -------         PROC          LIGHTCUBETYPE9
+  -------         DO            
+  D:0008H         SYMBOL        i
+  D:0009H         SYMBOL        snake_size
+  X:0000H         SYMBOL        snakeElementLayer
+  X:000CH         SYMBOL        snake_list
+  X:0018H         SYMBOL        snake
+  D:000AH         SYMBOL        LightsOut
+  D:000DH         SYMBOL        LightsOn
+  -------         ENDDO         
+  C:03F9H         LINE#         513
+  C:03F9H         LINE#         514
+  C:03F9H         LINE#         515
+  C:03FCH         LINE#         516
+  C:03FEH         LINE#         517
+  C:0410H         LINE#         518
+  C:0423H         LINE#         519
+  C:0436H         LINE#         520
+  C:0449H         LINE#         521
+  C:045CH         LINE#         522
+  C:0461H         LINE#         523
+  C:0463H         LINE#         524
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 16
+
+
+  C:0463H         LINE#         525
+  C:0463H         LINE#         526
+  C:0466H         LINE#         527
+  C:0466H         LINE#         528
+  C:049DH         LINE#         529
+  C:04A4H         LINE#         530
+  C:04A7H         LINE#         531
+  C:04A7H         LINE#         532
+  C:04AEH         LINE#         533
+  C:04AEH         LINE#         534
+  C:04BAH         LINE#         535
+  C:04BDH         LINE#         536
+  C:04BDH         LINE#         537
+  C:04C4H         LINE#         538
+  C:04C4H         LINE#         539
+  C:04D0H         LINE#         540
+  C:04D3H         LINE#         541
+  C:04D3H         LINE#         542
+  C:04DAH         LINE#         543
+  C:04DAH         LINE#         544
+  C:04E6H         LINE#         545
+  C:04E9H         LINE#         546
+  C:04E9H         LINE#         547
+  C:04F0H         LINE#         548
+  C:04F0H         LINE#         549
+  C:04FCH         LINE#         550
+  C:04FFH         LINE#         551
+  C:04FFH         LINE#         552
+  C:0506H         LINE#         553
+  C:0506H         LINE#         554
+  C:0512H         LINE#         555
+  C:0515H         LINE#         556
+  C:0515H         LINE#         557
+  C:051CH         LINE#         558
+  C:051CH         LINE#         559
+  C:0528H         LINE#         560
+  C:052BH         LINE#         561
+  C:052BH         LINE#         562
+  C:0532H         LINE#         563
+  C:0532H         LINE#         564
+  C:053EH         LINE#         565
+  C:0541H         LINE#         566
+  C:0541H         LINE#         567
+  C:0548H         LINE#         568
+  C:0548H         LINE#         569
+  C:0554H         LINE#         570
+  C:0557H         LINE#         571
+  C:0557H         LINE#         572
+  C:055EH         LINE#         573
+  C:055EH         LINE#         574
+  C:056AH         LINE#         575
+  C:056DH         LINE#         576
+  C:056DH         LINE#         577
+  C:0574H         LINE#         578
+  C:0574H         LINE#         579
+  C:0580H         LINE#         580
+  C:0583H         LINE#         581
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 17
+
+
+  C:0583H         LINE#         582
+  C:058AH         LINE#         583
+  C:058AH         LINE#         584
+  C:0596H         LINE#         585
+  C:0599H         LINE#         586
+  C:0599H         LINE#         587
+  C:05A0H         LINE#         588
+  C:05A0H         LINE#         589
+  C:05ACH         LINE#         590
+  C:05AEH         LINE#         591
+  C:05AEH         LINE#         592
+  C:0608H         LINE#         593
+  C:0608H         LINE#         604
+  C:0608H         LINE#         605
+  C:0608H         LINE#         606
+  C:0608H         LINE#         607
+  C:0608H         LINE#         608
+  C:0608H         LINE#         609
+  C:0608H         LINE#         610
+  C:0608H         LINE#         611
+  C:0608H         LINE#         612
+  C:0608H         LINE#         614
+  C:0608H         LINE#         615
+  C:0608H         LINE#         616
+  C:0608H         LINE#         617
+  C:0608H         LINE#         618
+  C:0608H         LINE#         619
+  C:0608H         LINE#         620
+  C:0608H         LINE#         621
+  C:0608H         LINE#         622
+  C:0608H         LINE#         624
+  C:0608H         LINE#         625
+  C:0608H         LINE#         626
+  C:0608H         LINE#         627
+  C:0608H         LINE#         628
+  C:0608H         LINE#         629
+  C:0608H         LINE#         630
+  C:0608H         LINE#         631
+  C:0616H         LINE#         632
+  C:0616H         LINE#         643
+  C:0616H         LINE#         644
+  C:062CH         LINE#         645
+  C:063AH         LINE#         646
+  C:063DH         LINE#         647
+  C:0646H         LINE#         648
+  C:0648H         LINE#         649
+  C:0657H         LINE#         650
+  C:0657H         LINE#         651
+  C:066CH         LINE#         652
+  C:0670H         LINE#         653
+  C:0673H         LINE#         654
+  C:0676H         LINE#         655
+  C:0678H         LINE#         656
+  -------         ENDPROC       LIGHTCUBETYPE9
+  -------         PROC          LIGHTCUBETYPE10
+  -------         DO            
+  D:0008H         SYMBOL        i
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 18
+
+
+  D:0009H         SYMBOL        j
+  D:000AH         SYMBOL        k
+  D:000BH         SYMBOL        n
+  D:000CH         SYMBOL        num
+  D:000DH         SYMBOL        LightsOut
+  -------         ENDDO         
+  C:0F9DH         LINE#         658
+  C:0F9DH         LINE#         659
+  C:0F9DH         LINE#         660
+  C:0FA7H         LINE#         661
+  C:0FA9H         LINE#         663
+  C:0FBAH         LINE#         664
+  C:0FBDH         LINE#         665
+  C:0FBDH         LINE#         666
+  C:0FC0H         LINE#         667
+  C:0FC0H         LINE#         668
+  C:0FC3H         LINE#         669
+  C:0FC3H         LINE#         670
+  C:0FC6H         LINE#         671
+  C:0FC6H         LINE#         672
+  C:0FEAH         LINE#         673
+  C:0FECH         LINE#         674
+  C:1022H         LINE#         675
+  C:1042H         LINE#         677
+  C:1058H         LINE#         678
+  C:1066H         LINE#         679
+  C:1074H         LINE#         680
+  C:1076H         LINE#         681
+  C:107DH         LINE#         682
+  C:108BH         LINE#         683
+  C:108EH         LINE#         684
+  C:1091H         LINE#         685
+  C:109FH         LINE#         686
+  -------         ENDPROC       LIGHTCUBETYPE10
+  -------         PROC          LIGHTSTATUSALL
+  C:16D5H         LINE#         688
+  C:16D5H         LINE#         689
+  C:16D5H         LINE#         690
+  C:16D5H         LINE#         691
+  C:16D5H         LINE#         692
+  C:16D8H         LINE#         693
+  C:16DBH         LINE#         694
+  C:16DEH         LINE#         695
+  C:16E1H         LINE#         696
+  C:16E4H         LINE#         697
+  C:16E7H         LINE#         698
+  C:16EAH         LINE#         699
+  C:16EDH         LINE#         700
+  C:16F0H         LINE#         701
+  C:16F3H         LINE#         702
+  -------         ENDPROC       LIGHTSTATUSALL
+  -------         PROC          LIGHTSTATUSSEL
+  D:0008H         SYMBOL        wsColor
+  -------         DO            
+  D:000BH         SYMBOL        i
+  -------         ENDDO         
+  C:1642H         LINE#         705
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 19
+
+
+  C:1642H         LINE#         706
+  C:1642H         LINE#         707
+  C:1645H         LINE#         708
+  C:1647H         LINE#         709
+  C:1647H         LINE#         710
+  C:165DH         LINE#         711
+  C:1668H         LINE#         712
+  -------         ENDPROC       LIGHTSTATUSSEL
+  -------         PROC          LIGHTSTATUS
+  C:0D5BH         LINE#         715
+  C:0D5BH         LINE#         716
+  C:0D5BH         LINE#         717
+  C:0D5DH         LINE#         718
+  C:0D60H         LINE#         720
+  C:0D60H         LINE#         721
+  C:0D60H         LINE#         722
+  C:0D9DH         LINE#         723
+  C:0D9DH         LINE#         724
+  C:0DACH         LINE#         725
+  C:0DBBH         LINE#         726
+  C:0DC9H         LINE#         727
+  C:0DD7H         LINE#         728
+  C:0DE5H         LINE#         729
+  C:0DF3H         LINE#         730
+  C:0E01H         LINE#         731
+  C:0E0FH         LINE#         732
+  C:0E1DH         LINE#         733
+  C:0E2BH         LINE#         734
+  C:0E39H         LINE#         735
+  C:0E4FH         LINE#         736
+  C:0E4FH         LINE#         737
+  C:0E61H         LINE#         738
+  C:0E66H         LINE#         739
+  C:0E66H         LINE#         740
+  C:0E68H         LINE#         741
+  C:0E6BH         LINE#         742
+  C:0E6DH         LINE#         743
+  C:0E75H         LINE#         744
+  C:0E75H         LINE#         745
+  C:0E81H         LINE#         746
+  C:0E84H         LINE#         747
+  C:0E87H         LINE#         748
+  -------         ENDPROC       LIGHTSTATUS
+  -------         PROC          GETKEYVALUE
+  C:151CH         LINE#         750
+  C:151CH         LINE#         751
+  C:151CH         LINE#         752
+  C:151FH         LINE#         753
+  C:151FH         LINE#         754
+  C:1522H         LINE#         755
+  C:1525H         LINE#         756
+  C:1525H         LINE#         757
+  C:1528H         LINE#         758
+  C:1528H         LINE#         759
+  C:152BH         LINE#         760
+  C:1532H         LINE#         761
+  C:1536H         LINE#         763
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 20
+
+
+  C:1539H         LINE#         764
+  C:1539H         LINE#         765
+  C:153CH         LINE#         766
+  C:153CH         LINE#         767
+  C:153FH         LINE#         768
+  C:1542H         LINE#         769
+  C:1542H         LINE#         771
+  C:1542H         LINE#         772
+  C:1549H         LINE#         773
+  C:154CH         LINE#         774
+  C:1557H         LINE#         775
+  C:155AH         LINE#         776
+  C:1565H         LINE#         777
+  C:1567H         LINE#         778
+  C:1567H         LINE#         780
+  -------         ENDPROC       GETKEYVALUE
+  -------         PROC          DELAY100US
+  -------         DO            
+  D:0007H         SYMBOL        i
+  D:0006H         SYMBOL        j
+  -------         ENDDO         
+  C:177DH         LINE#         782
+  C:177DH         LINE#         783
+  C:177DH         LINE#         786
+  C:177FH         LINE#         787
+  C:1781H         LINE#         789
+  C:1781H         LINE#         790
+  C:1783H         LINE#         791
+  C:1785H         LINE#         792
+  -------         ENDPROC       DELAY100US
+  -------         PROC          DELAY_1MS
+  -------         DO            
+  D:0004H         SYMBOL        i
+  -------         ENDDO         
+  C:1741H         LINE#         794
+  C:1741H         LINE#         795
+  C:1741H         LINE#         796
+  C:1745H         LINE#         797
+  C:174FH         LINE#         798
+  C:174FH         LINE#         799
+  C:1752H         LINE#         800
+  C:1754H         LINE#         801
+  -------         ENDPROC       DELAY_1MS
+  C:1714H         SYMBOL        L?0501
+  -------         PROC          L?0500
+  -------         ENDPROC       L?0500
+  C:1714H         SYMBOL        L?0501
+  -------         PROC          _DELAY_MS
+  D:0002H         SYMBOL        i
+  C:1718H         LINE#         803
+  C:171CH         LINE#         804
+  C:171CH         LINE#         805
+  C:1726H         LINE#         806
+  C:1726H         LINE#         807
+  C:1729H         LINE#         808
+  C:172BH         LINE#         809
+  -------         ENDPROC       _DELAY_MS
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 21
+
+
+  -------         PROC          TM0_ISR
+  C:166BH         LINE#         811
+  C:166FH         LINE#         813
+  C:1677H         LINE#         816
+  C:1682H         LINE#         817
+  C:1682H         LINE#         818
+  C:1688H         LINE#         819
+  C:168BH         LINE#         820
+  C:168BH         LINE#         821
+  -------         ENDPROC       TM0_ISR
+  -------         PROC          TM1_ISR
+  C:1690H         LINE#         823
+  C:1694H         LINE#         825
+  C:169CH         LINE#         828
+  C:16A7H         LINE#         829
+  C:16A7H         LINE#         830
+  C:16ADH         LINE#         831
+  C:16B0H         LINE#         832
+  C:16B0H         LINE#         834
+  -------         ENDPROC       TM1_ISR
+  -------         PROC          TM2_ISR
+  C:1610H         LINE#         836
+  C:1619H         LINE#         838
+  C:161BH         LINE#         839
+  C:1623H         LINE#         840
+  C:162EH         LINE#         841
+  C:162EH         LINE#         842
+  C:1634H         LINE#         843
+  C:1639H         LINE#         844
+  C:1639H         LINE#         845
+  C:163BH         LINE#         846
+  -------         ENDPROC       TM2_ISR
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        WS2812
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0092H         PUBLIC        P1M0
+  D:0091H         PUBLIC        P1M1
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:1328H         PUBLIC        _WS2812_rand_color
+  D:00C0H         PUBLIC        P4
+  D:00C8H         PUBLIC        P5
+  D:00E8H         PUBLIC        P6
+  D:00F8H         PUBLIC        P7
+  D:00A8H         PUBLIC        IE
+  B:0090H.3       PUBLIC        DO
+  D:00B8H         PUBLIC        IP
+  C:15E0H         PUBLIC        WS2812_bit
+  C:1786H         PUBLIC        ws2812_delay100us
+  C:0003H         PUBLIC        ws2812b_INIT
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  C:1772H         PUBLIC        LightCube_Reset
+  C:178FH         PUBLIC        ws2812bWriteAColor
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 22
+
+
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          WS2812_DELAY100US
+  -------         DO            
+  D:0007H         SYMBOL        i
+  D:0006H         SYMBOL        j
+  -------         ENDDO         
+  C:1786H         LINE#         3
+  C:1786H         LINE#         4
+  C:1786H         LINE#         7
+  C:1788H         LINE#         8
+  C:178AH         LINE#         10
+  C:178AH         LINE#         11
+  C:178CH         LINE#         12
+  C:178EH         LINE#         13
+  -------         ENDPROC       WS2812_DELAY100US
+  -------         PROC          LIGHTCUBE_RESET
+  C:1772H         LINE#         15
+  C:1772H         LINE#         16
+  C:1772H         LINE#         17
+  C:1774H         LINE#         18
+  C:1777H         LINE#         19
+  C:177AH         LINE#         20
+  -------         ENDPROC       LIGHTCUBE_RESET
+  C:15DCH         SYMBOL        L?0015
+  -------         PROC          L?0014
+  -------         ENDPROC       L?0014
+  C:15DCH         SYMBOL        L?0015
+  -------         PROC          WS2812_BIT
+  B:0020H.0       SYMBOL        data_bit
+  C:15E0H         LINE#         23
+  C:15E0H         LINE#         24
+  C:15E0H         LINE#         25
+  C:15E3H         LINE#         26
+  C:15E3H         LINE#         27
+  C:15E5H         LINE#         28
+  C:15F1H         LINE#         29
+  C:15F6H         LINE#         30
+  C:15F8H         LINE#         31
+  C:15F9H         LINE#         33
+  C:15F9H         LINE#         34
+  C:15FBH         LINE#         35
+  C:15FFH         LINE#         36
+  C:1601H         LINE#         37
+  C:160DH         LINE#         38
+  C:160FH         LINE#         39
+  C:160FH         LINE#         40
+  -------         ENDPROC       WS2812_BIT
+  -------         PROC          _WS2812_RAND_COLOR
+  D:0007H         SYMBOL        R
+  D:0005H         SYMBOL        G
+  D:0003H         SYMBOL        B
+  C:1328H         LINE#         42
+  C:1328H         LINE#         43
+  C:1328H         LINE#         44
+  C:1341H         LINE#         45
+  C:135CH         LINE#         47
+  C:1375H         LINE#         48
+BL51 BANKED LINKER/LOCATER V6.22.4.0                                                  04/17/2023  23:05:23  PAGE 23
+
+
+  C:1390H         LINE#         50
+  C:13A9H         LINE#         51
+  -------         ENDPROC       _WS2812_RAND_COLOR
+  -------         PROC          WS2812BWRITEACOLOR
+  D:0012H         SYMBOL        wsColor
+  C:178FH         LINE#         54
+  C:178FH         LINE#         55
+  C:178FH         LINE#         56
+  -------         ENDPROC       WS2812BWRITEACOLOR
+  -------         PROC          WS2812B_INIT
+  C:0003H         LINE#         59
+  C:0003H         LINE#         60
+  C:0003H         LINE#         61
+  C:0003H         LINE#         62
+  C:0006H         LINE#         63
+  -------         ENDPROC       WS2812B_INIT
+  -------         ENDMOD        WS2812
+
+  -------         MODULE        ?C?COPY
+  C:0944H         PUBLIC        ?C?COPY
+  -------         ENDMOD        ?C?COPY
+
+  -------         MODULE        ?C?SCDIV
+  C:096AH         PUBLIC        ?C?SCDIV
+  -------         ENDMOD        ?C?SCDIV
+
+  -------         MODULE        ?C?CLDOPTR
+  C:098CH         PUBLIC        ?C?CLDOPTR
+  -------         ENDMOD        ?C?CLDOPTR
+
+  -------         MODULE        ?C?CILDOPTR
+  C:09B9H         PUBLIC        ?C?CILDOPTR
+  -------         ENDMOD        ?C?CILDOPTR
+
+  -------         MODULE        ?C?CSTOPTR
+  C:09ECH         PUBLIC        ?C?CSTOPTR
+  -------         ENDMOD        ?C?CSTOPTR
+
+  -------         MODULE        ?C?IMUL
+  C:0A0EH         PUBLIC        ?C?IMUL
+  -------         ENDMOD        ?C?IMUL
+
+  -------         MODULE        ?C?CCASE
+  C:0A20H         PUBLIC        ?C?CCASE
+  -------         ENDMOD        ?C?CCASE
+
+Program Size: data=33.1 xdata=52 code=6031
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

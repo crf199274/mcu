@@ -1,0 +1,12 @@
+".\Objects\main.obj",
+".\Objects\functionSwitching.obj",
+".\Objects\function1.obj",
+".\Objects\WS2812.obj",
+".\Objects\function2.obj",
+".\Objects\function3.obj",
+".\Objects\LCD.obj",
+".\Objects\lcd_init.obj",
+".\Objects\delay.obj",
+".\Objects\adc.obj" 
+TO ".\Objects\magic" 
+PRINT(".\Listings\magic.m51") RAMSIZE(256) 

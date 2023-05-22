@@ -1,0 +1,103 @@
+C51 COMPILER V9.60.7.0   DELAY                                                             02/28/2023 03:21:41 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DELAY
+OBJECT MODULE PLACED IN .\Objects\delay.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE delay.c LARGE OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\delay.lst) TABS(2) OBJECT(.\Objects\delay.obj)
+
+line level    source
+
+   1          #include "delay.h"
+   2          #include "intrins.h"
+   3          #include "stc15.h"
+   4          
+   5          void Delay2us()   //@24.000MHz
+   6          {
+   7   1        unsigned char i;
+   8   1      
+   9   1        _nop_();
+  10   1        _nop_();
+  11   1        i = 9;
+  12   1        while (--i);
+  13   1      }
+  14          
+  15          void Delay5us()   //@24.000MHz
+  16          {
+  17   1        unsigned char i;
+  18   1      
+  19   1        _nop_();
+  20   1        _nop_();
+  21   1        i = 27;
+  22   1        while (--i);
+  23   1      }
+  24          
+  25          void Delay6us()   //@24.000MHz
+  26          {
+  27   1        unsigned char i;
+  28   1      
+  29   1        _nop_();
+  30   1        _nop_();
+  31   1        i = 33;
+  32   1        while (--i);
+  33   1      }
+  34          
+  35          void Delay1ms()   //@24.000MHz
+  36          {
+  37   1        unsigned char i, j;
+  38   1      
+  39   1        i = 24;
+  40   1        j = 85;
+  41   1        do
+  42   1        {
+  43   2          while (--j);
+  44   2        } while (--i);
+  45   1      }
+  46          
+  47          void Delay10ms()    //@24.000MHz
+  48          {
+  49   1        unsigned char i, j;
+  50   1      
+  51   1        i = 234;
+  52   1        j = 115;
+  53   1        do
+  54   1        {
+C51 COMPILER V9.60.7.0   DELAY                                                             02/28/2023 03:21:41 PAGE 2   
+
+  55   2          while (--j);
+  56   2        } while (--i);
+  57   1      }
+  58          
+  59          
+  60          void Delay500ms()   //@24.000MHz
+  61          {
+  62   1        unsigned char i, j, k;
+  63   1      
+  64   1        _nop_();
+  65   1        _nop_();
+  66   1        i = 46;
+  67   1        j = 153;
+  68   1        k = 245;
+  69   1        do
+  70   1        {
+  71   2          do
+  72   2          {
+  73   3            while (--k);
+  74   3          } while (--j);
+  75   2        } while (--i);
+  76   1      }
+  77          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     54    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

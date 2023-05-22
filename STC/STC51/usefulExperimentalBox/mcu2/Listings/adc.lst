@@ -1,0 +1,72 @@
+C51 COMPILER V9.60.7.0   ADC                                                               04/26/2023 01:36:42 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ADC
+OBJECT MODULE PLACED IN .\Objects\adc.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE ADC\adc.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\LCD;.\Delay;
+                    -.\ADC) DEBUG OBJECTEXTEND PRINT(.\Listings\adc.lst) TABS(2) OBJECT(.\Objects\adc.obj)
+
+line level    source
+
+   1          #include "adc.h"
+   2          
+   3          unsigned char ch = 0;
+   4          
+   5          unsigned int AD_Value = 0;
+   6          
+   7          float VOUT = 0;
+   8          float IOUT = 0;
+   9          float BAT = 0;
+  10          
+  11          void adcInit()
+  12          {
+  13   1        P1M0 = 0x00;                                //设置P1.0为ADC口
+  14   1        P1M1 = 0x02;
+  15   1        P3M0 = 0x00;
+  16   1        P3M1 = 0x04;
+  17   1        P_SW2 |= 0x80;
+  18   1        ADCTIM = 0x3f;                              //设置ADC内部时序
+  19   1        ADCEXCFG |=0x06; 
+  20   1        P_SW2 &= 0x7f;
+  21   1        ADCCFG = 0x0f;                              //设置ADC时钟为系统时钟/2/16
+  22   1        ADC_CONTR = 0x80;                           //使能ADC模块
+  23   1        EADC = 1;                                   //使能ADC中断
+  24   1        ADC_CONTR |= 0x40;                          //启动AD转换
+  25   1        
+  26   1      }
+  27          
+  28          void ADC_Isr() interrupt 5
+  29          {
+  30   1        
+  31   1        ADC_CONTR &= ~0x20;                         //清中断标志
+  32   1          
+  33   1        AD_Value = ADC_RES<<8;
+  34   1        AD_Value = AD_Value|ADC_RESL;
+  35   1        AD_Value = AD_Value>>6;
+  36   1        
+  37   1        switch(ch)
+  38   1        {
+  39   2          case 0:VOUT = AD_Value*VOUT_K-0.21;ch = 1;break;
+  40   2          case 1:IOUT = (AD_Value*VOUT_I_K)*1000;ch = 10;break;
+  41   2          case 10:BAT = AD_Value*VIN_K+0.21;ch = 0;break;
+  42   2        }
+  43   1        
+  44   1        ADC_CONTR = (ADC_CONTR & 0xF0) | 0x40 | ch;    //启动 AD 转换
+  45   1        
+  46   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    324    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     15    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V9.60.7.0   ADC                                                               04/26/2023 01:36:42 PAGE 2   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

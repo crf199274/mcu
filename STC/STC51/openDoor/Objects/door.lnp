@@ -1,0 +1,4 @@
+".\Objects\main.obj",
+".\Objects\fingerprint.obj" 
+TO ".\Objects\door" 
+PRINT(".\Listings\door.m51") RAMSIZE(256) 

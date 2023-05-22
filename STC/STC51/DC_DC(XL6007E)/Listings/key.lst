@@ -1,0 +1,78 @@
+C51 COMPILER V9.60.7.0   KEY                                                               02/19/2023 16:51:12 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE KEY
+OBJECT MODULE PLACED IN .\Objects\key.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE key.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\DC_DC) DEBUG OBJECTEX
+                    -TEND PRINT(.\Listings\key.lst) TABS(2) OBJECT(.\Objects\key.obj)
+
+line level    source
+
+   1          #include "key.h"
+   2          
+   3          uint8_t mode_key = 0;
+   4          
+   5          void keyInit(void)
+   6          {
+   7   1        INT0 = 1;
+   8   1        IT0 = 1;                    //设置INT0的中断类型 (1:仅下降沿 0:上升沿和下降沿)
+   9   1        EX0 = 1;                    //使能INT0中断
+  10   1        INT1 = 1;
+  11   1        IT1 = 1;                    //设置INT1的中断类型 (1:仅下降沿 0:上升沿和下降沿)
+  12   1        EX1 = 1;                    //使能INT1中断
+  13   1        
+  14   1        INT_CLKO |= 0x30;
+  15   1        
+  16   1      }
+  17          
+  18          //-----------------------------------------
+  19          //中断服务程序
+  20          //SUB
+  21          void exint0() interrupt 0       //INT0中断入口
+  22          {
+  23   1          mode_key = 1;
+  24   1          while(INT0==0);
+  25   1      }
+  26          
+  27          //-----------------------------------------
+  28          //中断服务程序
+  29          //ADD
+  30          void exint1() interrupt 2       //INT1中断入口
+  31          {
+  32   1          mode_key = 2;
+  33   1          while(INT1==0);
+  34   1      }
+  35          
+  36          //-----------------------------------------------
+  37          //中断服务程序
+  38          //FUN2
+  39          void exint2() interrupt 10          //INT2中断入口
+  40          {
+  41   1        mode_key = 3;
+  42   1        while(INT2==0);
+  43   1      }
+  44          
+  45          //-----------------------------------------------
+  46          //中断服务程序
+  47          //FUN1
+  48          void exint3() interrupt 11          //INT3中断入口
+  49          {
+  50   1        mode_key = 4;
+  51   1        while(INT3==0);
+  52   1      }
+
+
+C51 COMPILER V9.60.7.0   KEY                                                               02/19/2023 16:51:12 PAGE 2   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     44    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

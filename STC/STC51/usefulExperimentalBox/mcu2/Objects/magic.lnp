@@ -1,0 +1,7 @@
+".\Objects\main.obj",
+".\Objects\LCD.obj",
+".\Objects\lcd_init.obj",
+".\Objects\delay.obj",
+".\Objects\adc.obj" 
+TO ".\Objects\magic" 
+PRINT(".\Listings\magic.m51") RAMSIZE(256) 

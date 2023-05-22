@@ -1,0 +1,4 @@
+".\Objects\main.obj",
+".\Objects\WS2812.obj" 
+TO ".\Objects\LightCube_LED" 
+PRINT(".\Listings\LightCube_LED.m51") RAMSIZE(256) 

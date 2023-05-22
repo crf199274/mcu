@@ -1,0 +1,5 @@
+".\Objects\main.obj",
+".\Objects\pwm.obj",
+".\Objects\DC_DC.obj" 
+TO ".\Objects\DC_DC" 
+PRINT(".\Listings\DC_DC.m51") RAMSIZE(256) 

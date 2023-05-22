@@ -1,0 +1,531 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT
+                    -(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "stc15.h"
+   2          #include "intrins.h"
+   3          #include "codetab.h"
+   4          #include "LQ12864.h"
+   5          #include "stdio.h"
+   6          #include "string.h"
+   7          
+   8          sbit INT1 = P3^3;
+   9          sbit INT0 = P3^2;
+  10          sbit INT2 = P3^6;
+  11          sbit INT3 = P3^7;
+  12          
+  13          typedef unsigned char BYTE;
+  14          typedef unsigned int WORD;
+  15          
+  16          
+  17          #define ADC_POWER   0x80            //ADCµçÔ´¿ØÖÆÎ»
+  18          #define ADC_FLAG    0x10            //ADCÍê³É±êÖ¾
+  19          #define ADC_START   0x08            //ADCÆðÊ¼¿ØÖÆÎ»
+  20          #define ADC_STOP    0x00            //ADCÔÝÍ£
+  21          #define ADC_SPEEDLL 0x00            //540¸öÊ±ÖÓ
+  22          #define ADC_SPEEDL  0x20            //360¸öÊ±ÖÓ
+  23          #define ADC_SPEEDH  0x40            //180¸öÊ±ÖÓ
+  24          #define ADC_SPEEDHH 0x60            //90¸öÊ±ÖÓ
+  25          
+  26          float VIN = 0;
+  27          float VOUT = 0;
+  28          float OCC = 0;
+  29          int AD_Value = 0;
+  30          char SUB = 0;
+  31          char ADD = 0;
+  32          char OCC_ADD = 0;
+  33          char OCC_SUB = 0;
+  34          char ADC_OK = 0;
+  35          float V_MAX = 0;
+  36          int V_MAX_PWM = 0;
+  37          float V_MIN = 100;
+  38          int V_MIN_PWM = 0;
+  39          
+  40          float V_INIT = 5;
+  41          float V_NOW = 0;
+  42          float V_OLD = 0;
+  43          
+  44          void Delay1ms();    //@24.000MHz
+  45          void Delay10ms();   //@24.000MHz
+  46          //void Delay100ms();    //@24.000MHz
+  47          void Delay_ADC(WORD n);
+  48          void InitADC();
+  49          
+  50          void getV_MAX_MIN();
+  51          void SetV_Value(float V_standard);
+  52          void ADDOrSUB_1V(char AB);
+  53          
+  54          BYTE ch = 0;                        //ADCÍ¨µÀºÅ
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 2   
+
+  55          
+  56          #define     MAIN_Fosc       24000000UL      //¶¨ÒåÖ÷Ê±ÖÓ
+  57          
+  58          #define     PWM_DUTY        10000            //¶¨ÒåPWMµÄÖÜÆÚ£¬ÊýÖµÎªÊ±ÖÓÖÜÆÚÊý£¬¼ÙÈçÊ¹ÓÃ24.576MHZµÄÖ÷Æµ£¬Ô
+             -òPWMÆµÂÊÎª6000HZ¡£
+  59          
+  60          #define     PWM_HIGH_MIN    32              //ÏÞÖÆPWMÊä³öµÄ×îÐ¡Õ¼¿Õ±È¡£ÓÃ»§ÇëÎðÐÞ¸Ä¡£
+  61          #define     PWM_HIGH_MAX    (PWM_DUTY-PWM_HIGH_MIN) //ÏÞÖÆPWMÊä³öµÄ×î´óÕ¼¿Õ±È¡£ÓÃ»§ÇëÎðÐÞ¸Ä¡£
+  62          
+  63          typedef     unsigned char   u8;
+  64          typedef     unsigned int    u16;
+  65          typedef     unsigned long   u32;
+  66          
+  67          //sfr P3M1  = 0xB1;   //P3M1.n,P3M0.n     =00--->Standard,    01--->push-pull
+  68          //sfr P3M0  = 0xB2;   //                  =10--->pure input,  11--->open drain
+  69          //sfr AUXR  = 0x8E;
+  70          //sfr INT_CLKO = 0x8F;
+  71          
+  72          sbit    P_PWM = P3^5;       //¶¨ÒåPWMÊä³öÒý½Å¡£
+  73          //sbit  P_PWM = P1^4;       //¶¨ÒåPWMÊä³öÒý½Å¡£STC15W204S
+  74          
+  75          int     pwm = 0;                //¶¨ÒåPWMÊä³ö¸ßµçÆ½µÄÊ±¼äµÄ±äÁ¿¡£ÓÃ»§²Ù×÷PWMµÄ±äÁ¿¡£
+  76          
+  77          u16     PWM_high,PWM_low;   //ÖÐ¼ä±äÁ¿£¬ÓÃ»§ÇëÎðÐÞ¸Ä¡£
+  78          
+  79          //void    delay_ms(unsigned char ms);
+  80          void    LoadPWM(u16 i);
+  81          
+  82          void updata_LCD(void)
+  83          {
+  84   1        char buf[16];
+  85   1        
+  86   1        memset(buf,0,16);
+  87   1        sprintf(buf,"VIN: %4.1f V",VIN);
+  88   1        OLED_P8x16Str(0,0,buf);//µÚÒ»ÐÐ -- 8x16µÄÏÔÊ¾µ¥ÔªÏÔÊ¾ASCIIÂë
+  89   1        
+  90   1        memset(buf,0,16);
+  91   1        sprintf(buf,"VOUT: %4.1f V",VOUT);
+  92   1        OLED_P8x16Str(0,2,buf);//µÚÒ»ÐÐ -- 8x16µÄÏÔÊ¾µ¥ÔªÏÔÊ¾ASCIIÂë
+  93   1        
+  94   1      //  memset(buf,0,16);
+  95   1      //  sprintf(buf,"pwm: %5d",pwm);
+  96   1      //  OLED_P8x16Str(0,4,buf);//µÚÒ»ÐÐ -- 8x16µÄÏÔÊ¾µ¥ÔªÏÔÊ¾ASCIIÂë
+  97   1        
+  98   1        memset(buf,0,16);
+  99   1        OCC = pwm/(PWM_DUTY*1.0)*100;
+ 100   1        sprintf(buf,"OCC: %7.3f %%",OCC);
+ 101   1        OLED_P8x16Str(0,4,buf);//µÚÒ»ÐÐ -- 8x16µÄÏÔÊ¾µ¥ÔªÏÔÊ¾ASCIIÂë
+ 102   1        
+ 103   1      }
+ 104          
+ 105          void main()
+ 106          {
+ 107   1        char buf[32];
+ 108   1        
+ 109   1        P0M0 = 0x00;
+ 110   1        P0M1 = 0x00;
+ 111   1        P1M0 = 0x00;
+ 112   1        P1M1 = 0x00;
+ 113   1        P2M0 = 0x00;
+ 114   1        P2M1 = 0x00;
+ 115   1        P3M0 = 0x00;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 3   
+
+ 116   1        P3M1 = 0x00;
+ 117   1        P4M0 = 0x00;
+ 118   1        P4M1 = 0x00;
+ 119   1        P5M0 = 0x00;
+ 120   1        P5M1 = 0x00;
+ 121   1        
+ 122   1        InitADC();                      //³õÊ¼»¯ADC
+ 123   1        IE = 0xa0;                      //Ê¹ÄÜADCÖÐ¶Ï
+ 124   1                                        //¿ªÊ¼AD×ª»»
+ 125   1        P_PWM = 0;
+ 126   1        P3M1 &= ~(1 << 5);  //P3.5 ÉèÖÃÎªÍÆÍìÊä³ö
+ 127   1        P3M0 |=  (1 << 5);
+ 128   1      
+ 129   1      //  P1M1 &= ~(1 << 4);  //P1.4 ÉèÖÃÎªÍÆÍìÊä³ö   STC15W204S
+ 130   1      //  P1M0 |=  (1 << 4);
+ 131   1      
+ 132   1        TR0 = 0;        //Í£Ö¹¼ÆÊý
+ 133   1        ET0 = 1;        //ÔÊÐíÖÐ¶Ï
+ 134   1        PT0 = 1;        //¸ßÓÅÏÈ¼¶ÖÐ¶Ï
+ 135   1        TMOD &= ~0x03;  //¹¤×÷Ä£Ê½,0: 16Î»×Ô¶¯ÖØ×°
+ 136   1        AUXR |=  0x80;  //1T
+ 137   1        TMOD &= ~0x04;  //¶¨Ê±
+ 138   1        INT_CLKO |=  0x01;  //Êä³öÊ±ÖÓ
+ 139   1      
+ 140   1        TH0 = 0;
+ 141   1        TL0 = 0;
+ 142   1        TR0 = 1;    //¿ªÊ¼ÔËÐÐ
+ 143   1      
+ 144   1        INT0 = 1;
+ 145   1        IT0 = 1;                    //ÉèÖÃINT0µÄÖÐ¶ÏÀàÐÍ (1:½öÏÂ½µÑØ 0:ÉÏÉýÑØºÍÏÂ½µÑØ)
+ 146   1        EX0 = 1;                    //Ê¹ÄÜINT0ÖÐ¶Ï
+ 147   1        INT1 = 1;
+ 148   1        IT1 = 1;                    //ÉèÖÃINT1µÄÖÐ¶ÏÀàÐÍ (1:½öÏÂ½µÑØ 0:ÉÏÉýÑØºÍÏÂ½µÑØ)
+ 149   1        EX1 = 1;                    //Ê¹ÄÜINT1ÖÐ¶Ï
+ 150   1      //  INT_CLKO |= 0x10;           //(EX2 = 1)Ê¹ÄÜINT2ÖÐ¶Ï
+ 151   1      //  INT_CLKO |= 0x20;           //(EX3 = 1)Ê¹ÄÜINT3ÖÐ¶Ï
+ 152   1        INT_CLKO |= 0x30;
+ 153   1        EA = 1;
+ 154   1        
+ 155   1        OLED_Init(); //OLED³õÊ¼»¯
+ 156   1        
+ 157   1        getV_MAX_MIN();
+ 158   1        
+ 159   1        SetV_Value(V_INIT);
+ 160   1        
+ 161   1      //  sprintf(buf,"PB:%5dPS:%5d",V_MAX_PWM,V_MIN_PWM);
+ 162   1      //  OLED_P8x16Str(0,4,buf);//µÚÒ»ÐÐ -- 8x16µÄÏÔÊ¾µ¥ÔªÏÔÊ¾ASCIIÂë
+ 163   1        
+ 164   1        memset(buf,0,16);
+ 165   1        sprintf(buf,"B:%4.1fV S:%4.1fV",V_MAX,V_MIN);
+ 166   1        OLED_P8x16Str(0,6,buf);//µÚÒ»ÐÐ -- 8x16µÄÏÔÊ¾µ¥ÔªÏÔÊ¾ASCIIÂë
+ 167   1        
+ 168   1        V_NOW = V_INIT;
+ 169   1        
+ 170   1        while(1)
+ 171   1        {
+ 172   2          updata_LCD();
+ 173   2          if(OCC_ADD==1)
+ 174   2          {
+ 175   3            OCC_ADD = 0;
+ 176   3            V_OLD=V_NOW;
+ 177   3            V_NOW=5;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 4   
+
+ 178   3            SetV_Value(V_NOW);
+ 179   3          }
+ 180   2          if(OCC_SUB==1)
+ 181   2          {
+ 182   3            OCC_SUB = 0;
+ 183   3            V_OLD=V_NOW;
+ 184   3            V_NOW=14;
+ 185   3            SetV_Value(V_NOW);
+ 186   3          }
+ 187   2          if(SUB==1)
+ 188   2          {
+ 189   3            SUB=0;
+ 190   3            ADDOrSUB_1V(1);
+ 191   3          }
+ 192   2          if(ADD==1)
+ 193   2          {
+ 194   3            ADD=0;
+ 195   3            ADDOrSUB_1V(0);
+ 196   3          }
+ 197   2          Delay1ms();
+ 198   2        }
+ 199   1      }
+ 200          
+ 201          void getV_MAX_MIN()
+ 202          {
+ 203   1        pwm = 500;
+ 204   1        LoadPWM(pwm);           //¼ÆËãPWMÖØ×°Öµ
+ 205   1        Delay10ms();
+ 206   1        ADC_OK=1;
+ 207   1        
+ 208   1        while(1)
+ 209   1        {
+ 210   2          if(ADC_OK==0)
+ 211   2          {
+ 212   3            if(VOUT>V_MAX)
+ 213   3            {
+ 214   4              V_MAX = VOUT;
+ 215   4              V_MAX_PWM = pwm;
+ 216   4            }
+ 217   3            pwm-=10;
+ 218   3            LoadPWM(pwm);           //¼ÆËãPWMÖØ×°Öµ
+ 219   3            Delay10ms();
+ 220   3            ADC_OK=1;
+ 221   3          }
+ 222   2          if(pwm<=0)
+ 223   2            break;
+ 224   2        }
+ 225   1        
+ 226   1        pwm = 6000;
+ 227   1        LoadPWM(pwm);           //¼ÆËãPWMÖØ×°Öµ
+ 228   1        Delay10ms();
+ 229   1        ADC_OK=1;
+ 230   1        
+ 231   1        while(1)
+ 232   1        {
+ 233   2          if(ADC_OK==0)
+ 234   2          {
+ 235   3            if(VOUT<V_MIN)
+ 236   3            {
+ 237   4              V_MIN = VOUT;
+ 238   4              V_MIN_PWM = pwm;
+ 239   4            }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 5   
+
+ 240   3            pwm+=10;
+ 241   3            LoadPWM(pwm);           //¼ÆËãPWMÖØ×°Öµ
+ 242   3            Delay10ms();
+ 243   3            ADC_OK=1;
+ 244   3          }
+ 245   2          if(pwm>=7000)
+ 246   2            break;
+ 247   2        }
+ 248   1        
+ 249   1      }
+ 250          
+ 251          /*----------------------------
+ 252          ADCÖÐ¶Ï·þÎñ³ÌÐò
+ 253          ----------------------------*/
+ 254          void adc_isr() interrupt 5
+ 255          {
+ 256   1          ADC_CONTR &= !ADC_FLAG;         //Çå³ýADCÖÐ¶Ï±êÖ¾
+ 257   1          
+ 258   1          AD_Value = ADC_RES<<2;
+ 259   1          AD_Value = AD_Value|(ADC_RESL&0x03);
+ 260   1        
+ 261   1          if(ADC_OK)
+ 262   1            ADC_OK=0;
+ 263   1        
+ 264   1          if(ch==0)
+ 265   1            VOUT = AD_Value*(5/1024.0)*4;
+ 266   1          else
+ 267   1            VIN = AD_Value*(5/1024.0)*4;
+ 268   1        
+ 269   1          if(++ch>1)
+ 270   1            ch = 0;
+ 271   1          ADC_CONTR = ADC_POWER | ADC_SPEEDLL | ADC_START | ch;
+ 272   1      
+ 273   1          
+ 274   1      }
+ 275          
+ 276          /*----------------------------
+ 277          ³õÊ¼»¯ADC
+ 278          ----------------------------*/
+ 279          void InitADC()
+ 280          {
+ 281   1          P1ASF = 0x03;                   //ÉèÖÃP1¿ÚÎªAD¿Ú
+ 282   1          ADC_RES = 0;                    //Çå³ý½á¹û¼Ä´æÆ÷
+ 283   1          ADC_CONTR = ADC_POWER | ADC_SPEEDLL | ADC_START | ch;
+ 284   1          Delay_ADC(2);                       //ADCÉÏµç²¢ÑÓÊ±
+ 285   1      }
+ 286          
+ 287          /*----------------------------
+ 288          Èí¼þÑÓÊ±
+ 289          ----------------------------*/
+ 290          void Delay_ADC(WORD n)
+ 291          {
+ 292   1          WORD x;
+ 293   1      
+ 294   1          while (n--)
+ 295   1          {
+ 296   2              x = 5000;
+ 297   2              while (x--);
+ 298   2          }
+ 299   1      }
+ 300          
+ 301          void Delay1ms()   //@24.000MHz
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 6   
+
+ 302          {
+ 303   1        unsigned char i, j;
+ 304   1      
+ 305   1        i = 24;
+ 306   1        j = 85;
+ 307   1        do
+ 308   1        {
+ 309   2          while (--j);
+ 310   2        } while (--i);
+ 311   1      }
+ 312          
+ 313          void Delay10ms()    //@24.000MHz
+ 314          {
+ 315   1        unsigned char i, j;
+ 316   1      
+ 317   1        i = 234;
+ 318   1        j = 115;
+ 319   1        do
+ 320   1        {
+ 321   2          while (--j);
+ 322   2        } while (--i);
+ 323   1      }
+ 324          
+ 325          void Delay100ms()   //@24.000MHz
+ 326          {
+ 327   1        unsigned char i, j, k;
+ 328   1      
+ 329   1        _nop_();
+ 330   1        _nop_();
+ 331   1        i = 10;
+ 332   1        j = 31;
+ 333   1        k = 147;
+ 334   1        do
+ 335   1        {
+ 336   2          do
+ 337   2          {
+ 338   3            while (--k);
+ 339   3          } while (--j);
+ 340   2        } while (--i);
+ 341   1      }
+ 342          
+ 343          void SetV_Value(float V_standard)
+ 344          {
+ 345   1        if(V_standard<5||V_standard>14)
+ 346   1          return;
+ 347   1        
+ 348   1        if(V_standard<V_OLD)
+ 349   1        {
+ 350   2          pwm = V_MIN_PWM;
+ 351   2          LoadPWM(pwm);  //¼ÆËãPWMÖØ×°Öµ
+ 352   2          
+ 353   2          Delay100ms();
+ 354   2          Delay100ms();
+ 355   2          Delay100ms();
+ 356   2          Delay100ms();
+ 357   2          Delay100ms();
+ 358   2          Delay100ms();
+ 359   2          Delay100ms();
+ 360   2          Delay100ms();
+ 361   2          Delay100ms();
+ 362   2          Delay100ms();
+ 363   2        }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 7   
+
+ 364   1        
+ 365   1        pwm = V_MIN_PWM - (V_standard-V_MIN)/((V_MAX-V_MIN)/(V_MIN_PWM-V_MAX_PWM));
+ 366   1        LoadPWM(pwm);  //¼ÆËãPWMÖØ×°Öµ
+ 367   1        Delay10ms();
+ 368   1        ADC_OK=1;
+ 369   1        
+ 370   1        while(1)
+ 371   1        {
+ 372   2          if(ADC_OK==0)
+ 373   2          {
+ 374   3            if((VOUT>=(V_standard-0.05))&&(VOUT<=(V_standard+0.05)))
+ 375   3              break;
+ 376   3            else if(VOUT>V_standard)
+ 377   3              pwm += 10;
+ 378   3            else if(VOUT<V_standard)
+ 379   3              pwm -= 10;
+ 380   3            if((pwm>=(V_MIN_PWM-10))||(pwm<=(V_MAX_PWM+10)))
+ 381   3              break;
+ 382   3            LoadPWM(pwm);  //¼ÆËãPWMÖØ×°Öµ
+ 383   3            Delay10ms();
+ 384   3            ADC_OK=1;
+ 385   3          }
+ 386   2        }
+ 387   1        
+ 388   1      }
+ 389          
+ 390          void ADDOrSUB_1V(char AB)
+ 391          {
+ 392   1        if(AB)
+ 393   1        {
+ 394   2          V_OLD=V_NOW;
+ 395   2          V_NOW -= 1;
+ 396   2          if(V_NOW<5)
+ 397   2            V_NOW=5;
+ 398   2        }
+ 399   1        else
+ 400   1        {
+ 401   2          V_OLD=V_NOW;
+ 402   2          V_NOW += 1;
+ 403   2          if(V_NOW>14)
+ 404   2            V_NOW=14;
+ 405   2        }
+ 406   1        
+ 407   1        SetV_Value(V_NOW);
+ 408   1        
+ 409   1      }
+ 410          
+ 411          //-----------------------------------------
+ 412          //ÖÐ¶Ï·þÎñ³ÌÐò
+ 413          void exint0() interrupt 0       //INT0ÖÐ¶ÏÈë¿Ú
+ 414          {
+ 415   1          SUB = 1;
+ 416   1          while(INT0==0);
+ 417   1      }
+ 418          
+ 419          //-----------------------------------------
+ 420          //ÖÐ¶Ï·þÎñ³ÌÐò
+ 421          void exint1() interrupt 2       //INT1ÖÐ¶ÏÈë¿Ú
+ 422          {
+ 423   1          ADD = 1;
+ 424   1          while(INT1==0);
+ 425   1      }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 8   
+
+ 426          
+ 427          //-----------------------------------------------
+ 428          //ÖÐ¶Ï·þÎñ³ÌÐò
+ 429          void exint2() interrupt 10          //INT2ÖÐ¶ÏÈë¿Ú
+ 430          {
+ 431   1        OCC_ADD = 1;
+ 432   1        while(INT2==0);
+ 433   1      }
+ 434          
+ 435          //-----------------------------------------------
+ 436          //ÖÐ¶Ï·þÎñ³ÌÐò
+ 437          void exint3() interrupt 11          //INT3ÖÐ¶ÏÈë¿Ú
+ 438          {
+ 439   1        OCC_SUB = 1;
+ 440   1        while(INT3==0);
+ 441   1      }
+ 442          
+ 443          //========================================================================
+ 444          // º¯Êý: void  delay_ms(unsigned char ms)
+ 445          // ÃèÊö: ÑÓÊ±º¯Êý¡£
+ 446          // ²ÎÊý: ms,ÒªÑÓÊ±µÄmsÊý, ÕâÀïÖ»Ö§³Ö1~255ms. ×Ô¶¯ÊÊÓ¦Ö÷Ê±ÖÓ.
+ 447          // ·µ»Ø: none.
+ 448          // °æ±¾: VER1.0
+ 449          // ÈÕÆÚ: 2013-4-1
+ 450          // ±¸×¢: 
+ 451          //========================================================================
+ 452          //void  delay_ms(unsigned char ms)
+ 453          //{
+ 454          //     unsigned int i;
+ 455          //     do{
+ 456          //          i = MAIN_Fosc / 13000;
+ 457          //          while(--i)    ;
+ 458          //     }while(--ms);
+ 459          //}
+ 460          
+ 461          /**************** ¼ÆËãPWMÖØ×°Öµº¯Êý *******************/
+ 462          void    LoadPWM(u16 i)
+ 463          {
+ 464   1          u16 j;
+ 465   1      
+ 466   1          if(i > PWM_HIGH_MAX)        i = PWM_HIGH_MAX;   //Èç¹ûÐ´Èë´óÓÚ×î´óÕ¼¿Õ±ÈÊý¾Ý£¬ÔòÇ¿ÖÆÎª×î´óÕ¼¿Õ±È¡£
+ 467   1          if(i < PWM_HIGH_MIN)        i = PWM_HIGH_MIN;   //Èç¹ûÐ´ÈëÐ¡ÓÚ×îÐ¡Õ¼¿Õ±ÈÊý¾Ý£¬ÔòÇ¿ÖÆÎª×îÐ¡Õ¼¿Õ±È¡£
+ 468   1          j = 65536UL - PWM_DUTY + i; //¼ÆËãPWMµÍµçÆ½Ê±¼ä
+ 469   1          i = 65536UL - i;            //¼ÆËãPWM¸ßµçÆ½Ê±¼ä
+ 470   1          EA = 0;
+ 471   1          PWM_high = i;   //×°ÔØPWM¸ßµçÆ½Ê±¼ä
+ 472   1          PWM_low  = j;   //×°ÔØPWMµÍµçÆ½Ê±¼ä
+ 473   1          EA = 1;
+ 474   1      }
+ 475          
+ 476          /********************* Timer0ÖÐ¶Ïº¯Êý************************/
+ 477          void timer0_int (void) interrupt 1
+ 478          {
+ 479   1          if(P_PWM)
+ 480   1          {
+ 481   2              TH0 = (u8)(PWM_low >> 8);   //Èç¹ûÊÇÊä³ö¸ßµçÆ½£¬Ôò×°ÔØµÍµçÆ½Ê±¼ä¡£
+ 482   2              TL0 = (u8)PWM_low;
+ 483   2          }
+ 484   1          else
+ 485   1          {
+ 486   2              TH0 = (u8)(PWM_high >> 8);  //Èç¹ûÊÇÊä³öµÍµçÆ½£¬Ôò×°ÔØ¸ßµçÆ½Ê±¼ä¡£
+ 487   2              TL0 = (u8)PWM_high;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/06/2023 10:36:32 PAGE 9   
+
+ 488   2          }
+ 489   1      }
+ 490          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2675    ----
+   CONSTANT SIZE    =   1579    ----
+   XDATA SIZE       =     50      60
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,9 @@
+".\Objects\main.obj",
+".\Objects\DC_DC.obj",
+".\Objects\key.obj",
+".\Objects\adc.obj",
+".\Objects\delay.obj",
+".\Objects\IIC.obj",
+".\Objects\OLED.obj" 
+TO ".\Objects\DC_DC" 
+PRINT(".\Listings\DC_DC.m51") RAMSIZE(256) 

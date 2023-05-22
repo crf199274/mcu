@@ -1,0 +1,143 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              04/05/2023 18:41:03 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\DC_DC) DEBUG O
+                    -BJECTEXTEND PRINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "DC_DC.h"
+   2          #include "key.h"
+   3          #include "adc.h"
+   4          #include "delay.h"
+   5          #include "OLED.h"
+   6          #include "math.h"
+   7          
+   8          uint8_t mode1 = 1;
+   9          uint8_t mode2 = 0;
+  10          
+  11          void main()
+  12          {
+  13   1        
+  14   1        P1M0 = 0x00;
+  15   1        P1M1 = 0x00;
+  16   1        P2M0 = 0x01;
+  17   1        P2M1 = 0x00;
+  18   1        P3M0 = 0x00;
+  19   1        P3M1 = 0x00;
+  20   1        P4M0 = 0x00;
+  21   1        P4M1 = 0x00;
+  22   1        P5M0 = 0x00;
+  23   1        P5M1 = 0x00;
+  24   1        
+  25   1        keyInit();
+  26   1        oled_init();
+  27   1        adcInit();
+  28   1        DC_DC_PWM_Init();
+  29   1        
+  30   1        tip_OLED("Voltage verify");
+  31   1        
+  32   1        pwm = VOL_OCC(VOL);
+  33   1        LoadPWM(pwm);
+  34   1        
+  35   1        Delay500ms();
+  36   1        Delay500ms();
+  37   1        Delay500ms();
+  38   1        Delay500ms();
+  39   1        Delay500ms();
+  40   1        Delay500ms();
+  41   1        
+  42   1        if(VOUT<VOL)
+  43   1        {
+  44   2          pwm_error = -((fabs(VOL-VOUT)/(VOL_LIMIT_MAX-VOL_LIMIT_MIN))*CYCLE);
+  45   2        }else{
+  46   2          
+  47   2          pwm_error = fabs(VOL-VOUT)/(VOL_LIMIT_MAX-VOL_LIMIT_MIN)*CYCLE;
+  48   2        }
+  49   1        
+  50   1        oled_screen_fill(0x00);
+  51   1        tip_OLED("OK");
+  52   1        
+  53   1        Delay500ms();
+  54   1        Delay500ms();
+C51 COMPILER V9.60.7.0   MAIN                                                              04/05/2023 18:41:03 PAGE 2   
+
+  55   1        
+  56   1        oled_screen_fill(0x00);
+  57   1        
+  58   1        pwm = VOL_OCC(VOL) + pwm_error;
+  59   1        LoadPWM(pwm);
+  60   1        
+  61   1        while(1)
+  62   1        {
+  63   2          
+  64   2          if(mode_key!=0)
+  65   2          {
+  66   3            switch(mode_key)
+  67   3            {
+  68   4              case 1:
+  69   4                if(mode1)
+  70   4                  VOL -= 1;
+  71   4                else
+  72   4                  VOL -= 0.1;
+  73   4                if(VOL<VOL_MIN)
+  74   4                  VOL = VOL_MIN;
+  75   4                break;
+  76   4              case 2:
+  77   4                if(mode1)
+  78   4                  VOL += 1;
+  79   4                else
+  80   4                  VOL += 0.1;
+  81   4                if(VOL>VOL_MAX)
+  82   4                  VOL = VOL_MAX;
+  83   4                break;
+  84   4              case 3:
+  85   4                if(mode2==0)
+  86   4                {
+  87   5                  VOL = VOL_MIN;
+  88   5                  mode2 = 1 - mode2;
+  89   5                }
+  90   4                else
+  91   4                {
+  92   5                  VOL = VOL_MAX;
+  93   5                  mode2 = 1 - mode2;
+  94   5                }
+  95   4                break;
+  96   4              case 4:
+  97   4                mode1 = 1 - mode1;
+  98   4                break;
+  99   4            }
+ 100   3            
+ 101   3            pwm = VOL_OCC(VOL) + pwm_error;
+ 102   3            
+ 103   3            LoadPWM(pwm);
+ 104   3            
+ 105   3            mode_key = 0;
+ 106   3            
+ 107   3          }
+ 108   2          
+ 109   2          updata_OLED();
+ 110   2          
+ 111   2          Delay1ms();
+ 112   2          
+ 113   2        }
+ 114   1        
+ 115   1      }
+
+C51 COMPILER V9.60.7.0   MAIN                                                              04/05/2023 18:41:03 PAGE 3   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    613    ----
+   CONSTANT SIZE    =     18    ----
+   XDATA SIZE       =      2    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,40 @@
+
+T2BBC 000:214 SEGGER J-Link V6.14b Log File (0000ms, 0035ms total)
+T2BBC 000:214 DLL Compiled: Mar  9 2017 08:46:04 (0000ms, 0035ms total)
+T2BBC 000:214 Logging started @ 2023-05-08 21:23 (0000ms, 0035ms total)
+T2BBC 000:214 JLINK_SetWarnOutHandler(...) (0000ms, 0035ms total)
+T2BBC 000:214 JLINK_OpenEx(...)
+Firmware: J-Link ARM-OB STM32 compiled Aug 22 2012 19:52:04
+Hardware: V7.00
+S/N: 20090928
+Feature(s): RDI,FlashDL,FlashBP,JFlash,GDBWEBSRV Webserver running on local port 19080 (0009ms, 0044ms total)
+T2BBC 000:214   returns O.K. (0009ms, 0044ms total)
+T2BBC 000:223 JLINK_SetErrorOutHandler(...) (0000ms, 0044ms total)
+T2BBC 000:223 JLINK_ExecCommand("ProjectFile = "D:\单片机项目\stm32\medicineBox2\JLinkSettings.ini"", ...). E:\software\Driver\JLink_V614b\JLinkDevices.xml evaluated successfully.  returns 0x00 (0129ms, 0173ms total)
+T2BBC 000:353 JLINK_ExecCommand("Device = STM32F103C8", ...). Device "STM32F103C8" selected.  returns 0x00 (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_ExecCommand("DisableConnectionTimeout", ...).   returns 0x01 (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_GetHardwareVersion()  returns 0x11170 (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_GetDLLVersion()  returns 61402 (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_GetFirmwareString(...) (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_GetDLLVersion()  returns 61402 (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_GetCompileDateTime() (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_GetFirmwareString(...) (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_GetHardwareVersion()  returns 0x11170 (0000ms, 0173ms total)
+T2BBC 000:353 JLINK_TIF_Select(JLINKARM_TIF_SWD)  returns 0x00 (0001ms, 0174ms total)
+T2BBC 000:354 JLINK_SetSpeed(5000) (0001ms, 0175ms total)
+T2BBC 000:355 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)  returns JLINKARM_RESET_TYPE_NORMAL (0000ms, 0175ms total)
+T2BBC 000:355 JLINK_Reset() >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF> >0x108 TIF>STM32 (connect): Can not attach to CPU. Trying connect under reset. >0x108 TIF> >0x108 TIF>
+  ***** Error: STM32: Connecting to CPU via connect under reset failed. >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x108 TIF> >0x108 TIF>
+STM32 (connect): Can not attach to CPU. Trying connect under reset. >0x108 TIF> >0x108 TIF>
+  ***** Error: STM32: Connecting to CPU via connect under reset failed.JLINK_GetId() >0x108 TIF> >0x108 TIF>STM32 (connect): Can not attach to CPU. Trying connect under reset. >0x108 TIF> >0x108 TIF>
+  ***** Error: STM32: Connecting to CPU via connect under reset failed. >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x108 TIF> >0x108 TIF>
+STM32 (connect): Can not attach to CPU. Trying connect under reset. >0x108 TIF> >0x108 TIF>
+  ***** Error: STM32: Connecting to CPU via connect under reset failed.  returns 0x00000000 (0694ms, 2087ms total)
+T2BBC 002:268 JLINK_GetId() >0x108 TIF> >0x108 TIF>STM32 (connect): Can not attach to CPU. Trying connect under reset. >0x108 TIF> >0x108 TIF>
+  ***** Error: STM32: Connecting to CPU via connect under reset failed. >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x0D TIF> >0x108 TIF> >0x108 TIF>STM32 (connect): Can not attach to CPU. Trying connect under reset. >0x108 TIF> >0x108 TIF>
+  ***** Error: 
+STM32: Connecting to CPU via connect under reset failed.  returns 0x00000000 (0694ms, 2781ms total)
+T2BBC 002:979 JLINK_GetFirmwareString(...) (0000ms, 2781ms total)
+T2BBC 014:289 JLINK_Close() (0011ms, 2792ms total)
+T2BBC 014:289  (0011ms, 2792ms total)
+T2BBC 014:289 Closed (0011ms, 2792ms total)

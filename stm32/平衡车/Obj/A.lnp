@@ -1,0 +1,26 @@
+--cpu Cortex-M3
+".\obj\main.o"
+".\obj\stm32f10x_it.o"
+".\obj\startup_stm32f10x_hd.o"
+".\obj\core_cm3.o"
+".\obj\system_stm32f10x.o"
+".\obj\misc.o"
+".\obj\stm32f10x_pwr.o"
+".\obj\stm32f10x_adc.o"
+".\obj\stm32f10x_usart.o"
+".\obj\stm32f10x_tim.o"
+".\obj\stm32f10x_gpio.o"
+".\obj\stm32f10x_rcc.o"
+".\obj\usart.o"
+".\obj\inv_mpu.o"
+".\obj\inv_mpu_dmp_motion_driver.o"
+".\obj\pid.o"
+".\obj\timer_init.o"
+".\obj\mpu_6050.o"
+".\obj\output.o"
+".\obj\stdalay.o"
+".\obj\iic.o"
+--library_type=microlib --strict --scatter ".\Obj\A.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Obj\A.map" -o .\Obj\A.axf

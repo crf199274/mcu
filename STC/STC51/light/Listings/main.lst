@@ -1,0 +1,244 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              01/11/2023 17:38:20 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\stm32\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "stc8.h"
+   2          
+   3          sbit LED_R=P3^2;
+   4          sbit LED_G=P3^3;
+   5          sbit LED_B=P5^4;
+   6          sbit control=P5^5;
+   7          
+   8          static int time = 0;
+   9          static int change = 0;
+  10          int flag = 10;
+  11          char mode = 0;
+  12          
+  13          void Delay1ms()   //@11.0592MHz
+  14          {
+  15   1        unsigned char i, j;
+  16   1      
+  17   1        i = 15;
+  18   1        j = 90;
+  19   1        do
+  20   1        {
+  21   2          while (--j);
+  22   2        } while (--i);
+  23   1      }
+  24          
+  25          void change_exe()
+  26          {
+  27   1        switch(flag)
+  28   1        {
+  29   2          case 10:
+  30   2            flag = 20;
+  31   2            LED_R=1;
+  32   2            LED_G=0;
+  33   2            LED_B=0;
+  34   2            break;
+  35   2          case 20:
+  36   2            flag = 30;
+  37   2            LED_R=0;
+  38   2            LED_G=1;
+  39   2            LED_B=0;
+  40   2            break;
+  41   2          case 30:
+  42   2            flag = 60;
+  43   2            LED_R=0;
+  44   2            LED_G=0;
+  45   2            LED_B=1;
+  46   2            break;
+  47   2          case 60:
+  48   2            flag = 70;
+  49   2            LED_R=1;
+  50   2            LED_G=1;
+  51   2            LED_B=0;
+  52   2            break;
+  53   2          case 70:
+  54   2            flag = 80;
+C51 COMPILER V9.60.0.0   MAIN                                                              01/11/2023 17:38:20 PAGE 2   
+
+  55   2            LED_R=1;
+  56   2            LED_G=0;
+  57   2            LED_B=1;
+  58   2            break;
+  59   2          case 80:
+  60   2            flag = 10;
+  61   2            LED_R=0;
+  62   2            LED_G=1;
+  63   2            LED_B=1;
+  64   2            break;
+  65   2        }
+  66   1        
+  67   1      }
+  68          
+  69          void control_exe(int contr)
+  70          {
+  71   1        if(mode)
+  72   1        {
+  73   2          LED_R=0;
+  74   2          LED_G=0;
+  75   2          LED_B=0;
+  76   2        }
+  77   1        
+  78   1        
+  79   1        if(contr>=8&&contr<=12)//time:10-红
+  80   1        {
+  81   2          LED_R=1;
+  82   2          LED_G=0;
+  83   2          LED_B=0;
+  84   2        }
+  85   1        
+  86   1        if(contr>=18&&contr<=22)//time:20-绿
+  87   1        {
+  88   2          LED_R=0;
+  89   2          LED_G=1;
+  90   2          LED_B=0;
+  91   2        }
+  92   1        
+  93   1        if(contr>=28&&contr<=32)//time:30-蓝
+  94   1        {
+  95   2          LED_R=0;
+  96   2          LED_G=0;
+  97   2          LED_B=1;
+  98   2        }
+  99   1        
+ 100   1        if(contr>=38&&contr<=42)//time:40-关
+ 101   1        {
+ 102   2          LED_R=0;
+ 103   2          LED_G=0;
+ 104   2          LED_B=0;
+ 105   2        }
+ 106   1        
+ 107   1        if(contr>=48&&contr<=52)//time:50-开-白
+ 108   1        {
+ 109   2          LED_R=1;
+ 110   2          LED_G=1;
+ 111   2          LED_B=1;
+ 112   2        }
+ 113   1        
+ 114   1        if(contr>=58&&contr<=62)//time:60-黄
+ 115   1        {
+ 116   2          LED_R=1;
+C51 COMPILER V9.60.0.0   MAIN                                                              01/11/2023 17:38:20 PAGE 3   
+
+ 117   2          LED_G=1;
+ 118   2          LED_B=0;
+ 119   2        }
+ 120   1        
+ 121   1        if(contr>=68&&contr<=72)//time:70-紫
+ 122   1        {
+ 123   2          LED_R=1;
+ 124   2          LED_G=0;
+ 125   2          LED_B=1;
+ 126   2        }
+ 127   1        
+ 128   1        if(contr>=78&&contr<=82)//time:80-青
+ 129   1        {
+ 130   2          LED_R=0;
+ 131   2          LED_G=1;
+ 132   2          LED_B=1;
+ 133   2        }
+ 134   1        
+ 135   1        if(contr>=88&&contr<=92)//time:90-流水灯
+ 136   1        {
+ 137   2          mode = 1;
+ 138   2          change=0;
+ 139   2        }
+ 140   1        
+ 141   1        if(contr<88||contr>92)
+ 142   1        {
+ 143   2          mode = 0;
+ 144   2        }
+ 145   1        
+ 146   1        time = 0;
+ 147   1        
+ 148   1      }
+ 149          
+ 150          void Timer0Init(void)   //100微秒@11.0592MHz
+ 151          {
+ 152   1        AUXR |= 0x80;   //定时器时钟1T模式
+ 153   1        TMOD &= 0xF0;   //设置定时器模式
+ 154   1        TL0 = 0xAE;   //设置定时初始值
+ 155   1        TH0 = 0xFB;   //设置定时初始值
+ 156   1        TF0 = 0;    //清除TF0标志
+ 157   1        TR0 = 0;    
+ 158   1        ET0 = 1;                                    //使能定时器中断
+ 159   1        EA = 1;
+ 160   1      }
+ 161          
+ 162          void main()
+ 163          {
+ 164   1        
+ 165   1        P0M0 = 0x00;
+ 166   1        P0M1 = 0x00;
+ 167   1        P1M0 = 0x00;
+ 168   1        P1M1 = 0x00;
+ 169   1        P2M0 = 0x00;
+ 170   1        P2M1 = 0x00;
+ 171   1        P3M0 = 0x00;
+ 172   1        P3M1 = 0x00;
+ 173   1        P4M0 = 0x00;
+ 174   1        P4M1 = 0x00;
+ 175   1        P5M0 = 0x00;
+ 176   1        P5M1 = 0x00;
+ 177   1        
+ 178   1        LED_R=0;
+C51 COMPILER V9.60.0.0   MAIN                                                              01/11/2023 17:38:20 PAGE 4   
+
+ 179   1        LED_G=0;
+ 180   1        LED_B=0;
+ 181   1        
+ 182   1        Timer0Init();
+ 183   1        
+ 184   1        while(1)
+ 185   1        {
+ 186   2          if(mode)
+ 187   2          {
+ 188   3            if(change==0)
+ 189   3              change_exe();
+ 190   3            
+ 191   3            Delay1ms();
+ 192   3            
+ 193   3            change++;
+ 194   3            
+ 195   3            if(change>=500)
+ 196   3              change = 0;
+ 197   3            
+ 198   3          }
+ 199   2          
+ 200   2          if(control==1)
+ 201   2          {
+ 202   3            TR0 = 1;    //定时器0开始计时
+ 203   3            while(control);
+ 204   3            TR0 = 0;
+ 205   3            control_exe(time);
+ 206   3          }
+ 207   2          
+ 208   2        }
+ 209   1      }
+ 210          
+ 211          void TM0_Isr() interrupt 1
+ 212          {
+ 213   1        time++;
+ 214   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    533    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
