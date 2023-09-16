@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   WebSocketClientStompOverSockJs_ENC.ino
   For boards using ENC28J60 Shield/Module
-  
+
   Based on and modified from WebSockets libarary https://github.com/Links2004/arduinoWebSockets
   to support other boards such as  SAMD21, SAMD51, Adafruit's nRF52 boards, etc.
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/WebSockets_Generic
   Licensed under MIT license
-  
+
   Example for connecting and maintining a connection with a SockJS+STOMP websocket connection.
   In this example, we connect to a Spring application (see https://docs.spring.io/spring/docs/current/spring-framework-reference/html/websocket.html).
-  
+
   Created on: 18.07.2017
   Author: Martin Becker <mgbckr>, Contact: becker@informatik.uni-wuerzburg.de
  *****************************************************************************************************************************/
@@ -19,7 +19,7 @@
   // Default pin 10 to SS/CS
   #define USE_THIS_SS_PIN       10
   #define BOARD_TYPE      "SAM DUE"
-#elif ( defined(CORE_TEENSY) )  
+#elif ( defined(CORE_TEENSY) )
   #error You have to use examples written for Teensy
 #endif
 
@@ -27,10 +27,10 @@
   #define BOARD_NAME    BOARD_TYPE
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_     3
-#define WEBSOCKETS_NETWORK_TYPE   NETWORK_ENC28J60
+#define _WEBSOCKETS_LOGLEVEL_     2
 
-#define SHIELD_TYPE               "ENC28J60 using UIPEthernet Library"
+#define WEBSOCKETS_NETWORK_TYPE   NETWORK_ETHERNET_ENC
+#define SHIELD_TYPE               "ENC28J60 using EthernetENC Library"
 
 #include <WebSocketsClient_Generic.h>
 
@@ -53,56 +53,60 @@ const char* ws_baseurl            = "/socketentry/"; // don't forget leading and
 
 // FUNCTIONS
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
+void webSocketEvent(const WStype_t& type, uint8_t * payload, const size_t& length)
 {
   switch (type)
   {
     case WStype_DISCONNECTED:
       Serial.println("[WSc] Disconnected!");
       break;
+
     case WStype_CONNECTED:
-      {
-        Serial.print("[WSc] Connected to url: ");
-        Serial.println((char *) payload);
-      }
-      break;
+    {
+      Serial.print("[WSc] Connected to url: ");
+      Serial.println((char *) payload);
+    }
+    break;
+
     case WStype_TEXT:
+    {
+      // #####################
+      // handle SockJs+STOMP protocol
+      // #####################
+
+      String text = (char*) payload;
+
+      Serial.print("[WSc] get text: ");
+      Serial.println((char *) payload);
+
+      if (payload[0] == 'h')
       {
-        // #####################
-        // handle SockJs+STOMP protocol
-        // #####################
-
-        String text = (char*) payload;
-
-        Serial.print("[WSc] get text: ");
-        Serial.println((char *) payload);
-
-        if (payload[0] == 'h')
-        {
-          Serial.println("Heartbeat!");
-        }
-        else if (payload[0] == 'o')
-        {
-          // on open connection
-          String msg = "[\"CONNECT\\naccept-version:1.1,1.0\\nheart-beat:10000,10000\\n\\n\\u0000\"]";
-
-          webSocket.sendTXT(msg);
-        }
-        else if (text.startsWith("a[\"CONNECTED"))
-        {
-          // subscribe to some channels
-          String msg = "[\"SUBSCRIBE\\nid:sub-0\\ndestination:/user/queue/messages\\n\\n\\u0000\"]";
-
-          webSocket.sendTXT(msg);
-          delay(1000);
-
-          // and send a message
-          msg = "[\"SEND\\ndestination:/app/message\\n\\n{\\\"user\\\":\\\"esp\\\",\\\"message\\\":\\\"Hello!\\\"}\\u0000\"]";
-          webSocket.sendTXT(msg);
-          delay(1000);
-        }
-        break;
+        Serial.println("Heartbeat!");
       }
+      else if (payload[0] == 'o')
+      {
+        // on open connection
+        String msg = "[\"CONNECT\\naccept-version:1.1,1.0\\nheart-beat:10000,10000\\n\\n\\u0000\"]";
+
+        webSocket.sendTXT(msg);
+      }
+      else if (text.startsWith("a[\"CONNECTED"))
+      {
+        // subscribe to some channels
+        String msg = "[\"SUBSCRIBE\\nid:sub-0\\ndestination:/user/queue/messages\\n\\n\\u0000\"]";
+
+        webSocket.sendTXT(msg);
+        delay(1000);
+
+        // and send a message
+        msg = "[\"SEND\\ndestination:/app/message\\n\\n{\\\"user\\\":\\\"esp\\\",\\\"message\\\":\\\"Hello!\\\"}\\u0000\"]";
+        webSocket.sendTXT(msg);
+        delay(1000);
+      }
+
+      break;
+    }
+
     case WStype_BIN:
       Serial.print("[WSc] get binary length: ");
       Serial.println(length);
@@ -111,6 +115,26 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
       // send data to server
       webSocket.sendBIN(payload, length);
       break;
+
+    case WStype_PING:
+      // pong will be send automatically
+      Serial.printf("[WSc] get ping\n");
+      break;
+
+    case WStype_PONG:
+      // answer to a ping we send
+      Serial.printf("[WSc] get pong\n");
+      break;
+
+    case WStype_ERROR:
+    case WStype_FRAGMENT_TEXT_START:
+    case WStype_FRAGMENT_BIN_START:
+    case WStype_FRAGMENT:
+    case WStype_FRAGMENT_FIN:
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -118,10 +142,12 @@ void setup()
 {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
+
   while (!Serial);
 
   Serial.print("\nStart WebSocketClientStompOverSockJs_ENC on " + String(BOARD_NAME));
-  Serial.println(" with " + String(SHIELD_TYPE));
+  Serial.print(" with ");
+  Serial.println(SHIELD_TYPE);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   Serial.println("Used/default SPI pinout:");
@@ -133,7 +159,7 @@ void setup()
   Serial.println(SCK);
   Serial.print("SS:");
   Serial.println(SS);
-  
+
   /// start the ethernet connection and the server:
   // Use Static IP
   Ethernet.begin(mac, clientIP);

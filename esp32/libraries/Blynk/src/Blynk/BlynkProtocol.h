@@ -13,10 +13,9 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <Blynk/BlynkDebug.h>
+#include <Blynk/BlynkUtility.h>
 #include <Blynk/BlynkProtocolDefs.h>
 #include <Blynk/BlynkApi.h>
-#include <utility/BlynkUtility.h>
 
 template <class Transp>
 class BlynkProtocol
@@ -84,7 +83,11 @@ public:
 
     void printBanner() {
 #if defined(BLYNK_NO_FANCY_LOGO)
-        BLYNK_LOG1(BLYNK_F("Blynk v" BLYNK_VERSION " on " BLYNK_INFO_DEVICE));
+        BLYNK_LOG1(BLYNK_F("Blynk v" BLYNK_VERSION " on " BLYNK_INFO_DEVICE
+            BLYNK_NEWLINE
+            " #StandWithUkraine    https://bit.ly/swua" BLYNK_NEWLINE
+            BLYNK_NEWLINE
+        ));
 #else
         BLYNK_LOG1(BLYNK_F(BLYNK_NEWLINE
             "    ___  __          __" BLYNK_NEWLINE
@@ -92,9 +95,14 @@ public:
             "  / _  / / // / _ \\/  '_/" BLYNK_NEWLINE
             " /____/_/\\_, /_//_/_/\\_\\" BLYNK_NEWLINE
             "        /___/ v" BLYNK_VERSION " on " BLYNK_INFO_DEVICE BLYNK_NEWLINE
+            BLYNK_NEWLINE
+            " #StandWithUkraine    https://bit.ly/swua" BLYNK_NEWLINE
+            BLYNK_NEWLINE
         ));
 #endif
     }
+
+    uint16_t getNextMsgId();
 
 private:
 
@@ -105,7 +113,6 @@ private:
     }
 
     int readHeader(BlynkHeader& hdr);
-    uint16_t getNextMsgId();
 
 protected:
     void begin(const char* auth) {
@@ -132,6 +139,7 @@ private:
     uint16_t msgIdOut;
     uint16_t msgIdOutOverride;
     uint8_t  nesting;
+    BLYNK_MUTEX_DECL(mutex);
 protected:
     BlynkState state;
 };
@@ -303,7 +311,6 @@ bool BlynkProtocol<Transp>::processInput(void)
 
     switch (hdr.type)
     {
-    case BLYNK_CMD_LOGIN:
     case BLYNK_CMD_HW_LOGIN: {
 #ifdef BLYNK_USE_DIRECT_CONNECT
         if (strncmp(authkey, (char*)inputBuffer, 32)) {
@@ -436,19 +443,15 @@ int BlynkProtocol<Transp>::readHeader(BlynkHeader& hdr)
 template <class Transp>
 void BlynkProtocol<Transp>::sendCmd(uint8_t cmd, uint16_t id, const void* data, size_t length, const void* data2, size_t length2)
 {
-    if (!conn.connected() || (cmd != BLYNK_CMD_RESPONSE && cmd != BLYNK_CMD_PING && cmd != BLYNK_CMD_LOGIN && cmd != BLYNK_CMD_HW_LOGIN && state != CONNECTED) ) {
+    if (!conn.connected() || (cmd != BLYNK_CMD_RESPONSE && cmd != BLYNK_CMD_PING && cmd != BLYNK_CMD_HW_LOGIN && state != CONNECTED) ) {
 #ifdef BLYNK_DEBUG_ALL
         BLYNK_LOG2(BLYNK_F("Cmd skipped:"), cmd);
 #endif
         return;
     }
 
-    if (0 == id) {
-        id = getNextMsgId();
-    }
-
 #if defined(BLYNK_MSG_LIMIT) && BLYNK_MSG_LIMIT > 0
-    if (cmd >= BLYNK_CMD_TWEET && cmd <= BLYNK_CMD_HARDWARE) {
+    if (cmd >= BLYNK_CMD_BRIDGE && cmd <= BLYNK_CMD_HARDWARE) {
         const millis_time_t allowed_time = BlynkMax(lastActivityOut, lastActivityIn) + 1000/BLYNK_MSG_LIMIT;
         int32_t wait_time = allowed_time - BlynkMillis();
         if (wait_time >= 0) {
@@ -464,6 +467,14 @@ void BlynkProtocol<Transp>::sendCmd(uint8_t cmd, uint16_t id, const void* data, 
         }
     }
 #endif
+
+    BlynkApi< BlynkProtocol<Transp> >::sendPendingGroup();
+
+    BLYNK_MUTEX_GUARD(mutex);
+
+    if (0 == id) {
+        id = getNextMsgId();
+    }
 
     const size_t full_length = (sizeof(BlynkHeader)) +
                                (data  ? length  : 0) +

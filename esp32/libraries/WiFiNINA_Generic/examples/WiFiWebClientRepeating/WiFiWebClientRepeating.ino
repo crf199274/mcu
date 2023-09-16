@@ -42,10 +42,15 @@
 
 // To eliminate FW warning when using not latest nina-fw version
 // To use whenever WiFi101-FirmwareUpdater-Plugin is not sync'ed with nina-fw version
-#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.5"
+#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.8"
 
 #include <SPI.h>
-#include <WiFiNINA_Generic.h>
+
+#if USING_WIFI101
+  #include <WiFi101_Generic.h>
+#else
+  #include <WiFiNINA_Generic.h>
+#endif
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;        // your network SSID (name)
@@ -59,8 +64,7 @@ int status = WL_IDLE_STATUS;
 WiFiClient client;
 
 // server address:
-char server[] = "example.org";
-//IPAddress server(64,131,82,241);
+char server[] = "arduino.tips";
 
 unsigned long lastConnectionTime = 0;            // last time you connected to the server, in milliseconds
 const unsigned long postingInterval = 10L * 1000L; // delay between updates, in milliseconds
@@ -69,20 +73,29 @@ void setup()
 {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
-  while (!Serial);
 
-  Serial.print(F("\nStart WiFiWebClientRepeating on ")); Serial.println(BOARD_NAME);
+  while (!Serial && millis() < 5000);
+
+  Serial.print(F("\nStart WiFiWebClientRepeating on "));
+  Serial.println(BOARD_NAME);
+
+// check for the WiFi module:
+#if USING_WIFI101
+  if (WiFi.status() == WL_NO_SHIELD)
+#else
   Serial.println(WIFININA_GENERIC_VERSION);
-
-  // check for the WiFi module:
+  
   if (WiFi.status() == WL_NO_MODULE)
+#endif
   {
     Serial.println(F("Communication with WiFi module failed!"));
+
     // don't continue
     while (true);
   }
 
   String fv = WiFi.firmwareVersion();
+
   if (fv < WIFI_FIRMWARE_LATEST_VERSION)
   {
     Serial.print(F("Your current firmware NINA FW v"));
@@ -136,11 +149,10 @@ void httpRequest()
   // if there's a successful connection:
   if (client.connect(server, 80))
   {
-    Serial.println(F("Connecting..."));
-    // send the HTTP GET request:
-    client.println("GET / HTTP/1.1");
-    client.println("Host: example.org");
-    client.println("User-Agent: ArduinoWiFi/1.1");
+    Serial.println(F("Connected to server"));
+    // Make a HTTP request:
+    client.println(F("GET /asciilogo.txt HTTP/1.1"));
+    client.println("Host: arduino.tips");
     client.println("Connection: close");
     client.println();
 
@@ -154,7 +166,7 @@ void httpRequest()
   }
 }
 
-void printWiFiStatus() 
+void printWiFiStatus()
 {
   // print the SSID of the network you're attached to:
   Serial.print(F("SSID: "));

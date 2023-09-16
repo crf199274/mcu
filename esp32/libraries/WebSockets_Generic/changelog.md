@@ -1,4 +1,4 @@
-## WebSockets_Generic
+## WebSockets_Generic Library
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/WebSockets_Generic.svg?)](https://www.ardu-badge.com/WebSockets_Generic)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/WebSockets_Generic.svg)](https://github.com/khoih-prog/WebSockets_Generic/releases)
@@ -6,12 +6,29 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/WebSockets_Generic.svg)](http://github.com/khoih-prog/WebSockets_Generic/issues)
 
+
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
+<a href="https://profile-counter.glitch.me/khoih-prog/count.svg" title="Total khoih-prog Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog/count.svg" style="height: 30px;width: 200px;"></a>
+<a href="https://profile-counter.glitch.me/khoih-prog-WebSockets_Generic/count.svg" title="WebSockets_Generic Visitor count"><img src="https://profile-counter.glitch.me/khoih-prog-WebSockets_Generic/count.svg" style="height: 30px;width: 200px;"></a>
+
+
 ---
 ---
 
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v2.16.1](#release-v2161)
+  * [Release v2.16.0](#release-v2160)
+  * [Release v2.15.0](#release-v2150)
+  * [Release v2.14.2](#release-v2142)
+  * [Release v2.14.1](#release-v2141)
+  * [Release v2.14.0](#release-v2140)
+  * [Release v2.13.0](#release-v2130)
+  * [Major Release v2.12.0](#major-release-v2120)
+  * [Release v2.11.1](#release-v2111)
+  * [Major Release v2.11.0](#major-release-v2110)
   * [Release v2.10.1](#release-v2101)
   * [Major Release v2.10.0](#major-release-v2100)
   * [Major Release v2.9.0](#major-release-v290)
@@ -48,6 +65,78 @@
 ---
 
 ## Changelog
+
+### Release v2.16.1
+
+1. Using new [`WiFi101_Generic library`](https://github.com/khoih-prog/WiFi101_Generic) for sending larger data
+2. Add astyle using `allman` style. Restyle the library
+3. Update `Packages' Patches`
+
+### Release v2.16.0
+
+1. Add support to **RP2040-based boards, such as Nano_RP2040_Connect, RASPBERRY_PI_PICO, ADAFRUIT_FEATHER_RP2040**, using WiFiNINA or Ethernet
+2. Add `WS` and `BearSSL WSS` support to `RP2040W` using `CYW43439 WiFi` with `arduino-pico` core
+3. Optional user-defined 
+- `WEBSOCKETS_TCP_TIMEOUT`, default 5,000ms
+- `EIO_HEARTBEAT_INTERVAL`, default 20,000ms
+- `SIO_PING_INTERVAL`, default 60,000ms
+- `SIO_PONG_TIMEOUT`, default 90,000ms
+- `SIO_DISCONNECT_TIMEOUT_COUNT`, default 5
+4. Update `Packages' Patches`
+
+### Release v2.15.0
+
+1. Use new [Ethernet_Generic library](https://github.com/khoih-prog/Ethernet_Generic) as default for W5x00.
+2. Sync with `arduinoWebSockets v2.3.6`
+3. Add examples and rewrite all the examples to support new features
+4. Update `Packages' Patches`
+
+
+### Release v2.14.2
+
+1. Fix Async bug for ESP8266 when using NETWORK_ESP8266_ASYNC
+2. Add example [ESP8266_AsyncWSClient](examples/Async/ESP8266_AsyncWSClient)
+3. Update `platformio.ini` to temporarily use ESP32 core v2.0.0+ and use [ESPAsyncTCP](https://github.com/me-no-dev/ESPAsyncTCP) library for ESP8266 Async
+4. Update `Packages' Patches`
+
+### Release v2.14.1
+
+1. Fix setInsecure() bug for WIO_Terminal.
+2. Update `Packages' Patches` for `Seeeduino` core. Be sure to use the `Packages_Patches` of this library version v2.14.1+ to avoid compiler error.
+
+### Release v2.14.0
+
+1. Suppress unnecessary warnings.
+2. Don't use `deprecated sha.h` for ESP32 core v1.0.6+. Check [warning sha.h is deprecated, use sha_parallel_engine.h #738](https://github.com/Links2004/arduinoWebSockets/issues/738)
+3. Optimize code by passing by `reference` instead of `value`
+4. Modify nearly all examples
+5. Update `Packages' Patches`
+
+### Release v2.13.0
+
+1. Add support to `ESP32_S3`.
+2. Add `sIOtype_PING` and `sIOtype_PING` SocketIO events. Check [Ping events propagated to main code socketIO events #18](https://github.com/khoih-prog/WebSockets_Generic/issues/18)
+3. Add [ESP32_WebSocketClientSocketIO](examples/ESP32_WebSocketClientSocketIO) example
+4. Update `Packages' Patches`
+
+### Major Release v2.12.0
+
+1. Add SSL support to ESP32-based WT32_ETH01 boards using LAN8720 Ethernet
+2. Add WT32_ETH01-related [WT32_ETH01_SSL_SIO example](examples/WT32_ETH01/WT32_ETH01_SSL_SIO)
+3. Update `Packages' Patches`
+
+
+### Release v2.11.1
+
+1. Add option to use `transport=websocket` with sticky-session SIO server. Check [Run websocket only mode for Socket.IO #16](https://github.com/khoih-prog/WebSockets_Generic/issues/16)
+2. Add some Sticky_SIO-related examples
+
+### Major Release v2.11.0
+
+1. Auto detect ESP32 core to use for WT32_ETH01
+2. Fix bug in WT32_ETH01 examples to reduce connection time
+3. Delete Blynk-related examples
+4. Replace deprecated `echo.websocket.org` in examples.
 
 ### Release v2.10.1
 

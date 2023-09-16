@@ -54,6 +54,13 @@
 
 #define WEBSOCKETS_USE_PORTENTA_H7_ETHERNET     true
 
+#define DEBUG_WEBSOCKETS_PORT     Serial
+// Debug Level from 0 to 4
+#define _WEBSOCKETS_LOGLEVEL_     3
+
+// Uncomment to test sending WS headers in lower-case
+//#define WS_HEADERS_NORMAL_CASE    false
+
 #include <WebSockets2_Generic.h>
 
 using namespace websockets2_generic;
@@ -104,7 +111,7 @@ void setup()
 {
   // Start Serial and wait until it is ready.
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
  
   Serial.print("\nStarting Portenta_H7_Ethernet_Client on "); Serial.print(BOARD_NAME); 
   Serial.print(" "); Serial.println(SHIELD_TYPE);

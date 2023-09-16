@@ -2,7 +2,7 @@
   SimpleWebSocket.ino - Simple Arduino web server sample for WiFi shield
 
   For any WiFi shields, such as WiFiNINA W101, W102, W13x, or custom, such as ESP8266/ESP32-AT, Ethernet, etc
-  
+
   WiFiWebServer is a library for the ESP32-based WiFi shields to run WebServer
   Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
   Based on  and modified from Arduino WiFiNINA library https://www.arduino.cc/en/Reference/WiFiNINA
@@ -21,7 +21,7 @@
 
 #include "defines.h"
 
-// echo.websocket.org is not workinh anymore.Please use your local WS server
+// echo.websocket.org is not working anymore.Please use your local WS server
 char serverAddress[] = "192.168.2.30";  // server address
 int port = 8080;
 
@@ -52,10 +52,13 @@ void printWifiStatus()
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial);
 
-  Serial.print(F("\nStarting SimpleWebSocket on ")); Serial.print(BOARD_NAME);
-  Serial.print(F(" with ")); Serial.println(SHIELD_TYPE); 
+  while (!Serial && millis() < 5000);
+
+  Serial.print(F("\nStarting SimpleWebSocket on "));
+  Serial.print(BOARD_NAME);
+  Serial.print(F(" with "));
+  Serial.println(SHIELD_TYPE);
   Serial.println(WIFI_WEBSERVER_VERSION);
 
 #if WIFI_USING_ESP_AT
@@ -66,46 +69,49 @@ void setup()
   WiFi.init(&EspSerial);
 
   Serial.println(F("WiFi shield init done"));
-  
+
 #endif
 
 #if !(ESP32 || ESP8266)
-  
-  // check for the presence of the shield
-  #if USE_WIFI_NINA
-    if (WiFi.status() == WL_NO_MODULE)
-  #else
-    if (WiFi.status() == WL_NO_SHIELD)
-  #endif
-    {
-      Serial.println(F("WiFi shield not present"));
-      // don't continue
-      while (true);
-    }
 
-  #if USE_WIFI_NINA
-    String fv = WiFi.firmwareVersion();
-    
-    if (fv < WIFI_FIRMWARE_LATEST_VERSION)
-    {
-      Serial.println(F("Please upgrade the firmware"));
-    }
-  #endif
-  
+  // check for the presence of the shield
+#if USE_WIFI_NINA
+
+  if (WiFi.status() == WL_NO_MODULE)
+#else
+  if (WiFi.status() == WL_NO_SHIELD)
+#endif
+  {
+    Serial.println(F("WiFi shield not present"));
+
+    // don't continue
+    while (true);
+  }
+
+#if USE_WIFI_NINA
+  String fv = WiFi.firmwareVersion();
+
+  if (fv < WIFI_FIRMWARE_LATEST_VERSION)
+  {
+    Serial.println(F("Please upgrade the firmware"));
+  }
+
+#endif
+
 #endif
 
   Serial.print(F("Connecting to SSID: "));
   Serial.println(ssid);
-  
+
   status = WiFi.begin(ssid, pass);
 
   delay(1000);
-   
+
   // attempt to connect to WiFi network
   while ( status != WL_CONNECTED)
   {
     delay(500);
-        
+
     // Connect to WPA/WPA2 network
     status = WiFi.status();
   }
@@ -116,11 +122,13 @@ void setup()
 
 void loop()
 {
-  Serial.println("starting WebSocket client");
-  
+  static String data = " => Hello from SimpleWebSocket on " + String(BOARD_NAME) + ", millis = ";
+
+  Serial.println("Starting WebSocket client");
+
   wsClient.begin();
 
-  while (wsClient.connected()) 
+  while (wsClient.connected())
   {
     Serial.print("Sending Hello ");
     Serial.println(count);
@@ -128,8 +136,10 @@ void loop()
     // send a hello #
     wsClient.beginMessage(TYPE_TEXT);
     wsClient.print(count);
-    String data = " => Hello from SimpleWebSocket on " + String(BOARD_NAME) + ", millis = " + String(millis());
+
     wsClient.print(data);
+    wsClient.print(millis());
+
     wsClient.endMessage();
 
     // increment count for next message
@@ -138,7 +148,7 @@ void loop()
     // check if a message is available to be received
     int messageSize = wsClient.parseMessage();
 
-    if (messageSize > 0) 
+    if (messageSize > 0)
     {
       Serial.println("Received a message:");
       Serial.println(wsClient.readString());

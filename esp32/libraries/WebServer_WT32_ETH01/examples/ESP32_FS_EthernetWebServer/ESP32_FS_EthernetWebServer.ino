@@ -27,27 +27,41 @@
 // Debug Level from 0 to 4
 #define _ETHERNET_WEBSERVER_LOGLEVEL_       3
 
-// Uncomment to use ESP32 core v1.0.6-
-//#define USING_CORE_ESP32_CORE_V200_PLUS     false
-
 #define USE_LITTLEFS                true
 #define USE_SPIFFS                  false
+
+// For WT32_ETH01 only (A0 = IO36 = 36)
+#if defined(ARDUINO_WT32_ETH01)
+  #define A0        36
+#endif
 
 // For ESP32
 #if USE_LITTLEFS
 //LittleFS has higher priority
 #include "FS.h"
 
-// The library will be depreciated after being merged to future major Arduino esp32 core release 2.x
-// At that time, just remove this library inclusion
-#include <LITTLEFS.h>             // https://github.com/lorol/LITTLEFS
-
-FS* filesystem =          &LITTLEFS;
-#define CurrentFileFS     "LittleFS"
-#define FileFS            LITTLEFS
+// Check cores/esp32/esp_arduino_version.h and cores/esp32/core_version.h
+//#if ( ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(2, 0, 0) )  //(ESP_ARDUINO_VERSION_MAJOR >= 2)
+#if ( defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 2) )
+  #warning Using ESP32 Core 1.0.6 or 2.0.0+
+  // The library has been merged into esp32 core from release 1.0.6
+  #include <LittleFS.h>
+  
+  FS* filesystem =            &LittleFS;
+  #define FileFS              LittleFS
+  #define CurrentFileFS       "LittleFS"
+#else
+  #warning Using ESP32 Core 1.0.5-. You must install LITTLEFS library
+  // The library has been merged into esp32 core from release 1.0.6
+  #include <LITTLEFS.h>             // https://github.com/lorol/LITTLEFS
+  
+  FS* filesystem =            &LITTLEFS;
+  #define FileFS              LITTLEFS
+  #define CurrentFileFS       "LittleFS"
+#endif
 
 #ifdef USE_SPIFFS
-#undef USE_SPIFFS
+  #undef USE_SPIFFS
 #endif
 
 #define USE_SPIFFS                  false
@@ -358,7 +372,7 @@ void handleFileList()
   server.send(200, "text/json", output);
 }
 
-void initFS(void)
+void initFS()
 {
   // Initialize LittleFS/SPIFFS file-system
   // Format SPIFFS if not yet
@@ -397,7 +411,7 @@ void listDir()
   Serial.println();
 }
 
-void initWebserver(void)
+void initWebserver()
 {
   //SERVER INIT
   //list directory
@@ -465,7 +479,7 @@ void initWebserver(void)
   server.begin();
 }
 
-void setup(void)
+void setup()
 {
   Serial.begin(115200);
   while (!Serial);
@@ -477,7 +491,10 @@ void setup(void)
   Serial.println(" with " + String(SHIELD_TYPE));
   Serial.println(WEBSERVER_WT32_ETH01_VERSION);
 
-  //bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO,
+  // To be called before ETH.begin()
+  WT32_ETH01_onEvent();
+
+  //bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO, 
   //           eth_phy_type_t type=ETH_PHY_TYPE, eth_clock_mode_t clk_mode=ETH_CLK_MODE);
   //ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER, ETH_PHY_MDC, ETH_PHY_MDIO, ETH_PHY_TYPE, ETH_CLK_MODE);
   ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER);
@@ -485,8 +502,6 @@ void setup(void)
   // Static IP, leave without this line to get IP via DHCP
   //bool config(IPAddress local_ip, IPAddress gateway, IPAddress subnet, IPAddress dns1 = 0, IPAddress dns2 = 0);
   ETH.config(myIP, myGW, mySN, myDNS);
-
-  WT32_ETH01_onEvent();
 
   WT32_ETH01_waitForConnect();
 
@@ -502,7 +517,7 @@ void setup(void)
   Serial.println(F("/edit to see the file browser"));
 }
 
-void loop(void)
+void loop()
 {
   server.handleClient();
 }

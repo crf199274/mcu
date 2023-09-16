@@ -64,11 +64,23 @@ byte mac[6];
 // Enter websockets server port.
 const uint16_t port = 81;
 
-// Define how many clients we accpet simultaneously.
+// Define how many clients we accept simultaneously.
 const byte maxClients = 4;
 
 WebsocketsClient clients[maxClients];
 WebsocketsServer server;
+
+//#define USING_DHCP            true
+#define USING_DHCP            false
+
+#if !USING_DHCP
+  // Set the static IP address to use if the DHCP fails to assign
+  IPAddress myIP(192, 168, 2, 222);
+  IPAddress myNetmask(255, 255, 255, 0);
+  IPAddress myGW(192, 168, 2, 1);
+  //IPAddress mydnsServer(192, 168, 2, 1);
+  IPAddress mydnsServer(8, 8, 8, 8);
+#endif
 
 void setup()
 {
@@ -77,20 +89,37 @@ void setup()
 
   // Start Serial and wait until it is ready.
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
-  Serial.println("\nStart MultiClients_Teensy41_Server on Teensy 4.1");
+  Serial.println("\nStart MultiClients_Teensy41_Server on Teensy 4.1 NativeEthernet");
   Serial.println(WEBSOCKETS2_GENERIC_VERSION);
 
   // Connect to ethernet.
-  if (Ethernet.begin(mac))
+#if USING_DHCP  
+  if (Ethernet.begin(mac)) 
   {
-    Serial.println("Ethernet connected");
+    Serial.print("Ethernet connected (");
+    Serial.print(Ethernet.localIP());
+    Serial.println(")");
   }
-  else
+  else 
   {
     Serial.println("Ethernet failed");
   }
+
+  // give the Ethernet shield minimum 1 sec for DHCP 
+  delay(1000);
+#else
+  // Use Static IP
+  Ethernet.begin(mac, myIP, mydnsServer);
+  
+  Serial.print("Ethernet connected (");
+  Serial.print(Ethernet.localIP());
+  Serial.println(")");
+
+  // give the Ethernet shield minimum 2 secs for staticP to initialize:
+  delay(2000);
+#endif
 
   // Start websockets server.
   server.listen(port);
@@ -157,7 +186,7 @@ void listenForClients()
       Serial.printf("Accepted new websockets client at index %d\n", freeIndex);
       newClient.onMessage(handleMessage);
       newClient.onEvent(handleEvent);
-      newClient.send("Hello from Teensy");
+      newClient.send("Hello from Teensy 4.1 NativeEthernet");
       clients[freeIndex] = newClient;
     }
   }

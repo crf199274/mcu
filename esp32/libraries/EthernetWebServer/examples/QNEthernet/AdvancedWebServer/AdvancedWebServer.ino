@@ -1,29 +1,29 @@
 /****************************************************************************************************************************
   AdvancedWebServer.h - Dead simple web-server for Ethernet shields
-  
+
   EthernetWebServer is a library for the Ethernet shields to run WebServer
-  
+
   Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
   Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
   Licensed under MIT license
-  
+
   Copyright (c) 2015, Majenko Technologies
   All rights reserved.
-  
+
   Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
-  
+
   Redistributions of source code must retain the above copyright notice, this
   list of conditions and the following disclaimer.
-  
+
   Redistributions in binary form must reproduce the above copyright notice, this
   list of conditions and the following disclaimer in the documentation and/or
   other materials provided with the distribution.
-  
+
   Neither the name of Majenko Technologies nor the names of its
   contributors may be used to endorse or promote products derived from
   this software without specific prior written permission.
-  
+
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -44,8 +44,8 @@ int reqCount = 0;                // number of requests received
 
 void handleRoot()
 {
-#define BUFFER_SIZE     400
-  
+#define BUFFER_SIZE     512
+
   char temp[BUFFER_SIZE];
   int sec = millis() / 1000;
   int min = sec / 60;
@@ -58,18 +58,19 @@ void handleRoot()
            "<html>\
 <head>\
 <meta http-equiv='refresh' content='5'/>\
-<title>AdvancedWebServer %s</title>\
+<title>%s</title>\
 <style>\
 body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
 </style>\
 </head>\
 <body>\
-<h2>Hi from EthernetWebServer!</h2>\
-<h3>%s on %s</h3>\
+<h1>Hello from %s</h1>\
+<h3>running EthernetWebServer</h3>\
+<h3>on %s</h3>\
 <p>Uptime: %d d %02d:%02d:%02d</p>\
 <img src=\"/test.svg\" />\
 </body>\
-</html>", BOARD_NAME, SHIELD_TYPE, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
+</html>", BOARD_NAME, BOARD_NAME, SHIELD_TYPE, day, hr, min % 60, sec % 60);
 
   server.send(200, F("text/html"), temp);
 }
@@ -77,7 +78,7 @@ body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Col
 void handleNotFound()
 {
   String message = F("File Not Found\n\n");
-  
+
   message += F("URI: ");
   message += server.uri();
   message += F("\nMethod: ");
@@ -85,45 +86,72 @@ void handleNotFound()
   message += F("\nArguments: ");
   message += server.args();
   message += F("\n");
-  
+
   for (uint8_t i = 0; i < server.args(); i++)
   {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
-  
+
   server.send(404, F("text/plain"), message);
 }
 
+#define ORIGINAL_STR_LEN        2048
+
 void drawGraph()
 {
-  String out;
-  out.reserve(3000);
+  static String out;
+  static uint16_t previousStrLen = ORIGINAL_STR_LEN;
+
+  if (out.length() == 0)
+  {
+    ET_LOGWARN1(F("String Len = 0, extend to"), ORIGINAL_STR_LEN);
+    out.reserve(ORIGINAL_STR_LEN);
+  }
+
+  out = F( "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n" \
+           "<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"3\" stroke=\"rgb(0, 0, 0)\" />\n" \
+           "<g stroke=\"blue\">\n");
+
   char temp[70];
-  
-  out += F("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n");
-  out += F("<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"1\" stroke=\"rgb(0, 0, 0)\" />\n");
-  out += F("<g stroke=\"black\">\n");
+
   int y = rand() % 130;
 
   for (int x = 10; x < 300; x += 10)
   {
     int y2 = rand() % 130;
-    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"1\" />\n", x, 140 - y, x + 10, 140 - y2);
+    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"2\" />\n", x, 140 - y, x + 10, 140 - y2);
     out += temp;
     y = y2;
   }
+
   out += F("</g>\n</svg>\n");
 
-  server.send(200, F("image/svg+xml"), out);
+  ET_LOGDEBUG1(F("String Len = "), out.length());
+
+  if (out.length() > previousStrLen)
+  {
+    ET_LOGERROR3(F("String Len > "), previousStrLen, F(", extend to"), out.length() + 48);
+
+    previousStrLen = out.length() + 48;
+
+    out.reserve(previousStrLen);
+  }
+  else
+  {
+    server.send(200, "image/svg+xml", out);
+  }
 }
 
-void setup(void)
+void setup()
 {
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.print("\nStarting AdvancedWebServer on "); Serial.print(BOARD_NAME);
-  Serial.print(" " ); Serial.println(SHIELD_TYPE);
+  Serial.print("\nStarting AdvancedWebServer on ");
+  Serial.print(BOARD_NAME);
+  Serial.print(" " );
+  Serial.println(SHIELD_TYPE);
   Serial.println(ETHERNET_WEBSERVER_VERSION);
 
 #if USE_NATIVE_ETHERNET
@@ -153,16 +181,18 @@ void setup(void)
 
 #else
 
-  #if USING_DHCP
-    // Start the Ethernet connection, using DHCP
-    Serial.print("Initialize Ethernet using DHCP => ");
-    Ethernet.begin();
-  #else   
-    // Start the Ethernet connection, using static IP
-    Serial.print("Initialize Ethernet using static IP => ");
-    Ethernet.begin(myIP, myNetmask, myGW);
-    Ethernet.setDNSServerIP(mydnsServer);
-  #endif
+#if USING_DHCP
+  // Start the Ethernet connection, using DHCP
+  Serial.print("Initialize Ethernet using DHCP => ");
+  Ethernet.begin();
+  // give the Ethernet shield minimum 1 sec for DHCP and 2 secs for staticP to initialize:
+  delay(1000);
+#else
+  // Start the Ethernet connection, using static IP
+  Serial.print("Initialize Ethernet using static IP => ");
+  Ethernet.begin(myIP, myNetmask, myGW);
+  Ethernet.setDNSServerIP(mydnsServer);
+#endif
 
   if (!Ethernet.waitForLocalIP(5000))
   {
@@ -185,6 +215,9 @@ void setup(void)
     Serial.println(Ethernet.localIP());
   }
 
+  // give the Ethernet shield minimum 1 sec for DHCP and 2 secs for staticP to initialize:
+  delay(2000);
+
 #endif
 
   server.on(F("/"), handleRoot);
@@ -201,7 +234,7 @@ void setup(void)
   Serial.println(Ethernet.localIP());
 }
 
-void heartBeatPrint(void)
+void heartBeatPrint()
 {
   static int num = 1;
 
@@ -232,7 +265,7 @@ void check_status()
   }
 }
 
-void loop(void)
+void loop()
 {
   server.handleClient();
   check_status();

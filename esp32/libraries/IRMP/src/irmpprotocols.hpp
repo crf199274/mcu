@@ -4,7 +4,7 @@
  *  Copyright (C) 2020-2021  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
- *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,16 +13,16 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
-#ifndef _IRMP_PROTOCOLS_C_H_
-#define _IRMP_PROTOCOLS_C_H_
+#ifndef IRMP_PROTOCOLS_HPP
+#define IRMP_PROTOCOLS_HPP
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * IR protocol strings for IRMP and IRSND:
@@ -163,4 +163,4 @@ irmp_protocol_names[IRMP_N_PROTOCOLS + 1] PROGMEM =
     proto_melinera
 };
 
-#endif // _IRMP_PROTOCOLS_C_H_
+#endif // IRMP_PROTOCOLS_HPP

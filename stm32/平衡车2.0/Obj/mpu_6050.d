@@ -2,7 +2,7 @@
 .\obj\mpu_6050.o: APP\MPU_6050.h
 .\obj\mpu_6050.o: .\Libraries\CMSIS\stm32f10x.h
 .\obj\mpu_6050.o: .\Libraries\CMSIS\core_cm3.h
-.\obj\mpu_6050.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\obj\mpu_6050.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
 .\obj\mpu_6050.o: .\Libraries\CMSIS\system_stm32f10x.h
 .\obj\mpu_6050.o: .\User\stm32f10x_conf.h
 .\obj\mpu_6050.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h
@@ -30,6 +30,6 @@
 .\obj\mpu_6050.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_wwdg.h
 .\obj\mpu_6050.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\misc.h
 .\obj\mpu_6050.o: .\Public\I2C.h
-.\obj\mpu_6050.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+.\obj\mpu_6050.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\math.h
 .\obj\mpu_6050.o: .\Public\delay.h
 .\obj\mpu_6050.o: APP\Output.h

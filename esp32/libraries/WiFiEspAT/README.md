@@ -1,3 +1,4 @@
+<a href="https://www.buymeacoffee.com/jurajandraY" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 # WiFiEspAT library
 
@@ -26,13 +27,13 @@ The library is for all Arduino MCU architectures.
 
 ## Getting started
 
-* Put AT firmware version 1.7 or higher into the ESP you want to use with the WiFiEspAT library. Make sure the firmware is working and returning OK to test command "AT".
+* Put AT firmware a supported version of the AT firmware into the ESP you want to use with the WiFiEspAT library. Make sure the firmware is working and returning OK to test command "AT".
 
 
 * Wire the ESP module to Serial1 of your Arduino. Wire RX to TX. If your Arduino doesn't have Serial1, wire the ESP module to pins 6 as RX and 7 as TX for SoftwareSerial.
 
 
-* For AT firmware version 2.1.0 or higher open in the folder of the library the file src/utility/EspAtDrvTypes.h in a text editor and comment out the line `#define WIFIESPAT1` like this `//#define WIFIESPAT1` 
+* For AT firmware version 2.4.0 or higher open in the folder of the library the file src/utility/EspAtDrvTypes.h in a text editor and comment out the line `#define WIFIESPAT1` like this `//#define WIFIESPAT1` 
 
 
 * If you use SoftwareSerial run the ChangeATBaudRate sketch from WiFiEspAT/Tools section in IDE Examples menu. If the sketch ends with "Communication with WiFi module failed!" check the wiring.
@@ -49,14 +50,14 @@ The library is for all Arduino MCU architectures.
 
 ## Why a new WiFiEsp library?
 
-This library uses the new passive receive mode implemented in AT firmware 1.7 (Non OS SDK 3) and AT firmware 2.1 (RTOS SDK). The [older WiFiEsp library](https://github.com/bportaluri/WiFiEsp) can't do much with larger data received. Without the passive receive mode, the AT firmware sends all the data at once and the serial RX buffer overflows. It is hard to receive more data over network with AT firmware without UART hardware flow control and Arduino AVR boards don't have flow control and simple esp8266 modules don't have the flow control pins exposed.
+This library uses the new passive receive mode implemented in AT firmware 1.7 (Non OS SDK 3) and AT firmware 2.4+ (RTOS SDK). The [older WiFiEsp library](https://github.com/bportaluri/WiFiEsp) can't do much with larger data received. Without the passive receive mode, the AT firmware sends all the data at once and the serial RX buffer overflows. It is hard to receive more data over network with AT firmware without UART hardware flow control and Arduino AVR boards don't have flow control and simple esp8266 modules don't have the flow control pins exposed.
 
 Note: The older WiFiEsp library referenced the AT firmware version by SDK version. This library reports AT commands version.
 
 
 ## Limitations
 
-The AT firmwares are limited to one TCP server.
+The official AT firmwares are limited to one TCP server.
 
 ### AT 1.7
 
@@ -64,40 +65,40 @@ AT 1.7 is only for esp8266.
 
 The passive receive mode of the AT firmware is not supported for UDP and secure connection (SSL). For this reason UDP received message size is limited to configured buffer size and secure connection (SSL, https) is not supported.
 
-### AT 2.1
+### AT 2
 
-The AT 2 has some problem with UDP messages in passive receive mode. The received message must be read at once so received message size is limited to configured buffer size with this library. If multiple messages are received before the first message is read, the firmware concatenates the messages and doesn't report the sizes of the individual messages.
+The AT 2 has a small problem with UDP messages in passive receive mode. The received message must be read at once so received message size is limited to configured buffer size with this library.
 
-For SSL passive receive mode the AT 2 always reports more data available then there really are. The firmware then closes the link if all data are read so next read ends with an unspecified error.
+AT 2 is for esp32. Use at least version 2.4. Versions 2.1 and 2.2 were for esp8266 too, but are not reliable.
+
+Note to 2.0.0 versions: ESP8266 version can't be used with this library. It doesn't support passive receive mode. In ESP32 AT 2.0.0 version UDP doesn't work in passive receive mode.
 
 ### Capabilities comparison
 
 The table focuses on limits of AT firmwares in passive receive mode.
 
-|Property|AT 1.7|AT 2.1 esp8266|AT 2.1 ESP32|JB AT 1.7 (1)|
-|---| :---: | :---: | :---: | :---: |
-|more then one TCP server|✗|✗|✗|n/a|
-|SSL server|✗|✗|🗸(4)|✗|
-|TCP client|🗸|🗸|🗸|🗸|
-|SSL client|✗|🗸(2)|🗸(2)|🗸|
-|SSL client TLS 1.2|✗|✗|✗|🗸|
-|UDP (3)|🗸|🗸|🗸|✗|
-|UDP backlog|✗|✗|✗|n/a| 
-|UDP multicast|✗|🗸|🗸|n/a| 
-|SoftAP|🗸|🗸|🗸|✗|
-|WPA2 Enterprise|✗|✗|🗸|✗|
-|epoch time|Lobo|🗸|🗸|✗|
+|Feature|AT 1.7|AT 2.4+|ESP_ATMod(1)|
+|---| :---: | :---: | :---: |
+|more than one TCP server|✗|✗|✓(2)|
+|SSL server|✗|✓|✗|
+|TCP client|✓|✓|✓|
+|SSL client|✗|✓|✓|
+|SSL client TLS 1.2|✗(3)|✓|✓|
+|UDP (4)|✓|✓|✗|
+|UDP backlog|✗|✓|n/a| 
+|UDP multicast|✗|✓|n/a| 
+|SoftAP|✓|✓|✓|
+|WPA2 Enterprise|✗|✓|✗|
+|epoch time|Lobo|✓|✓|
 
 * (1) [Jiri Bilek's firmware](https://github.com/JiriBilek/ESP_ATMod#description)
-* (2) larger size of available bytes is reported (unencrypted size)
-* (3) it is not possible to receive UDP message larger then the configured buffer
-* (4) SSL server expects all client data to be read at once, so it only works with large buffer 
+* (2) uncomment `#define WIFIESPAT_MULTISERVER` in src/utility/EspAtDrv.h
+* (3) it is possible to use the [SSLClient library](https://github.com/OPEnSLab-OSU/SSLClient) for TLS 1.2 on 32bit MCU
+* (4) it is not possible to receive UDP message larger than the configured buffer
 
 ## AT firmware versions
 
 You can use the CheckFirmware sketch from examples Tools to check the version of the AT firmware.
-
-Note to 2.0.0 versions: ESP8266 version can't be used with this library. It doesn't support passive receive mode. In ESP32 AT 2.0.0 version UDP doesn't work in passive receive mode.  
 
 ### AT 1.7
 
@@ -119,25 +120,23 @@ For some esp8266 modules you will have to add `--flash_mode dout` before `--flas
 
 GitHub user loboris (Boris Lovosevic) builds customized versions of AT firmware with SDK 3 for all flash sizes. You can download the files from his [ESP8266_AT_LoBo GitHub repository](https://github.com/loboris/ESP8266_AT_LoBo). Run his flash.sh utility to flash the correct binary.
 
-Jiri Bilek created [an alternative AT 1.7 firmware implementation](https://github.com/JiriBilek/ESP_ATMod) over esp8266 Arduino core and WiFi library. This supports SSL TLS1.2 connection in passive mode with this library. Please, be aware of the limitations of Jiri's firmware.
+Jiri Bilek created [an alternative AT 1.7 firmware implementation](https://github.com/JiriBilek/ESP_ATMod) over esp8266 Arduino core and WiFi library. This supports SSL TLS1.2 connection in passive mode with this library. This firmware doesn't yet support UDP.
 
 Resources:
-* [the Espressif binaries](https://www.espressif.com/en/support/download/at?keys=&field_type_tid%5B%5D=14) - versions 1.7.x 
-* [AT 1.7 reference](https://www.espressif.com/en/support/download/overview?keys=AT+Instruction+Set&field_type_tid%5B%5D=14) - it contains firmware flashing instructions too
+* [the Espressif binaries](https://github.com/espressif/ESP8266_NONOS_SDK/releases) - versions 1.7.x in NONOS SDK 3.0.x
+* [AT 1.7 reference](https://www.espressif.com/en/support/documents/technical-documents?keys=Non-OS+AT&field_type_tid%5B%5D=14) - it contains firmware flashing instructions too
 * [AT LoBo flashing instructions](https://github.com/loboris/ESP8266_AT_LoBo/#flashing). First install esptool.py. If you download the AT LoBo repository as zip, it contains the firmware binaries and a script to flash them.
+* [Jiri Bilek's ESP_ATMod](https://github.com/JiriBilek/ESP_ATMod)
 
-### AT 2.1
+### AT 2
 
-This library can work with AT firmware 2.1.x. AT firmware 2.1.x is build on Espressif RTOS SDK for esp8266 and esp32. 
+This library can work with AT firmware version 2.4 or higher. AT firmware 2 is for ESP32 and is build on Espressif's IDF framework. 
 
 The flashing command of AT2 with esptool is `esptool.py write_flash @download.config`. I recommend to change in download.config file flash_mode to qio if your ESP module supports it and flash frequency to 40MHz if your module doesn't support 80MHz.
 
-The AT 2.1 binary for esp8266 build by Espressif requires at least 2 MB flash and uses pins 15 as TX and 13 as RX. To have the AT firmware communicating on usual pins 1 as TX and 3 as RX, you can use at flashing of the firmware AT2_esp8266_factory_param_tx1rx3.bin from extras folder of this library instead of factory_param.bin bundled with the AT firmware.
-
-It is possible to build the AT 2 for esp8266 with 1 MB flash, but Espressif didn't publish a binary for this option. You can download it [here](https://github.com/jandrassy/UnoWiFiDevEdSerial1/wiki/files/ESP8266-1MB-tx1rx3-AT_V2.1.zip).
-
 Resources:
 * [the Espressif AT2 binaries](https://docs.espressif.com/projects/esp-at/en/latest/AT_Binary_Lists/index.html)
+* [the Espressif AT2 releases on GitHub](https://github.com/espressif/esp-at/releases)
 
 ### Flashing tools
 
@@ -187,6 +186,7 @@ This library implements Arduino WiFi networking API. The last version of this AP
 ### the WiFi object differences
 
 * `init` command to set the Serial interface used for communication
+* `begin` for AT 1.7 begin() without parameters (joining remembered WiFi) is not available
 * `beginEnterprise` AT 2 only. to connect to WPA2 Enterprise network (sorry, it is not tested)
 * `setPersistent` to set the remembering of the following WiFi connection (see the SetupPersistentWiFiConnection.ino tool example)
 * `setAutoConnect` to set the automatic connection to remembered WiFi AP
@@ -199,7 +199,7 @@ This library implements Arduino WiFi networking API. The last version of this AP
 * `configureAP` - to configure AP. see the SetupPersistentAP.ino tool example
 * AP parameters getters - apMacAddress, apSSID, apPassphrase, apEncryptionType, apMaxConnections, apIsHidden, apDhcpIsEnabled, apIP, apGatewayIP, apSubnetMask (see PrintPersistentSettings.ino tool example)
 * `startMDNS` to execute AT+MDNS. refer to AT reference for parameters
-* `sntp` - to enable and configure SNTP time zone and servers. see SNTPTime.ino example
+* `sntp` - to enable and configure SNTP servers. see SNTPTime.ino example
 * `reset` - to reset or wake-up the ESP. see DeepSleepAndHwReset.ino example
 * `sleepMode`- to set the level of automatic sleep mode. possible modes are WIFI_NONE_SLEEP, WIFI_LIGHT_SLEEP and WIFI_MODEM_SLEEP
 * `deepSleep`- to turn-off the ESP. see DeepSleepAndHwReset.ino example
@@ -214,10 +214,10 @@ This library implements Arduino WiFi networking API. The last version of this AP
 
 ### the WiFiServer class differences
 
-The AT firmware supports only one TCP server.
+The standard AT firmwares support only one TCP server. The ESP_ATMod firmware supports multiple servers (uncomment `#define WIFIESPAT_MULTISERVER` in src/utility/EspAtDrv.h).
 
 * `begin` has optional parameters maxConnCount (default 1) and serverTimeout in seconds (default 60)
-* `beginSSL` ESP32 only. starts the server for secure connections. AT2 expects all client data of the SSL server to be read at once, so it only works with large WIFIESPAT_CLIENT_RX_BUFFER_SIZE or large buffer provided for read. see the WebServerSSL example 
+* `beginSSL` ESP32 only. starts the server for secure connections.
 * `end` to stop the server (the Arduino WiFi libraries can't stop a server)
 * `accept` like in new [Ethernet library](https://www.arduino.cc/en/Reference/EthernetServerAccept). see the AdvancedChatServer  
 
@@ -264,7 +264,7 @@ It is recommended to use WiFiClient.flush() after completing the output. WiFiCli
 
 The buffers size can be changed in WiFiEspAtConfig.h or set on build command line. The TCP TX buffer can be set to 0 and the RX buffer must be at least 1 (for peek()), but then please use buffers in sketch for example with [StreamLib's](https://github.com/jandrassy/StreamLib) wrapper class BufferedPrint. 
 
-The size of the UDP TX buffer can be set to zero in WiFiEspAtConfig.h if the complete message is sent with one print(msg), one write(msg, length) or with write(callback). Otherwise the size of the UDP buffers limits the size of the message. If the composed message is larger then the buffer it will be send as partial UDP messages. If the size of received message with AT1 is larger then the UDP TX buffer, the message will be dropped (with WiFi.getLastDriverError() set to EspAtDrvError::UDP_LARGE).
+The size of the UDP TX buffer can be set to zero in WiFiEspAtConfig.h if the complete message is sent with one print(msg), one write(msg, length) or with write(callback). Otherwise the size of the UDP buffers limits the size of the message. If the composed message is larger than the buffer it will be send as partial UDP messages. If the size of received message with AT1 is larger than the UDP TX buffer, the message will be dropped (with WiFi.getLastDriverError() set to EspAtDrvError::UDP_LARGE).
 
 To set different custom sizes of buffers for different boards, you can create a file boards.local.txt next to boards.txt file in hardware package. Set build.extra_flags for individual boards. For example for Mega you can add to boards.local.txt a line with -D options to define the macros.
 

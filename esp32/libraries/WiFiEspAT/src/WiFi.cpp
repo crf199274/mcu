@@ -20,7 +20,7 @@
 #include "WiFi.h"
 #include "utility/EspAtDrv.h"
 
-// this statics are removed by compiler if not used
+// these statics are removed by compiler, if not used
 char WiFiClass::fwVersion[15] = {0};
 char WiFiClass::ssid[33] = {0};
 char WiFiClass::name[33] = {0}; // hostname
@@ -193,6 +193,10 @@ int32_t WiFiClass::RSSI() {
   return rssi;
 }
 
+int8_t WiFiClass::scanNetworks() {
+  return scanNetworks(apDataInternal, WIFIESPAT_INTERNAL_AP_LIST_SIZE);
+}
+
 int8_t WiFiClass::scanNetworks(WiFiApData* _apData, uint8_t _apDataSize) {
   apData = _apData;
   apDataSize = _apDataSize;
@@ -250,8 +254,8 @@ bool WiFiClass::ping(IPAddress ip) {
   return ping(s);
 }
 
-bool WiFiClass::sntp(int8_t timezone, const char* server1, const char* server2) {
-  return EspAtDrv.sntpCfg(timezone, server1, server2);
+bool WiFiClass::sntp(const char* server1, const char* server2) {
+  return EspAtDrv.sntpCfg(server1, server2);
 }
 
 unsigned long WiFiClass::getTime() {

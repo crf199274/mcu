@@ -10,7 +10,7 @@
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
- *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -51,7 +51,7 @@ IRMP_DATA irsnd_data;
 void setup()
 {
     Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
     delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 #if defined(ESP8266)
@@ -68,11 +68,7 @@ void setup()
     irsnd_init();
     irmp_irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
 
-#if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("Ready to send IR signals at pin " IRSND_OUTPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
-#else
-    Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
-#endif
+    Serial.println(F("Send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
     delay(1000);
 }
 
@@ -82,7 +78,7 @@ void loop()
     static uint8_t sCommand = 1;
     static uint8_t sRepeats = 0;
 
-    for (uint8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
+    for (uint_fast8_t i = 0; i < sizeof(irsnd_used_protocol_index); ++i)
     {
         irsnd_data.protocol = pgm_read_byte(&irsnd_used_protocol_index[i]);
         irsnd_data.address = sAddress;

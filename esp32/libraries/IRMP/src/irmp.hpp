@@ -14,7 +14,7 @@
  * ATmega164, ATmega324, ATmega644,  ATmega644P, ATmega1284, ATmega1284P
  * ATmega88,  ATmega88P, ATmega168,  ATmega168P, ATmega328P
  *
- * This file is part of IRMP https://github.com/ukw100/IRMP.
+ * This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,17 +198,6 @@
 #define MITSU_HEAVY_0_PAUSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define MITSU_HEAVY_0_PAUSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * MITSU_HEAVY_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
-#define VINCENT_START_BIT_PULSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define VINCENT_START_BIT_PULSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define VINCENT_START_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define VINCENT_START_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define VINCENT_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
-#define VINCENT_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) + 1)
-#define VINCENT_1_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define VINCENT_1_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-#define VINCENT_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
-#define VINCENT_0_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
-
 #define PANASONIC_START_BIT_PULSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define PANASONIC_START_BIT_PULSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 #define PANASONIC_START_BIT_PAUSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
@@ -219,6 +208,17 @@
 #define PANASONIC_1_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define PANASONIC_0_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define PANASONIC_0_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * PANASONIC_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+
+#define VINCENT_START_BIT_PULSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define VINCENT_START_BIT_PULSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define VINCENT_START_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define VINCENT_START_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * VINCENT_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define VINCENT_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
+#define VINCENT_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * VINCENT_PULSE_TIME * MAX_TOLERANCE_40 + 0.5) + 1)
+#define VINCENT_1_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define VINCENT_1_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_1_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define VINCENT_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define VINCENT_0_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * VINCENT_0_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
 #define RECS80_START_BIT_PULSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define RECS80_START_BIT_PULSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * RECS80_START_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
@@ -274,10 +274,10 @@
 #define DENON_AUTO_REPETITION_PAUSE_LEN         ((uint_fast16_t)(F_INTERRUPTS * DENON_AUTO_REPETITION_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
 #define THOMSON_PULSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * THOMSON_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define THOMSON_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * THOMSON_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
+#define THOMSON_PULSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * THOMSON_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define THOMSON_1_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * THOMSON_1_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define THOMSON_1_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * THOMSON_1_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define THOMSON_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * THOMSON_0_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
+#define THOMSON_0_PAUSE_LEN_MIN                 ((uint_fast8_t)(F_INTERRUPTS * THOMSON_0_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
 #define THOMSON_0_PAUSE_LEN_MAX                 ((uint_fast8_t)(F_INTERRUPTS * THOMSON_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
 #define RC6_START_BIT_PULSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * RC6_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
@@ -376,14 +376,14 @@
 #define GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN_MIN    ((uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_PRE_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) + 1)
 #define GRUNDIG_NOKIA_IR60_PRE_PAUSE_LEN_MAX    ((uint_fast8_t)(F_INTERRUPTS * GRUNDIG_NOKIA_IR60_PRE_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
-#define SIEMENS_OR_RUWIDO_START_BIT_PULSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME * MIN_TOLERANCE_00 + 0.5) - 1)
-#define SIEMENS_OR_RUWIDO_START_BIT_PULSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define SIEMENS_OR_RUWIDO_START_BIT_PULSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME * MIN_TOLERANCE_00 + 0.5) - 0)
+#define SIEMENS_OR_RUWIDO_START_BIT_PULSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 #define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MIN       ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * MIN_TOLERANCE_00 + 0.5) - 1)
-#define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define SIEMENS_OR_RUWIDO_START_BIT_PAUSE_LEN_MAX       ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 #define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * MIN_TOLERANCE_00 + 0.5) - 1)
-#define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define SIEMENS_OR_RUWIDO_BIT_PULSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 #define SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME * MIN_TOLERANCE_00 + 0.5) - 1)
-#define SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define SIEMENS_OR_RUWIDO_BIT_PAUSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * SIEMENS_OR_RUWIDO_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
 #define FDC_START_BIT_PULSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * FDC_START_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)   // 5%: avoid conflict with NETBOX
 #define FDC_START_BIT_PULSE_LEN_MAX             ((uint_fast8_t)(F_INTERRUPTS * FDC_START_BIT_PULSE_TIME * MAX_TOLERANCE_05 + 0.5))
@@ -407,8 +407,8 @@
 #define RCCAR_PULSE_LEN_MIN                     ((uint_fast8_t)(F_INTERRUPTS * RCCAR_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define RCCAR_PULSE_LEN_MAX                     ((uint_fast8_t)(F_INTERRUPTS * RCCAR_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 #define RCCAR_1_PAUSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RCCAR_1_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
-#define RCCAR_1_PAUSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RCCAR_1_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
-#define RCCAR_0_PAUSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RCCAR_0_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
+#define RCCAR_1_PAUSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RCCAR_1_PAUSE_TIME * MAX_TOLERANCE_25 + 0.5) + 1)
+#define RCCAR_0_PAUSE_LEN_MIN                   ((uint_fast8_t)(F_INTERRUPTS * RCCAR_0_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5) - 1)
 #define RCCAR_0_PAUSE_LEN_MAX                   ((uint_fast8_t)(F_INTERRUPTS * RCCAR_0_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
 
 #define JVC_START_BIT_PULSE_LEN_MIN             ((uint_fast8_t)(F_INTERRUPTS * JVC_START_BIT_PULSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
@@ -471,7 +471,7 @@
 #define LEGO_1_PAUSE_LEN_MIN                    ((uint_fast8_t)(F_INTERRUPTS * LEGO_1_PAUSE_TIME * MIN_TOLERANCE_25 + 0.5) - 1)
 #define LEGO_1_PAUSE_LEN_MAX                    ((uint_fast8_t)(F_INTERRUPTS * LEGO_1_PAUSE_TIME * MAX_TOLERANCE_40 + 0.5) + 1)
 #define LEGO_0_PAUSE_LEN_MIN                    ((uint_fast8_t)(F_INTERRUPTS * LEGO_0_PAUSE_TIME * MIN_TOLERANCE_40 + 0.5) - 1)
-#define LEGO_0_PAUSE_LEN_MAX                    ((uint_fast8_t)(F_INTERRUPTS * LEGO_0_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
+#define LEGO_0_PAUSE_LEN_MAX                    ((uint_fast8_t)(F_INTERRUPTS * LEGO_0_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
 
 #define IRMP16_START_BIT_PULSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * IRMP16_START_BIT_PULSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
 #define IRMP16_START_BIT_PULSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * IRMP16_START_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
@@ -508,13 +508,13 @@
 #define BOSE_FRAME_REPEAT_PAUSE_LEN_MAX          (uint_fast16_t)(F_INTERRUPTS * 100.0e-3 * MAX_TOLERANCE_20 + 0.5)
 
 #define A1TVBOX_START_BIT_PULSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define A1TVBOX_START_BIT_PULSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define A1TVBOX_START_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_START_BIT_PAUSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
-#define A1TVBOX_START_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_START_BIT_PAUSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
-#define A1TVBOX_BIT_PULSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PULSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
+#define A1TVBOX_START_BIT_PULSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_START_BIT_PULSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
+#define A1TVBOX_START_BIT_PAUSE_LEN_MIN         ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_START_BIT_PAUSE_TIME * MIN_TOLERANCE_20 + 0.5) - 1)
+#define A1TVBOX_START_BIT_PAUSE_LEN_MAX         ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_START_BIT_PAUSE_TIME * MAX_TOLERANCE_00 + 0.5) + 1)
+#define A1TVBOX_BIT_PULSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PULSE_TIME * MIN_TOLERANCE_05 + 0.5) - 1)
 #define A1TVBOX_BIT_PULSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PULSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
-#define A1TVBOX_BIT_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PAUSE_TIME * MIN_TOLERANCE_30 + 0.5) - 1)
-#define A1TVBOX_BIT_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PAUSE_TIME * MAX_TOLERANCE_30 + 0.5) + 1)
+#define A1TVBOX_BIT_PAUSE_LEN_MIN               ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PAUSE_TIME * MIN_TOLERANCE_00 + 0.5) - 0)
+#define A1TVBOX_BIT_PAUSE_LEN_MAX               ((uint_fast8_t)(F_INTERRUPTS * A1TVBOX_BIT_PAUSE_TIME * MAX_TOLERANCE_20 + 0.5) + 1)
 
 #define MERLIN_START_BIT_PULSE_LEN_MIN          ((uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PULSE_TIME * MIN_TOLERANCE_10 + 0.5) - 1)
 #define MERLIN_START_BIT_PULSE_LEN_MAX          ((uint_fast8_t)(F_INTERRUPTS * MERLIN_START_BIT_PULSE_TIME * MAX_TOLERANCE_10 + 0.5) + 1)
@@ -662,7 +662,7 @@
 #define STOP_BIT_PAUSE_LEN_MIN                  ((uint_fast8_t)(F_INTERRUPTS * STOP_BIT_PAUSE_TIME_MIN + 0.5) + 1)      // minimum stop bit pause len
 
 // XC8 Compiler does not support variadic macros
-#ifdef ANALYZE
+#if defined(ANALYZE)
 #  define ANALYZE_PUTCHAR(a)                    { if (! silent)             { putchar (a);          } }
 #  define ANALYZE_ONLY_NORMAL_PUTCHAR(a)        { if (! silent && !verbose) { putchar (a);          } }
 // #  define ANALYZE_PRINTF(...)                { if (verbose)              { printf (__VA_ARGS__); } }
@@ -751,11 +751,11 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #    include "irmpextlog.h"
 #  else                                                                 // normal UART log (IRMP_EXT_LOGGING == 0)
 #    define BAUD                                    9600L
-#  ifndef UNIX_OR_WINDOWS
+#  if !defined(UNIX_OR_WINDOWS)
 #    include <util/setbaud.h>
 #  endif
 
-#ifdef UBRR0H
+#if defined(UBRR)0H
 
 #define UART0_UBRRH                             UBRR0H
 #define UART0_UBRRL                             UBRR0L
@@ -765,7 +765,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #define UART0_UDRE_BIT_VALUE                    (1<<UDRE0)
 #define UART0_UCSZ1_BIT_VALUE                   (1<<UCSZ01)
 #define UART0_UCSZ0_BIT_VALUE                   (1<<UCSZ00)
-#ifdef URSEL0
+#if defined(URSEL)0
 #define UART0_URSEL_BIT_VALUE                   (1<<URSEL0)
 #else
 #define UART0_URSEL_BIT_VALUE                   (0)
@@ -784,7 +784,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 #define UART0_UDRE_BIT_VALUE                    (1<<UDRE)
 #define UART0_UCSZ1_BIT_VALUE                   (1<<UCSZ1)
 #define UART0_UCSZ0_BIT_VALUE                   (1<<UCSZ0)
-#ifdef URSEL
+#if defined(URSEL)
 #define UART0_URSEL_BIT_VALUE                   (1<<URSEL)
 #else
 #define UART0_URSEL_BIT_VALUE                   (0)
@@ -805,7 +805,7 @@ void irmp_register_complete_callback_function(void (*aCompleteCallbackFunction)(
 void
 irmp_uart_init (void)
 {
-#ifndef UNIX_OR_WINDOWS
+#if !defined(UNIX_OR_WINDOWS)
 #if defined(ARM_STM32F4XX)
     GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
@@ -877,6 +877,42 @@ irmp_uart_init (void)
     // UART enable
     USART_Cmd(STM32_UART_COM, ENABLE);
 
+#elif defined(ARM_STM32F30X)
+    GPIO_InitTypeDef GPIO_InitStructure;
+    USART_InitTypeDef USART_InitStructure;
+
+    // Clock enable vom TX Pin
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE); // UART3 an PB10
+
+    // Clock enable der UART
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+
+    // UART Alternative-Funktion mit dem IO-Pin verbinden
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_7);
+
+    // UART als Alternative-Funktion mit PushPull
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+
+    // TX-Pin
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    // Oversampling
+    USART_OverSampling8Cmd(STM32_UART_COM, ENABLE);
+
+    // init baud rate, 8 data bits, 1 stop bit, no parity, no RTS+CTS
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Tx;
+    USART_Init(STM32_UART_COM, &USART_InitStructure);
+
+    // UART enable
+    USART_Cmd(STM32_UART_COM, ENABLE);
+
 #elif defined(ARDUINO)
     // we use the Arduino Serial Implementation
     // you have to call Serial.begin(SER_BAUD); in Arduino setup() function
@@ -926,8 +962,8 @@ irmp_uart_init (void)
 void
 irmp_uart_putc (unsigned char ch)
 {
-#ifndef UNIX_OR_WINDOWS
-#if defined(ARM_STM32F4XX) || defined(ARM_STM32F10X)
+#if !defined(UNIX_OR_WINDOWS)
+#if defined(ARM_STM32F4XX) || defined(ARM_STM32F10X) || defined(ARM_STM32F30X)
     // warten bis altes Byte gesendet wurde
     while (USART_GetFlagStatus(STM32_UART_COM, USART_FLAG_TXE) == RESET)
     {
@@ -2313,7 +2349,7 @@ gpio_t                                          gpioIRin;               // use l
 #endif
 
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 #define input(x)                                (x)
 static uint_fast8_t                             IRMP_PIN;
 #endif
@@ -2323,7 +2359,7 @@ static uint_fast8_t                             IRMP_PIN;
  *  @details  Configures IRMP input pin
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #if ! defined(ARDUINO)
 void
 irmp_init (void)
@@ -2364,6 +2400,21 @@ irmp_init (void)
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 #  endif
     GPIO_Init(IRMP_PORT, &GPIO_InitStructure);
+
+#elif defined (ARM_STM32_OPENCM3)                                       // ARM_STM32_OPENCM3
+
+    /* GPIOx clock enable */
+#  if defined (STM32L1) || defined (STM32F1) || defined (STM32F3) || defined (STM32F4)
+    rcc_periph_clock_enable(IRMP_PORT_RCC);
+#  endif
+
+    /* GPIO Configuration */
+#  if defined (STM32L1) || defined (STM32F4) || defined (STM32F3)
+    gpio_mode_setup(IRMP_PORT, GPIO_MODE_INPUT, GPIO_PUPD_NONE, IRMP_BIT);
+    gpio_set_output_options(IRMP_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, IRMP_BIT);
+#  elif defined (STM32F1)
+    gpio_set_mode(IRMP_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, IRMP_BIT);
+#  endif
 
 #elif defined(STELLARIS_ARM_CORTEX_M4)
     // Enable the GPIO port
@@ -2409,7 +2460,7 @@ irmp_init (void)
 #endif
 }
 #endif // ! defined(ARDUINO)
-#endif // ifndef ANALYZE
+#endif // if !defined(ANALYZE)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  Get IRMP data
  *  @details  gets decoded IRMP data
@@ -2424,10 +2475,7 @@ uint_fast8_t
 #endif
 irmp_get_data (IRMP_DATA * irmp_data_p)
 {
-    uint_fast8_t   rtc = FALSE;
-#if IRMP_SUPPORT_MERLIN_PROTOCOL == 1
-    uint_fast8_t   cmd_len = 0;
-#endif
+    uint_fast8_t   tReturnCode = FALSE;
 
     if (irmp_ir_detected)
     {
@@ -2438,51 +2486,85 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    irmp_command |= irmp_id << 8;
-                    rtc = TRUE;
+//                    irmp_command |= irmp_id << 8; // for samsung32 irmp_id looks to be the same as irmp_command
+                    tReturnCode = TRUE;
                 }
                 break;
 
-#if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
+#  if IRMP_SUPPORT_SAMSUNG48_PROTOCOL == 1
             case IRMP_SAMSUNG48_PROTOCOL:
                 irmp_command = (irmp_command & 0x00FF) | ((irmp_id & 0x00FF) << 8);
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
+#  endif
 #endif
+
+#if IRMP_SUPPORT_SIRCS_PROTOCOL == 1
+            case IRMP_SIRCS_PROTOCOL:
+                // Concatenate high byte of command and low byte of address
+                irmp_address <<= 7;
+                irmp_address = irmp_address | irmp_command >> 8;
+                // Command is 7 bytes, so add the 8.th bit of command to address
+                irmp_address <<= 1;
+                if ((irmp_command & 0x80))
+                {
+                    irmp_address++;
+                }
+                irmp_command &= 0x7F;
+                tReturnCode = TRUE;
+                break;
 #endif
 
 #if IRMP_SUPPORT_NEC_PROTOCOL == 1
             case IRMP_NEC_PROTOCOL:
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
+                    if ((irmp_address >> 8) == (~irmp_address & 0x00FF))
+                    {
+                        irmp_address &= 0xff;
+                    }
                     irmp_command &= 0xff;
-                    rtc = TRUE;
                 }
                 else if (irmp_address == 0x87EE)
                 {
-                    ANALYZE_PRINTF1 ("Switching to APPLE protocol\n");
+                    ANALYZE_PRINTF1 ("APPLE protocol detected\n");
                     irmp_protocol = IRMP_APPLE_PROTOCOL;
-                    irmp_address = (irmp_command & 0xFF00) >> 8;
+                    irmp_address = (irmp_command & 0xFF00) >> 8; // address was received in command!
                     irmp_command &= 0x00FF;
-                    rtc = TRUE;
                 }
                 else
                 {
-                    ANALYZE_PRINTF1 ("Switching to ONKYO protocol\n");
+                    ANALYZE_PRINTF1 ("ONKYO protocol detected\n");
                     irmp_protocol = IRMP_ONKYO_PROTOCOL;
-                    rtc = TRUE;
                 }
+                tReturnCode = TRUE;
                 break;
-#endif
 
-
-#if IRMP_SUPPORT_NEC_PROTOCOL == 1
             case IRMP_VINCENT_PROTOCOL:
                 if ((irmp_command >> 8) == (irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
+                break;
+#endif
+
+#if IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1
+            case IRMP_KASEIKYO_PROTOCOL:
+                /*
+                 * Todo AJ 14.7.22 The bit before the command (not existent bit 16 of command) is skipped and I have a Panasonic remote where it is 1 for 2 buttons
+                 * and the 4 LSB command bits are always zero for this remote
+                 */
+                if( irmp_address == 0x2002) // PANASONIC_VENDOR_ID_CODE
+                {
+                    ANALYZE_PRINTF1 ("Kaseikyo_Panasonic protocol detected\n");
+                    irmp_protocol = IRMP_PANASONIC_PROTOCOL;
+                    irmp_command = irmp_command >> 4; // remove the 4 zero bits
+                    irmp_address = (irmp_command & 0xF00) >> 8; // LSB address (genre1) was received in command!
+                    irmp_address |= irmp_flags & 0xF0; // MSB of address(genre2 bits) are located in MSB of the flag byte
+                    irmp_command &= 0x00FF;
+                }
+                tReturnCode = TRUE;
                 break;
 #endif
 
@@ -2491,7 +2573,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command >> 8) == (~irmp_command & 0x00FF))
                 {
                     irmp_command &= 0xff;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
@@ -2500,7 +2582,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
             case IRMP_MERLIN_PROTOCOL:
                 if (irmp_bit == 10)
                 {
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 else if (irmp_bit >= 19 && ((irmp_bit - 3) % 8 == 0))
                 {
@@ -2509,8 +2591,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                         irmp_command >>= 1;
                         irmp_command |= ((irmp_address & 1) << (irmp_bit - 12));
                         irmp_address >>= 1;
-                        cmd_len = (irmp_bit - 11) >> 3;
-                        rtc = TRUE;
+                        tReturnCode = TRUE;
                     }
                 }
                 break;
@@ -2522,7 +2603,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if (((irmp_command >> 1) & 0x0001) == (~irmp_command & 0x0001))
                 {
                     irmp_command >>= 1;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
@@ -2530,27 +2611,27 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
             case IRMP_KATHREIN_PROTOCOL:
                 if (irmp_command != 0x0000)
                 {
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
 #if IRMP_SUPPORT_RC5_PROTOCOL == 1
             case IRMP_RC5_PROTOCOL:
                 irmp_address &= ~0x20;                              // clear toggle bit
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
 #endif
 #if IRMP_SUPPORT_S100_PROTOCOL == 1
             case IRMP_S100_PROTOCOL:
                 irmp_address &= ~0x20;                              // clear toggle bit
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
 #endif
 #if IRMP_SUPPORT_IR60_PROTOCOL == 1
             case IRMP_IR60_PROTOCOL:
                 if (irmp_command != 0x007d)                         // 0x007d (== 62<<1 + 1) is start instruction frame
                 {
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 else
                 {
@@ -2567,7 +2648,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 irmp_command = ((irmp_command & 0x1000) >> 2) | // V-Bit:  V  0  0  0  0  0  0  0  0  0  0
                                ((irmp_command & 0x0003) << 8) | // C-Bits: 0  C1 C0 0  0  0  0  0  0  0  0
                                ((irmp_command & 0x0FF0) >> 4);  // D-Bits:          D7 D6 D5 D4 D3 D2 D1 D0
-                rtc = TRUE;                                     // Summe:  V  C1 C0 D7 D6 D5 D4 D3 D2 D1 D0
+                tReturnCode = TRUE;                                     // Summe:  V  C1 C0 D7 D6 D5 D4 D3 D2 D1 D0
                 break;
 #endif
 
@@ -2579,13 +2660,13 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                     {
                         irmp_command >>= 5;
                         irmp_command &= 0x7F;
-                        rtc = TRUE;
+                        tReturnCode = TRUE;
                     }
                     else if ((irmp_command & 0x1f) == 0x10)     // key released: 000 01 (LSB)
                     {
                         irmp_command >>= 5;
                         irmp_command |= 0x80;
-                        rtc = TRUE;
+                        tReturnCode = TRUE;
                     }
                     else
                     {
@@ -2606,7 +2687,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if ((irmp_command & 0x000F) == crc)
                 {
                     irmp_command >>= 4;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 else
                 {
@@ -2624,7 +2705,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 {
                     irmp_address >>= 3;
                     irmp_command >>= 6;
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
 #endif
@@ -2645,7 +2726,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
                 if (((irmp_command + (0x0055 + (channel << 4))) & 0x7F) == checksum)
                 {                                                   // checksum correct?
                     irmp_address = channel + 1;                     // set address to channel + 1
-                    rtc = TRUE;
+                    tReturnCode = TRUE;
                 }
                 break;
             }
@@ -2653,12 +2734,12 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
 
             default:
             {
-                rtc = TRUE;
+                tReturnCode = TRUE;
                 break;
             }
         }
 
-        if (rtc)
+        if (tReturnCode)
         {
             irmp_data_p->protocol = irmp_protocol;
             irmp_data_p->address  = irmp_address;
@@ -2677,7 +2758,7 @@ irmp_get_data (IRMP_DATA * irmp_data_p)
         irmp_ir_detected = FALSE;
     }
 
-    return rtc;
+    return tReturnCode;
 }
 
 #if IRMP_USE_CALLBACK == 1
@@ -3009,7 +3090,7 @@ irmp_store_bit2 (uint_fast8_t value)
 }
 #endif // IRMP_SUPPORT_RC5_PROTOCOL == 1 && (IRMP_SUPPORT_FDC_PROTOCOL == 1 || IRMP_SUPPORT_RCCAR_PROTOCOL == 1)
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 static uint32_t s_curSample = 0;
 static uint32_t s_startBitSample = 0;
 #endif
@@ -3038,9 +3119,7 @@ static uint32_t s_startBitSample = 0;
 /*
  * 4 us idle, 45 us at start of each pulse @16 MHz ATmega 328p
  */
-#if defined(ESP8266)
-bool ICACHE_RAM_ATTR irmp_ISR(void)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 bool IRAM_ATTR irmp_ISR(void)
 #else
 #  ifdef __cplusplus
@@ -3081,7 +3160,7 @@ uint_fast8_t irmp_ISR(void)
 #endif
     uint_fast8_t            irmp_input;                                             // input value
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
     time_counter++;
 #endif // ANALYZE
 
@@ -3105,7 +3184,9 @@ uint_fast8_t irmp_ISR(void)
 #endif // IRMP_USE_CALLBACK == 1
 
 #if defined(ARDUINO)
+#  if !defined(NO_LED_FEEDBACK_CODE)
     irmp_DoLEDFeedback(irmp_input);
+#  endif
 #endif
 
     irmp_log(irmp_input);                                                       // log ir signal, if IRMP_LOGGING defined
@@ -3117,7 +3198,7 @@ uint_fast8_t irmp_ISR(void)
             if (! irmp_input)                                                   // receiving burst?
             {                                                                   // yes...
 //              irmp_busy_flag = TRUE;
-#ifdef ANALYZE
+#if defined(ANALYZE)
                 if (! irmp_pulse_time)
                 {
                     s_startBitSample = s_curSample;
@@ -5400,7 +5481,7 @@ uint_fast8_t irmp_ISR(void)
     return (irmp_ir_detected);
 }
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * main functions - for Unix/Linux + Windows only!

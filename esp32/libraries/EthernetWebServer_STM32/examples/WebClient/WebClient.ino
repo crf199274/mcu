@@ -11,7 +11,7 @@
 
 #include "defines.h"
 
-char server[] = "arduino.cc";
+char server[] = "arduino.tips";
 
 // Initialize the Web client object
 EthernetClient client;
@@ -20,43 +20,49 @@ void setup()
 {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   Serial.println("\nStart WebClient on " + String(BOARD_NAME) + ", using " + String(SHIELD_TYPE));
+
+#if USE_ETHERNET_GENERIC
+  Serial.println(ETHERNET_GENERIC_VERSION);
+#endif
+  
   Serial.println(ETHERNET_WEBSERVER_STM32_VERSION);
 
-  ET_LOGWARN3(F("Board :"), BOARD_NAME, F(", setCsPin:"), USE_THIS_SS_PIN);
-
-  ET_LOGWARN(F("Default SPI pinout:"));
-  ET_LOGWARN1(F("MOSI:"), MOSI);
-  ET_LOGWARN1(F("MISO:"), MISO);
-  ET_LOGWARN1(F("SCK:"),  SCK);
-  ET_LOGWARN1(F("SS:"),   SS);
-  ET_LOGWARN(F("========================="));
-
-  #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-    // For other boards, to change if necessary
-    #if ( USE_ETHERNET || USE_ETHERNET_LARGE || USE_ETHERNET2  || USE_ETHERNET_ENC )
-      // Must use library patch for Ethernet, Ethernet2, EthernetLarge libraries
-      Ethernet.init (USE_THIS_SS_PIN);
-    
-    #elif USE_ETHERNET3
-      // Use  MAX_SOCK_NUM = 4 for 4K, 2 for 8K, 1 for 16K RX/TX buffer
-      #ifndef ETHERNET3_MAX_SOCK_NUM
-        #define ETHERNET3_MAX_SOCK_NUM      4
-      #endif
-    
-      Ethernet.setCsPin (USE_THIS_SS_PIN);
-      Ethernet.init (ETHERNET3_MAX_SOCK_NUM);
-  
-    #elif USE_CUSTOM_ETHERNET
-      // You have to add initialization for your Custom Ethernet here
-      // This is just an example to setCSPin to USE_THIS_SS_PIN, and can be not correct and enough
-      //Ethernet.init(USE_THIS_SS_PIN);
-      
-    #endif  //( ( USE_ETHERNET || USE_ETHERNET_LARGE || USE_ETHERNET2  || USE_ETHERNET_ENC )
+#if !(USE_BUILTIN_ETHERNET)
+  #if (USING_SPI2)
+    #if defined(CUR_PIN_MISO)
+      ET_LOGWARN(F("Default SPI pinout:"));
+      ET_LOGWARN1(F("MOSI:"), CUR_PIN_MOSI);
+      ET_LOGWARN1(F("MISO:"), CUR_PIN_MISO);
+      ET_LOGWARN1(F("SCK:"),  CUR_PIN_SCK);
+      ET_LOGWARN1(F("SS:"),   CUR_PIN_SS);
+      ET_LOGWARN(F("========================="));
+    #endif
+  #else
+    ET_LOGWARN(F("Default SPI pinout:"));
+    ET_LOGWARN1(F("MOSI:"), MOSI);
+    ET_LOGWARN1(F("MISO:"), MISO);
+    ET_LOGWARN1(F("SCK:"),  SCK);
+    ET_LOGWARN1(F("SS:"),   SS);
+    ET_LOGWARN(F("========================="));
   #endif
-  
+#endif
+
+#if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
+  // For other boards, to change if necessary
+  #if ( USE_ETHERNET_GENERIC || USE_ETHERNET_ENC )
+  Ethernet.init (USE_THIS_SS_PIN);
+
+  #elif USE_CUSTOM_ETHERNET
+  // You have to add initialization for your Custom Ethernet here
+  // This is just an example to setCSPin to USE_THIS_SS_PIN, and can be not correct and enough
+  //Ethernet.init(USE_THIS_SS_PIN);
+
+  #endif  //( ( USE_ETHERNET_GENERIC || USE_ETHERNET_ENC )
+#endif
+
   // start the ethernet connection and the server:
   // Use DHCP dynamic IP and random mac
   uint16_t index = millis() % NUMBER_OF_MAC;
@@ -64,8 +70,7 @@ void setup()
   //Ethernet.begin(mac[index], ip);
   Ethernet.begin(mac[index]);
 
-  // you're connected now, so print out the data
-  Serial.print(F("You're connected to the network, IP = "));
+  Serial.print(F("Connected! IP address: "));
   Serial.println(Ethernet.localIP());
 
   Serial.println();
@@ -77,13 +82,13 @@ void setup()
     Serial.println(F("Connected to server"));
     // Make a HTTP request
     client.println(F("GET /asciilogo.txt HTTP/1.1"));
-    client.println(F("Host: arduino.cc"));
+    client.println(F("Host: arduino.tips"));
     client.println(F("Connection: close"));
     client.println();
   }
 }
 
-void printoutData(void)
+void printoutData()
 {
   // if there are incoming bytes available
   // from the server, read them and print them

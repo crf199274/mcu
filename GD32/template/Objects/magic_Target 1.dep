@@ -1,6 +1,39 @@
 Dependencies for Project 'magic', Target 'Target 1': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\AC5
-F (.\main.c)(0x646A3207)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\SDK\CMSIS\GD\GD32F10x\Include -I ..\SDK\CMSIS -I ..\SDK\GD32F10x_standard_peripheral\Include -I ..\template-IE:\software\keil5_v5\ARM\Packs\GigaDevice\GD32F10x_DFP\2.0.2\Device\Include-D__UVISION_VERSION="538" -DGD32F10X_MD -DUSE_STDPERIPH_DRIVER -DUSE_STDPERIPH_DRIVER -DGD32F10X_MD-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\main.c)(0x6491E9CB)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\SDK\CMSIS\GD\GD32F10x\Include -I ..\SDK\CMSIS -I ..\SDK\GD32F10x_standard_peripheral\Include -I ..\template-IE:\software\keil5_v5\ARM\Packs\GigaDevice\GD32F10x_DFP\2.0.2\Device\Include-D__UVISION_VERSION="538" -DGD32F10X_MD -DUSE_STDPERIPH_DRIVER -DUSE_STDPERIPH_DRIVER -DGD32F10X_MD-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+I (gd32f10x_it.h)(0x63B3D74F)
+I (..\SDK\CMSIS\GD\GD32F10x\Include\gd32f10x.h)(0x63B3D741)
+I (..\SDK\CMSIS\core_cm3.h)(0x63B3D741)
+I (E:\software\keil5_v5\ARM\AC5\include\stdint.h)(0x5E8E3CC2)
+I (..\SDK\CMSIS\core_cmInstr.h)(0x63B3D741)
+I (..\SDK\CMSIS\core_cmFunc.h)(0x63B3D741)
+I (..\SDK\CMSIS\GD\GD32F10x\Include\system_gd32f10x.h)(0x63B3D741)
+I (..\template\gd32f10x_libopt.h)(0x63B3D74F)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_fmc.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_pmu.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_bkp.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_rcu.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_exti.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_gpio.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_crc.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_dma.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_dbg.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_adc.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_dac.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_fwdgt.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_wwdgt.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_rtc.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_timer.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_usart.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_i2c.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_spi.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_sdio.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_exmc.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_can.h)(0x63B3D741)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_enet.h)(0x63B3D741)
+I (E:\software\keil5_v5\ARM\AC5\include\stdlib.h)(0x5E8E3CC2)
+I (..\SDK\GD32F10x_standard_peripheral\Include\gd32f10x_misc.h)(0x63B3D741)
+I (systick.h)(0x63B3D74F)
 F (.\gd32f10x_it.c)(0x646A3409)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\SDK\CMSIS\GD\GD32F10x\Include -I ..\SDK\CMSIS -I ..\SDK\GD32F10x_standard_peripheral\Include -I ..\template-IE:\software\keil5_v5\ARM\Packs\GigaDevice\GD32F10x_DFP\2.0.2\Device\Include-D__UVISION_VERSION="538" -DGD32F10X_MD -DUSE_STDPERIPH_DRIVER -DUSE_STDPERIPH_DRIVER -DGD32F10X_MD-o .\objects\gd32f10x_it.o --omf_browse .\objects\gd32f10x_it.crf --depend .\objects\gd32f10x_it.d)
 I (gd32f10x_it.h)(0x63B3D74F)
 I (..\SDK\CMSIS\GD\GD32F10x\Include\gd32f10x.h)(0x63B3D741)

@@ -16,7 +16,7 @@
   #error This code is intended to run only on the ESP32 boards ! Please check your Tools->Board setting.
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_     4
+#define _WEBSOCKETS_LOGLEVEL_     2
 
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -30,14 +30,20 @@ WebSocketsClient  webSocket;
 #define USE_SSL         false
 
 #if USE_SSL
+  // Deprecated echo.websocket.org to be replaced
   #define WS_SERVER           "wss://echo.websocket.org"
   #define WS_PORT             443
-#else  
-  #define WS_SERVER           "ws://echo.websocket.org"
-  #define WS_PORT             80
+#else
+  // To run a local WebSocket Server
+  //#define WS_SERVER           "192.168.2.222"
+  #define WS_SERVER           "192.168.2.86"
+  //#define WS_SERVER           "192.168.2.30"
+  #define WS_PORT             8080
 #endif
 
-void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
+String messageToServer = String("Message from Client on ") + String(ARDUINO_BOARD);
+
+void hexdump(const void *mem, const uint32_t& len, const uint8_t& cols = 16)
 {
   const uint8_t* src = (const uint8_t*) mem;
 
@@ -53,12 +59,13 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
     Serial.printf("%02X ", *src);
     src++;
   }
+
   Serial.printf("\n");
 }
 
 bool alreadyConnected = false;
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
+void webSocketEvent(const WStype_t& type, uint8_t * payload, const size_t& length)
 {
   switch (type)
   {
@@ -68,46 +75,58 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
         Serial.println("[WSc] Disconnected!");
         alreadyConnected = false;
       }
-      
-      break;
-    case WStype_CONNECTED:
-      {
-        alreadyConnected = true;
-        
-        Serial.print("[WSc] Connected to url: ");
-        Serial.println((char *) payload);
 
-        // send message to server when Connected
-        webSocket.sendTXT("Connected");
-      }
       break;
+
+    case WStype_CONNECTED:
+    {
+      alreadyConnected = true;
+
+      Serial.print("[WSc] Connected to url: ");
+      Serial.println((char *) payload);
+
+      // send message to server when Connected
+      webSocket.sendTXT("Connected");
+    }
+
+    break;
+
     case WStype_TEXT:
       Serial.printf("[WSc] get text: %s\n", payload);
 
       // send message to server
-      webSocket.sendTXT("message here");
+      //webSocket.sendTXT("Message from ESP32");
+      webSocket.sendTXT(messageToServer);
+
       break;
+
     case WStype_BIN:
       Serial.printf("[WSc] get binary length: %u\n", length);
       hexdump(payload, length);
 
       // send data to server
       webSocket.sendBIN(payload, length);
+
       break;
 
     case WStype_PING:
       // pong will be send automatically
       Serial.printf("[WSc] get ping\n");
+
       break;
+
     case WStype_PONG:
       // answer to a ping we send
       Serial.printf("[WSc] get pong\n");
-      break;      
+
+      break;
+
     case WStype_ERROR:
     case WStype_FRAGMENT_TEXT_START:
     case WStype_FRAGMENT_BIN_START:
     case WStype_FRAGMENT:
     case WStype_FRAGMENT_FIN:
+
       break;
 
     default:
@@ -119,9 +138,13 @@ void setup()
 {
   // Serial.begin(921600);
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.println("\nStart ESP32_WebSocketClient on " + String(ARDUINO_BOARD));
+  delay(200);
+
+  Serial.print("\nStarting ESP32_WebSocketClient on ");
+  Serial.println(ARDUINO_BOARD);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   Serial.setDebugOutput(true);
@@ -134,7 +157,7 @@ void setup()
     Serial.print(".");
     delay(100);
   }
-  
+
   Serial.println();
 
   // Client address
@@ -144,11 +167,11 @@ void setup()
   // server address, port and URL
   Serial.print("Connecting to WebSockets Server @ ");
   Serial.println(WS_SERVER);
-  
+
   // server address, port and URL
 #if USE_SSL
   webSocket.beginSSL(WS_SERVER, WS_PORT);
-#else  
+#else
   webSocket.begin(WS_SERVER, WS_PORT, "/");
 #endif
 

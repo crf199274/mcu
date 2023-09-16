@@ -1,0 +1,218 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              06/02/2023 05:04:46 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\software\keil5_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Lis
+                    -tings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          #include "OLED.h"
+   3          #include "DC_DC.h"
+   4          #include "adc.h"
+   5          #include "key.h"
+   6          #include "delay.h"
+   7          #include "math.h"
+   8          
+   9          void main()
+  10          {
+  11   1        //初始化IO
+  12   1        IO_Init();
+  13   1        
+  14   1        //初始OLED
+  15   1        oled_init();
+  16   1        
+  17   1        //初始化按键
+  18   1        keyInit();
+  19   1        
+  20   1        //初始化ADC
+  21   1        adcInit();
+  22   1        
+  23   1        //初始化DC_DC
+  24   1        DC_DC_PWM_Init();
+  25   1        
+  26   1        //电压校准并设置初始电压
+  27   1        voltageVerify();
+  28   1        
+  29   1        //主循环
+  30   1        while(1)
+  31   1        {
+  32   2          mainTask();
+  33   2        }
+  34   1        
+  35   1      }
+  36          
+  37          /*            IO模式
+  38          *   PxM0        PxM1    MODE
+  39          *   1           1       开漏输出
+  40          *   1           0       高阻输入
+  41          *   0           1       推挽输出
+  42          *   0           0       准双向
+  43          */
+  44          
+  45          //IO口初始化函数
+  46          void IO_Init(void)
+  47          {
+  48   1        P1M0 = 0x00;
+  49   1        P1M1 = 0x00;
+  50   1        P2M0 = 0x01;
+  51   1        P2M1 = 0x00;
+  52   1        P3M0 = 0x00;
+  53   1        P3M1 = 0x00;
+  54   1        P4M0 = 0x00;
+C51 COMPILER V9.60.7.0   MAIN                                                              06/02/2023 05:04:46 PAGE 2   
+
+  55   1        P4M1 = 0x00;
+  56   1        P5M0 = 0x00;
+  57   1        P5M1 = 0x00;
+  58   1      }
+  59          
+  60          //计算误差设计初始电压
+  61          void voltageVerify(void)
+  62          {
+  63   1        tip_OLED("Voltage verify");
+  64   1        
+  65   1        DC_DC_1.pwm = voltageToPWM(DC_DC_1.vol);
+  66   1        LoadPWM(DC_DC_1.pwm);
+  67   1        
+  68   1        Delay500ms();
+  69   1        Delay500ms();
+  70   1        Delay500ms();
+  71   1        Delay500ms();
+  72   1        Delay500ms();
+  73   1        Delay500ms();
+  74   1        
+  75   1        if(DC_DC_1.Vout<DC_DC_1.vol)
+  76   1        {
+  77   2          DC_DC_1.pwm_error = -((fabs(DC_DC_1.vol-DC_DC_1.Vout)/(VOL_LIMIT_MAX-VOL_LIMIT_MIN))*CYCLE);
+  78   2        }else{
+  79   2          
+  80   2          DC_DC_1.pwm_error = fabs(DC_DC_1.vol-DC_DC_1.Vout)/(VOL_LIMIT_MAX-VOL_LIMIT_MIN)*CYCLE;
+  81   2        }
+  82   1        
+  83   1        oled_screen_fill(0x00);
+  84   1        tip_OLED("OK");
+  85   1        
+  86   1        Delay500ms();
+  87   1        Delay500ms();
+  88   1        
+  89   1        oled_screen_fill(0x00);
+  90   1        
+  91   1        DC_DC_1.pwm = voltageToPWM(DC_DC_1.vol) + DC_DC_1.pwm_error;
+  92   1        LoadPWM(DC_DC_1.pwm);
+  93   1        
+  94   1      }
+  95          
+  96          //OLED显示电流电压信息
+  97          void updata_OLED(void)
+  98          {
+  99   1        char buf[16];
+ 100   1        
+ 101   1        memset(buf,0,16);
+ 102   1        sprintf(buf,"VIN: %5.2f V",DC_DC_1.Vin);
+ 103   1        oled_write_size_16x8(0,0,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 104   1        
+ 105   1        memset(buf,0,16);
+ 106   1        sprintf(buf,"VOUT: %5.2f V",DC_DC_1.Vout);
+ 107   1        oled_write_size_16x8(0,2,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 108   1        
+ 109   1        memset(buf,0,16);
+ 110   1        sprintf(buf,"IIN: %5.2f A",DC_DC_1.Iin);
+ 111   1        oled_write_size_16x8(0,4,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 112   1        
+ 113   1        memset(buf,0,16);
+ 114   1        sprintf(buf,"IOUT: %5.2f A",DC_DC_1.Iout);
+ 115   1        oled_write_size_16x8(0,6,buf);//第一行 -- 8x16的显示单元显示ASCII码
+ 116   1        
+C51 COMPILER V9.60.7.0   MAIN                                                              06/02/2023 05:04:46 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119          //显示提示信息
+ 120          void tip_OLED(char str[])
+ 121          {
+ 122   1        oled_write_size_16x8(0,0,str);//第一行 -- 8x16的显示单元显示ASCII码
+ 123   1      }
+ 124          
+ 125          //执行主体
+ 126          void mainTask(void)
+ 127          {
+ 128   1        while(1)
+ 129   1        {
+ 130   2          
+ 131   2          //按键是否被触发
+ 132   2          if(key_msg_1.mode_key!=0)
+ 133   2          {
+ 134   3            //哪个按键被按下
+ 135   3            switch(key_msg_1.mode_key)
+ 136   3            {
+ 137   4              case 1:
+ 138   4                if(key_msg_1.key_RR)
+ 139   4                  DC_DC_1.vol -= 1;
+ 140   4                else
+ 141   4                  DC_DC_1.vol -= 0.1;
+ 142   4                if(DC_DC_1.vol<VOL_MIN)
+ 143   4                  DC_DC_1.vol = VOL_MIN;
+ 144   4                break;
+ 145   4              case 2:
+ 146   4                if(key_msg_1.key_RR)
+ 147   4                  DC_DC_1.vol += 1;
+ 148   4                else
+ 149   4                  DC_DC_1.vol += 0.1;
+ 150   4                if(DC_DC_1.vol>VOL_MAX)
+ 151   4                  DC_DC_1.vol = VOL_MAX;
+ 152   4                break;
+ 153   4              case 3:
+ 154   4                if(key_msg_1.key_EV==0)
+ 155   4                {
+ 156   5                  DC_DC_1.vol = VOL_MIN;
+ 157   5                  key_msg_1.key_EV = 1 - key_msg_1.key_EV;
+ 158   5                }
+ 159   4                else
+ 160   4                {
+ 161   5                  DC_DC_1.vol = VOL_MAX;
+ 162   5                  key_msg_1.key_EV = 1 - key_msg_1.key_EV;
+ 163   5                }
+ 164   4                break;
+ 165   4              case 4:
+ 166   4                key_msg_1.key_RR = 1 - key_msg_1.key_RR;
+ 167   4                break;
+ 168   4            }
+ 169   3            
+ 170   3            //计算结果加上误差
+ 171   3            DC_DC_1.pwm = voltageToPWM(DC_DC_1.vol) + DC_DC_1.pwm_error;
+ 172   3            
+ 173   3            //加载pwm
+ 174   3            LoadPWM(DC_DC_1.pwm);
+ 175   3            
+ 176   3            //按键清除
+ 177   3            key_msg_1.mode_key = 0;
+ 178   3            
+C51 COMPILER V9.60.7.0   MAIN                                                              06/02/2023 05:04:46 PAGE 4   
+
+ 179   3          }
+ 180   2          
+ 181   2          //更新OLED显示
+ 182   2          updata_OLED();
+ 183   2          
+ 184   2          //延时
+ 185   2          Delay1ms();
+ 186   2          
+ 187   2        }
+ 188   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    743    ----
+   CONSTANT SIZE    =     72    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      16
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

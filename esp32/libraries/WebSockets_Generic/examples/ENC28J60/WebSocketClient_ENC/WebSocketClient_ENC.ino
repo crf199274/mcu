@@ -1,13 +1,13 @@
 /****************************************************************************************************************************
   WebSocketClient_ENC.ino
   For boards using ENC28J60 Shield/Module
-  
+
   Based on and modified from WebSockets libarary https://github.com/Links2004/arduinoWebSockets
   to support other boards such as  SAMD21, SAMD51, Adafruit's nRF52 boards, etc.
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/WebSockets_Generic
   Licensed under MIT license
-  
+
   Created on: 24.05.2015
   Author: Markus Sattler
  *****************************************************************************************************************************/
@@ -16,7 +16,7 @@
   // Default pin 10 to SS/CS
   #define USE_THIS_SS_PIN       10
   #define BOARD_TYPE      "SAM DUE"
-#elif ( defined(CORE_TEENSY) )  
+#elif ( defined(CORE_TEENSY) )
   #error You have to use examples written for Teensy
 #endif
 
@@ -24,10 +24,10 @@
   #define BOARD_NAME    BOARD_TYPE
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_     4
-#define WEBSOCKETS_NETWORK_TYPE   NETWORK_ENC28J60
+#define _WEBSOCKETS_LOGLEVEL_     2
 
-#define SHIELD_TYPE               "ENC28J60 using UIPEthernet Library"
+#define WEBSOCKETS_NETWORK_TYPE   NETWORK_ETHERNET_ENC
+#define SHIELD_TYPE               "ENC28J60 using EthernetENC Library"
 
 #include <WebSocketsClient_Generic.h>
 
@@ -39,29 +39,33 @@ uint8_t mac[6] =  { 0xDE, 0xAD, 0xBE, 0xEF, 0xBE, 0x08 };
 #define USE_SSL         false
 
 #if USE_SSL
+  // Deprecated echo.websocket.org to be replaced
   #define WS_SERVER           "wss://echo.websocket.org"
   #define WS_PORT             443
 #else
-  #define WS_SERVER           "ws://echo.websocket.org"
-  #define WS_PORT             80
+  // To run a local WebSocket Server
+  #define WS_SERVER           "192.168.2.30"
+  #define WS_PORT             8080
 #endif
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
+void webSocketEvent(const WStype_t& type, uint8_t * payload, const size_t& length)
 {
   switch (type)
   {
     case WStype_DISCONNECTED:
       Serial.println("[WSc] Disconnected!");
       break;
-    case WStype_CONNECTED:
-      {
-        Serial.print("[WSc] Connected to url: ");
-        Serial.println((char *) payload);
 
-        // send message to server when Connected
-        webSocket.sendTXT("Connected");
-      }
-      break;
+    case WStype_CONNECTED:
+    {
+      Serial.print("[WSc] Connected to url: ");
+      Serial.println((char *) payload);
+
+      // send message to server when Connected
+      webSocket.sendTXT("Connected");
+    }
+    break;
+
     case WStype_TEXT:
       Serial.print("[WSc] get text: ");
       Serial.println((char *) payload);
@@ -69,6 +73,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
       // send message to server
       // webSocket.sendTXT("message here");
       break;
+
     case WStype_BIN:
       Serial.print("[WSc] get binary length: ");
       Serial.println(length);
@@ -79,6 +84,26 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
       // send data to server
       webSocket.sendBIN(payload, length);
       break;
+
+    case WStype_PING:
+      // pong will be send automatically
+      Serial.printf("[WSc] get ping\n");
+      break;
+
+    case WStype_PONG:
+      // answer to a ping we send
+      Serial.printf("[WSc] get pong\n");
+      break;
+
+    case WStype_ERROR:
+    case WStype_FRAGMENT_TEXT_START:
+    case WStype_FRAGMENT_BIN_START:
+    case WStype_FRAGMENT:
+    case WStype_FRAGMENT_FIN:
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -86,10 +111,12 @@ void setup()
 {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
+
   while (!Serial);
 
   Serial.print("\nStart WebSocketClient_ENC on " + String(BOARD_NAME));
-  Serial.println(" with " + String(SHIELD_TYPE));
+  Serial.print(" with ");
+  Serial.println(SHIELD_TYPE);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   Serial.println("Used/default SPI pinout:");

@@ -1,9 +1,9 @@
 /****************************************************************************************************************************
-   ConfigOnMultiReset.ino
-   For ESP8266 / ESP32 boards
+  ConfigOnMultiReset.ino
+  For ESP8266 / ESP32 boards
   
   ESP_MultiResetDetector is a library for the ESP8266/Arduino platform
-  to enable trigger configure mode by resetting ESP32 / ESP8266 twice.
+  to enable trigger configure mode by resetting ESP32 / ESP8266 multiple times.
   
   Based on and modified from
   1) DataCute    https://github.com/datacute/MultiResetDetector
@@ -67,13 +67,26 @@
     // Use LittleFS
     #include "FS.h"
 
-    // The library will be depreciated after being merged to future major Arduino esp32 core release 2.x
-    // At that time, just remove this library inclusion
-    #include <LITTLEFS.h>             // https://github.com/lorol/LITTLEFS
+    // Check cores/esp32/esp_arduino_version.h and cores/esp32/core_version.h
+    //#if ( ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(2, 0, 0) )  //(ESP_ARDUINO_VERSION_MAJOR >= 2)
+    #if ( defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 2) )
+      #warning Using ESP32 Core 1.0.6 or 2.0.0+
+      // The library has been merged into esp32 core from release 1.0.6
+      #include <LittleFS.h>
+      
+      FS* filesystem =      &LittleFS;
+      #define FileFS        LittleFS
+      #define FS_Name       "LittleFS"
+    #else
+      #warning Using ESP32 Core 1.0.5-. You must install LITTLEFS library
+      // The library has been merged into esp32 core from release 1.0.6
+      #include <LITTLEFS.h>             // https://github.com/lorol/LITTLEFS
+      
+      FS* filesystem =      &LITTLEFS;
+      #define FileFS        LITTLEFS
+      #define FS_Name       "LittleFS"
+    #endif
     
-    FS* filesystem =      &LITTLEFS;
-    #define FileFS        LITTLEFS
-    #define FS_Name       "LittleFS"
   #elif USE_SPIFFS
     #include <SPIFFS.h>
     FS* filesystem =      &SPIFFS;
@@ -88,8 +101,6 @@
   #endif
     //////
     
-    #define ESP_getChipId()   ((uint32_t)ESP.getEfuseMac())
-
 #define LED_BUILTIN       2
 #define LED_ON            HIGH
 #define LED_OFF           LOW
@@ -188,14 +199,6 @@ MultiResetDetector* mrd;//////
 
 // Onboard LED I/O pin on NodeMCU board
 const int PIN_LED = 2; // D4 on NodeMCU and WeMos. GPIO2/ADC12 of ESP32. Controls the onboard LED.
-
-// SSID and PW for Config Portal
-String ssid = "ESP_" + String(ESP_getChipId(), HEX);
-const char* password = "your_password";
-
-// SSID and PW for your Router
-String Router_SSID;
-String Router_Pass;
 
 // From v1.1.0
 // You only need to format the filesystem once
@@ -300,6 +303,15 @@ IPAddress APStaticGW  = IPAddress(192, 168, 100, 1);
 IPAddress APStaticSN  = IPAddress(255, 255, 255, 0);
 
 #include <ESP_WiFiManager.h>              //https://github.com/khoih-prog/ESP_WiFiManager
+
+// SSID and PW for Config Portal
+String ssid = "ESP_" + String(ESP_getChipId(), HEX);
+const char* password = "your_password";
+
+// SSID and PW for your Router
+String Router_SSID;
+String Router_Pass;
+
 
 // Function Prototypes
 uint8_t connectMultiWiFi(void);

@@ -23,7 +23,7 @@
 
 #include "irsnd.h"
 
-#ifndef F_CPU
+#if !defined(F_CPU)
 #  error F_CPU unkown
 #endif
 
@@ -181,6 +181,8 @@
     //Nothing here to do here -> See irsndconfig.h
 #elif defined (ARM_STM32)                                               // STM32
     //Nothing here to do here -> See irsndconfig.h
+#elif defined (ARM_STM32_OPENCM3)                                       // STM32_OPENCM3
+    //Nothing here to do here -> See irsndconfig.h
 #elif defined (ARM_STM32_HAL)                                           // STM32 with Hal Library
     //Nothing here to do here -> See irsndconfig.h
 #elif defined (__xtensa__)                                              // ESP8266
@@ -221,9 +223,9 @@
 #endif
 
 #if IRSND_SUPPORT_NIKON_PROTOCOL == 1
-    typedef uint16_t    IRSND_PAUSE_LEN;
+typedef uint16_t IRSND_PAUSE_LEN;
 #else
-    typedef uint8_t     IRSND_PAUSE_LEN;
+typedef uint8_t IRSND_PAUSE_LEN;
 #endif
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -486,7 +488,7 @@
 #define IRSND_ACP24_0_PAUSE_LEN                     (uint8_t)(F_INTERRUPTS * ACP24_0_PAUSE_TIME + 0.5)
 #define IRSND_ACP24_FRAME_REPEAT_PAUSE_LEN          (uint16_t)(F_INTERRUPTS * ACP24_FRAME_REPEAT_PAUSE_TIME + 0.5)                // use uint16_t!
 
-#ifdef PIC_C18                                  // PIC C18
+#if defined(PIC_C18)                                  // PIC C18
 #  define IRSND_FREQ_TYPE                       uint8_t
 #  define IRSND_FREQ_30_KHZ                     (IRSND_FREQ_TYPE) ((F_CPU / 30000  / 2 / Pre_Scaler / PIC_Scaler) - 1)
 #  define IRSND_FREQ_32_KHZ                     (IRSND_FREQ_TYPE) ((F_CPU / 32000  / 2 / Pre_Scaler / PIC_Scaler) - 1)
@@ -496,6 +498,15 @@
 #  define IRSND_FREQ_56_KHZ                     (IRSND_FREQ_TYPE) ((F_CPU / 56000  / 2 / Pre_Scaler / PIC_Scaler) - 1)
 #  define IRSND_FREQ_455_KHZ                    (IRSND_FREQ_TYPE) ((F_CPU / 455000 / 2 / Pre_Scaler / PIC_Scaler) - 1)
 #elif defined (ARM_STM32)                       // STM32
+#  define IRSND_FREQ_TYPE                       uint32_t
+#  define IRSND_FREQ_30_KHZ                     (IRSND_FREQ_TYPE) (30000)
+#  define IRSND_FREQ_32_KHZ                     (IRSND_FREQ_TYPE) (32000)
+#  define IRSND_FREQ_36_KHZ                     (IRSND_FREQ_TYPE) (36000)
+#  define IRSND_FREQ_38_KHZ                     (IRSND_FREQ_TYPE) (38000)
+#  define IRSND_FREQ_40_KHZ                     (IRSND_FREQ_TYPE) (40000)
+#  define IRSND_FREQ_56_KHZ                     (IRSND_FREQ_TYPE) (56000)
+#  define IRSND_FREQ_455_KHZ                    (IRSND_FREQ_TYPE) (455000)
+#elif defined (ARM_STM32_OPENCM3)               // STM32_OPENCM3
 #  define IRSND_FREQ_TYPE                       uint32_t
 #  define IRSND_FREQ_30_KHZ                     (IRSND_FREQ_TYPE) (30000)
 #  define IRSND_FREQ_32_KHZ                     (IRSND_FREQ_TYPE) (32000)
@@ -547,14 +558,16 @@
 #  define IRSND_FREQ_455_KHZ                    (IRSND_FREQ_TYPE) ((F_CPU / 455000 / AVR_PRESCALER / 2) - 1)
 #endif
 
+// @formatter:off
 // Used for Arduino by IRTimer.hpp
 volatile uint8_t                                irsnd_busy = 0;
 volatile uint8_t                                irsnd_is_on = FALSE;
 
 static volatile uint8_t                         irsnd_protocol = 0;
-static volatile uint8_t                         irsnd_buffer[11] = {0};
+static volatile uint8_t                         irsnd_buffer[11] = { 0 };
 static volatile uint8_t                         irsnd_repeat = 0;
 static volatile uint8_t                         irsnd_suppress_trailer = 0;
+// @formatter:on
 
 #if defined(ARDUINO)
 #include "irsndArduinoExt.hpp" // must be after the declarations of irsnd_busy etc.
@@ -573,7 +586,7 @@ irsnd_on (void)
 {
     if (! irsnd_is_on)
     {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #  if defined(PIC_C18)                                  // PIC C18
         PWMon();
         // IRSND_PIN = 0; // output mode -> enable PWM outout pin (0=PWM on, 1=PWM off)
@@ -583,7 +596,13 @@ irsnd_on (void)
         TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);      // enable OC-output (is being disabled in TIM_SelectOCxM())
         TIM_Cmd(IRSND_TIMER, ENABLE);                   // enable counter
 
+        #  elif defined (ARM_STM32_OPENCM3)                     // STM32_OPENCM3
+        TIM_EGR(IRSND_TIMER) = TIM_EGR_UG;              // Generate an update event to reload the Prescaler and the Repetition counter values immediately
+        timer_enable_oc_output(IRSND_TIMER, IRSND_TIMER_CHANNEL);      // enable OC-output
+        timer_enable_counter(IRSND_TIMER);              // enable counter
+
 #  elif defined (ARM_STM32_HAL)                         // STM32 with Hal Library
+        IRSND_TIMER->EGR = TIM_EGR_UG;                  // Generate an update event to reload the Prescaler and the Repetition counter values immediately
         HAL_TIM_PWM_Start(&IRSND_TIMER_HANDLER, IRSND_TIMER_CHANNEL_NUMBER);
 
 #  elif defined (TEENSY_ARM_CORTEX_M4)                  // TEENSY
@@ -650,7 +669,7 @@ irsnd_off (void)
 {
     if (irsnd_is_on)
     {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 
 #  if defined(PIC_C18)                                                                  // PIC C18
         PWMoff();
@@ -661,6 +680,10 @@ irsnd_off (void)
         TIM_SelectOCxM(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_ForcedAction_InActive);    // force output inactive
         TIM_CCxCmd(IRSND_TIMER, IRSND_TIMER_CHANNEL, TIM_CCx_Enable);                   // enable OC-output (is being disabled in TIM_SelectOCxM())
         TIM_SetCounter(IRSND_TIMER, 0);                                                 // reset counter value
+
+#  elif defined (ARM_STM32_OPENCM3)                                                     // STM32_OPENCM3
+        timer_disable_oc_output(IRSND_TIMER, IRSND_TIMER_CHANNEL);                      // disable OC-output
+        timer_disable_counter(IRSND_TIMER);                                             // disable counter
 
 #  elif defined (ARM_STM32_HAL)                                                         // STM32
         HAL_TIM_PWM_Stop(&IRSND_TIMER_HANDLER, IRSND_TIMER_CHANNEL_NUMBER);
@@ -733,7 +756,7 @@ extern void pwm_init(uint16_t freq);
 static void
 irsnd_set_freq (IRSND_FREQ_TYPE freq)
 {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #  if defined(PIC_C18)                                                                      // PIC C18 or XC8
 #    if defined(__12F1840)                                                                  // XC8
         TRISA2=0;
@@ -788,6 +811,39 @@ irsnd_set_freq (IRSND_FREQ_TYPE freq)
         TIM_SetAutoreload(IRSND_TIMER, freq - 1);
         /* Set duty cycle */
         TIM_SetCompare1(IRSND_TIMER, (freq + 1) / 2);
+
+#  elif defined (ARM_STM32_OPENCM3)                                                         // ARM_STM32_OPENCM3
+        static uint32_t      TimeBaseFreq = 0;
+
+        if (TimeBaseFreq == 0)
+        {
+#    if ((IRSND_TIMER_NUMBER >= 2) && (IRSND_TIMER_NUMBER <= 5)) || ((IRSND_TIMER_NUMBER >= 12) && (IRSND_TIMER_NUMBER <= 14))
+            if (rcc_apb1_frequency == rcc_ahb_frequency)
+            {
+               TimeBaseFreq = rcc_apb1_frequency;
+            }
+            else
+            {
+               TimeBaseFreq = rcc_apb1_frequency * 2;
+            }
+#    else
+            if (rcc_apb2_frequency == rcc_ahb_frequency)
+            {
+               TimeBaseFreq = rcc_apb2_frequency;
+            }
+            else
+            {
+               TimeBaseFreq = rcc_apb2_frequency * 2;
+            }
+#    endif
+        }
+
+        freq = TimeBaseFreq/freq;
+
+        /* Set frequency */
+        timer_set_period(IRSND_TIMER, freq - 1);
+        /* Set duty cycle */
+        timer_set_oc_value(IRSND_TIMER, TIM_OC1, (freq + 1) / 2);
 
 #  elif defined (ARM_STM32_HAL)                                                            // STM32 with Hal Library
 
@@ -868,7 +924,7 @@ irsnd_set_freq (IRSND_FREQ_TYPE freq)
 void
 irsnd_init (void)
 {
-#ifndef ANALYZE
+#if !defined(ANALYZE)
 #  if defined(PIC_C18)                                                      // PIC C18 or XC8 compiler
 #    if ! defined(__12F1840)                                                // only C18:
         OpenTimer;
@@ -941,6 +997,51 @@ irsnd_init (void)
         /* Preload configuration */
         TIM_ARRPreloadConfig(IRSND_TIMER, ENABLE);
         TIM_OC1PreloadConfig(IRSND_TIMER, TIM_OCPreload_Enable);
+
+        irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // set default frequency
+
+#  elif defined (ARM_STM32_OPENCM3)                                         // ARM_STM32_OPENCM3
+
+       /* GPIOx clock enable */
+#    if defined (STM32L1) || defined (STM32F1) || defined (STM32F3) || defined (STM32F4)
+        rcc_periph_clock_enable(IRSND_PORT_RCC);
+#    endif
+
+        /* GPIO Configuration */
+#    if defined (STM32L) || defined (STM32F4)
+        gpio_mode_setup(IRSND_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, IRSND_BIT);
+        gpio_set_output_options(IRSND_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, IRSND_BIT);
+        gpio_set_af(IRSND_PORT, IRSND_GPIO_AF, (uint8_t)IRSND_BIT_NUMBER);
+#    elif defined (STM32F1)
+        gpio_set_mode(IRSND_PORT, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, IRSND_BIT);
+#    elif defined (STM32F3)
+        gpio_mode_setup(IRSND_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, IRSND_BIT);
+        gpio_set_output_options(IRSND_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, IRSND_BIT);
+        //gpio_set_af(IRSND_PORT, IRSND_GPIO_AF, (uint8_t)IRSND_BIT_NUMBER);
+
+#    endif
+
+        /* TIMx clock enable */
+#    if ((IRSND_TIMER_NUMBER >= 2) && (IRSND_TIMER_NUMBER <= 5)) || ((IRSND_TIMER_NUMBER >= 12) && (IRSND_TIMER_NUMBER <= 14))
+        rcc_periph_clock_enable(IRSND_TIMER_RCC);
+#    else
+        rcc_periph_clock_enable(IRSND_TIMER_RCC);
+#    endif
+
+        /* Time base configuration */
+        timer_set_mode(IRSND_TIMER, 0, TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+                timer_set_period(IRSND_TIMER, -1);     // set dummy value (don't set to 0), will be initialized later
+                timer_set_prescaler(IRSND_TIMER, 0);
+
+        /* PWM1 Mode configuration */
+        timer_set_oc_mode(IRSND_TIMER, TIM_OC1, TIM_OCM_PWM1);
+        timer_enable_oc_output(IRSND_TIMER, TIM_OC1);
+        timer_set_oc_value(IRSND_TIMER, TIM_OC1, 0);         // will be initialized later
+        timer_set_oc_polarity_high(IRSND_TIMER, TIM_OC1);
+
+        /* Preload configuration */
+        timer_enable_preload(IRSND_TIMER);
+        timer_enable_oc_preload(IRSND_TIMER, TIM_OC1);
 
         irsnd_set_freq (IRSND_FREQ_36_KHZ);                                         // set default frequency
 
@@ -1025,17 +1126,16 @@ bool
 #else
 uint8_t
 #endif
-irsnd_is_busy (void)
+irsnd_is_busy(void)
 {
     return irsnd_busy;
 }
 
-static uint16_t
-bitsrevervse (uint16_t x, uint8_t len)
+static uint16_t bitsrevervse(uint16_t x, uint8_t len)
 {
-    uint16_t    xx = 0;
+    uint16_t xx = 0;
 
-    while(len)
+    while (len)
     {
         xx <<= 1;
         if (x & 1)
@@ -1048,22 +1148,23 @@ bitsrevervse (uint16_t x, uint8_t len)
     return xx;
 }
 
-
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
 static uint8_t  sircs_additional_bitlen;
 #endif // IRSND_SUPPORT_SIRCS_PROTOCOL == 1
 
-/*
- * @param  do_wait - wait for last command to have ended sending its trailing space before start of new sending.
+/**
+ * @param  do_wait - true: Wait for last command to have ended sending its trailing space before start of new sending.
  *                   For Arduino: Additionally wait for sent command to have ended (including trailing gap).
- * @return false if protocol was not found or do_wait was false and sending (of former frame) is still in progress.
+ *                   false: Return directly and do sending in background.
+ *                   Keep in mind not to send next frame in background before this frame and its trailing space has ended!
+ * @return false if protocol was not found or do_wait was false and sending (of former frame and its trailing space) is still in progress.
  */
 #  ifdef __cplusplus
 bool
 #else
 uint8_t
 #endif
-irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
+irsnd_send_data(IRMP_DATA *irmp_data_p, uint8_t do_wait)
 {
 #if IRSND_SUPPORT_RECS80_PROTOCOL == 1
     static uint8_t  toggle_bit_recs80;
@@ -1080,8 +1181,8 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 #if IRSND_SUPPORT_THOMSON_PROTOCOL == 1
     static uint8_t  toggle_bit_thomson;
 #endif
-    uint16_t        address;
-    uint16_t        command;
+    uint16_t address;
+    uint16_t command;
     // to avoid [-Wunused-variable] compiler warnings, e.g. if only NUBERT is activated.
     (void) address;
     (void) command;
@@ -1099,9 +1200,11 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
         return (FALSE);
     }
 
-    irsnd_protocol  = irmp_data_p->protocol;
-    irsnd_repeat    = irmp_data_p->flags & IRSND_REPETITION_MASK;
+    irsnd_protocol = irmp_data_p->protocol;
+    irsnd_repeat = irmp_data_p->flags & IRSND_REPETITION_MASK;
+#if !defined(ARDUINO) // never send a trailing space for Arduino
     irsnd_suppress_trailer  = (irmp_data_p->flags & IRSND_SUPPRESS_TRAILER) ? TRUE : FALSE;
+#endif
 
     switch (irsnd_protocol)
     {
@@ -1739,19 +1842,21 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
             break;
         }
 #endif
-
+// @formatter:off
         default:
         {
             return (FALSE); // Error here: we called irsnd_send_data with a non enabled protocol!
             break;
         }
-    }
-
+// @formatter:on
+}
 #if defined(ARDUINO)
     storeIRTimer(); // store current timer state to enable alternately send and receive with the same timer
     initIRTimerForSend(); // Setup timer and interrupts for sending
-    if (do_wait) {
-        while (irsnd_busy) {
+    if (do_wait)
+    {
+        while (irsnd_busy)
+        {
             // Wait for frame and leading space to be sent;
         }
     }
@@ -1762,8 +1867,7 @@ irsnd_send_data (IRMP_DATA * irmp_data_p, uint8_t do_wait)
 #endif
 }
 
-void
-irsnd_stop (void)
+void irsnd_stop(void)
 {
     irsnd_repeat = 0;
 }
@@ -1771,6 +1875,7 @@ irsnd_stop (void)
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  *  ISR routine
  *  @details  ISR routine, called from 10000 to 20000, typically 15000 times per second
+ *  If new frame starts, check for autorepeat gap, then check for trailing space gap, then initialize frame.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 #  ifdef __cplusplus
@@ -1778,10 +1883,13 @@ bool
 #else
 uint8_t
 #endif
-irsnd_ISR (void)
+irsnd_ISR(void)
 {
-    static uint8_t              send_trailer                    = FALSE;    // if TRUE, we send the trailing space as defined in repeat_frame_pause_len
-    static uint8_t              current_bit                     = 0xFF;
+// @formatter:off
+#if !defined(ARDUINO) // never send a trailing space for Arduino
+    static uint8_t              send_last_trailer                    = FALSE;    // Only for last trailer after n repeats. if TRUE, we send the trailing space as defined in repeat_frame_pause_len
+#endif
+    static uint8_t              current_bit                     = 0xFF;     // 0xFF => send start bit
     static uint8_t              pulse_counter                   = 0;
     static IRSND_PAUSE_LEN      pause_counter                   = 0;
     static uint8_t              startbit_pulse_len              = 0;
@@ -1794,7 +1902,7 @@ irsnd_ISR (void)
     static uint8_t              new_frame                       = TRUE;
     static uint8_t              complete_data_len               = 0;
     static uint8_t              n_repeat_frames                 = 0;        // number of repetition frames
-    static uint8_t              n_auto_repetitions              = 0;        // number of auto_repetitions
+    static uint8_t              n_auto_repetitions              = 0;        // number of frames inclusive auto_repetition frames
     static uint8_t              auto_repetition_counter         = 0;        // auto_repetition counter
     static uint16_t             auto_repetition_pause_len       = 0;        // pause before auto_repetition, uint16_t!
     static uint16_t             auto_repetition_pause_counter   = 0;        // pause before auto_repetition, uint16_t!
@@ -1806,18 +1914,23 @@ irsnd_ISR (void)
 #endif
     static uint8_t              pulse_len = 0xFF;
     static IRSND_PAUSE_LEN      pause_len = 0xFF;
+// @formatter:on
 
     if (irsnd_busy)
     {
-        if (current_bit == 0xFF && new_frame)                                               // start of transmission...
+        if (current_bit == 0xFF && new_frame) // start of transmission...
         {
+//            check for autorepeat gap, then check for trailing space gap, then initialize frame.
             if (auto_repetition_counter > 0)
             {
-                auto_repetition_pause_counter++;
+                /*
+                 * Send gap between auto repetitions
+                 */
+                auto_repetition_pause_counter++; // count gap duration
 
                 if (auto_repetition_pause_counter >= auto_repetition_pause_len)
                 {
-                    auto_repetition_pause_counter = 0;
+                    auto_repetition_pause_counter = 0; // end of auto repetition space
 
 #if IRSND_SUPPORT_DENON_PROTOCOL == 1
                     if (irsnd_protocol == IRMP_DENON_PROTOCOL)                              // n'th denon frame
@@ -1865,24 +1978,31 @@ irsnd_ISR (void)
                 }
                 else
                 {
-#ifdef ANALYZE
+#if defined(ANALYZE)
                     if (irsnd_is_on)
                     {
-                        putchar ('0');
+                        putchar('0');
                     }
                     else
                     {
-                        putchar ('1');
+                        putchar('1');
                     }
 #endif
+                    // auto repetition pause here
                     return irsnd_busy;
                 }
             }
+
+            /*
+             * Send trailing space
+             */
             else if (packet_repeat_pause_counter < repeat_frame_pause_len)
             {
-                // wait for trailing space/gap before stop/repeating
-                packet_repeat_pause_counter++;
-#ifdef ANALYZE
+                /*
+                 * Send trailing space, especially for repeats
+                 */
+                packet_repeat_pause_counter++; // count trailing space duration
+#if defined(ANALYZE)
                 if (irsnd_is_on)
                 {
                     putchar ('0');
@@ -1894,16 +2014,20 @@ irsnd_ISR (void)
 #endif
                 return irsnd_busy;
             }
+
             else
             {
-                if (send_trailer)
+                // End of trailing space here => initialize new frame
+#if !defined(ARDUINO) // never send a trailing space for Arduino
+                if (send_last_trailer)
                 {
                     irsnd_busy = FALSE;     // Trailing space sent complete, stop sending
-                    send_trailer = FALSE;
+                    send_last_trailer = FALSE;
                     return irsnd_busy;
                 }
+#endif
 
-                n_repeat_frames             = irsnd_repeat;
+                n_repeat_frames = irsnd_repeat;
 
                 if (n_repeat_frames == IRSND_ENDLESS_REPETITION)
                 {
@@ -1911,9 +2035,12 @@ irsnd_ISR (void)
                 }
 
                 packet_repeat_pause_counter = 0;
-                pulse_counter               = 0;
-                pause_counter               = 0;
+                pulse_counter = 0;
+                pause_counter = 0;
 
+                /*
+                 * Initialize new frame for selected protocol
+                 */
                 switch (irsnd_protocol)
                 {
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1
@@ -2136,7 +2263,7 @@ irsnd_ISR (void)
                         pause_0_len                 = IRSND_KASEIKYO_0_PAUSE_LEN - 1;
                         has_stop_bit                = KASEIKYO_STOP_BIT;
                         complete_data_len           = KASEIKYO_COMPLETE_DATA_LEN;
-                        n_auto_repetitions          = (repeat_counter == 0) ? KASEIKYO_FRAMES : 1;          // 2 frames auto repetition if first frame
+                        n_auto_repetitions          = KASEIKYO_FRAMES;                                      // 1 frame
                         auto_repetition_pause_len   = IRSND_KASEIKYO_AUTO_REPETITION_PAUSE_LEN;             // 75 ms pause
                         repeat_frame_pause_len      = IRSND_KASEIKYO_FRAME_REPEAT_PAUSE_LEN;
                         irsnd_set_freq (IRSND_FREQ_38_KHZ);
@@ -2671,18 +2798,21 @@ irsnd_ISR (void)
                         break;
                     }
 #endif
+// @formatter:off
                     default:
                     {
                         irsnd_busy = FALSE; // no enabled protocol is selected -> stop immediately
                         break;
                     }
+// @formatter:on
+
                 }
             }
-        }
+        } // if (current_bit == 0xFF && new_frame)
 
         if (irsnd_busy)
         {
-            new_frame = FALSE;
+            new_frame = FALSE; // we just have sent start bit here
 
             switch (irsnd_protocol)
             {
@@ -2700,9 +2830,6 @@ irsnd_ISR (void)
 #if IRSND_SUPPORT_NEC42_PROTOCOL == 1
                 case IRMP_NEC42_PROTOCOL:
 #endif
-#if IRSND_SUPPORT_MELINERA_PROTOCOL == 1
-                case IRMP_MELINERA_PROTOCOL:
-#endif
 #if IRSND_SUPPORT_LGAIR_PROTOCOL == 1
                 case IRMP_LGAIR_PROTOCOL:
 #endif
@@ -2716,17 +2843,11 @@ irsnd_ISR (void)
 #if IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1
                 case IRMP_MATSUSHITA_PROTOCOL:
 #endif
-#if IRSND_SUPPORT_MATSUSHITA_PROTOCOL == 1
+#if IRSND_SUPPORT_TECHNICS_PROTOCOL == 1
                 case IRMP_TECHNICS_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_KASEIKYO_PROTOCOL == 1
                 case IRMP_KASEIKYO_PROTOCOL:
-#endif
-#if IRSND_SUPPORT_PANASONIC_PROTOCOL == 1
-                case IRMP_PANASONIC_PROTOCOL:
-#endif
-#if IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
-                case IRMP_MITSU_HEAVY_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_RECS80_PROTOCOL == 1
                 case IRMP_RECS80_PROTOCOL:
@@ -2734,14 +2855,8 @@ irsnd_ISR (void)
 #if IRSND_SUPPORT_RECS80EXT_PROTOCOL == 1
                 case IRMP_RECS80EXT_PROTOCOL:
 #endif
-#if IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1
-                case IRMP_TELEFUNKEN_PROTOCOL:
-#endif
 #if IRSND_SUPPORT_DENON_PROTOCOL == 1
                 case IRMP_DENON_PROTOCOL:
-#endif
-#if IRSND_SUPPORT_BOSE_PROTOCOL == 1
-                case IRMP_BOSE_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_NUBERT_PROTOCOL == 1
                 case IRMP_NUBERT_PROTOCOL:
@@ -2770,20 +2885,35 @@ irsnd_ISR (void)
 #if IRSND_SUPPORT_LEGO_PROTOCOL == 1
                 case IRMP_LEGO_PROTOCOL:
 #endif
-#if IRSND_SUPPORT_IRMP16_PROTOCOL == 1
-                case IRMP_IRMP16_PROTOCOL:
-#endif
 #if IRSND_SUPPORT_THOMSON_PROTOCOL == 1
                 case IRMP_THOMSON_PROTOCOL:
 #endif
 #if IRSND_SUPPORT_ROOMBA_PROTOCOL == 1
                 case IRMP_ROOMBA_PROTOCOL:
 #endif
+#if IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1
+                case IRMP_TELEFUNKEN_PROTOCOL:
+#endif
 #if IRSND_SUPPORT_PENTAX_PROTOCOL == 1
                 case IRMP_PENTAX_PROTOCOL:
 #endif
+#if IRSND_SUPPORT_PANASONIC_PROTOCOL == 1
+                case IRMP_PANASONIC_PROTOCOL:
+#endif
 #if IRSND_SUPPORT_ACP24_PROTOCOL == 1
                 case IRMP_ACP24_PROTOCOL:
+#endif
+#if IRSND_SUPPORT_BOSE_PROTOCOL == 1
+                case IRMP_BOSE_PROTOCOL:
+#endif
+#if IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
+                case IRMP_MITSU_HEAVY_PROTOCOL:
+#endif
+#if IRSND_SUPPORT_IRMP16_PROTOCOL == 1
+                case IRMP_IRMP16_PROTOCOL:
+#endif
+#if IRSND_SUPPORT_MELINERA_PROTOCOL == 1
+                case IRMP_MELINERA_PROTOCOL:
 #endif
 
 #if IRSND_SUPPORT_SIRCS_PROTOCOL == 1  || IRSND_SUPPORT_NEC_PROTOCOL == 1 || IRSND_SUPPORT_NEC16_PROTOCOL == 1 || IRSND_SUPPORT_NEC42_PROTOCOL == 1 || \
@@ -2792,8 +2922,8 @@ irsnd_ISR (void)
     IRSND_SUPPORT_NUBERT_PROTOCOL == 1 || IRSND_SUPPORT_FAN_PROTOCOL == 1 || IRSND_SUPPORT_SPEAKER_PROTOCOL == 1 || IRSND_SUPPORT_BANG_OLUFSEN_PROTOCOL == 1 || \
     IRSND_SUPPORT_FDC_PROTOCOL == 1 || IRSND_SUPPORT_RCCAR_PROTOCOL == 1 || IRSND_SUPPORT_JVC_PROTOCOL == 1 || IRSND_SUPPORT_NIKON_PROTOCOL == 1 || \
     IRSND_SUPPORT_LEGO_PROTOCOL == 1 || IRSND_SUPPORT_THOMSON_PROTOCOL == 1 || IRSND_SUPPORT_ROOMBA_PROTOCOL == 1 || IRSND_SUPPORT_TELEFUNKEN_PROTOCOL == 1 || \
-    IRSND_SUPPORT_PENTAX_PROTOCOL == 1 || IRSND_SUPPORT_ACP24_PROTOCOL == 1 || IRSND_SUPPORT_PANASONIC_PROTOCOL == 1 || IRSND_SUPPORT_BOSE_PROTOCOL == 1 || \
-    IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1 || IRSND_SUPPORT_IRMP16_PROTOCOL == 1 || IRSND_SUPPORT_MELINERA_PROTOCOL
+    IRSND_SUPPORT_PENTAX_PROTOCOL == 1 || IRSND_SUPPORT_PANASONIC_PROTOCOL == 1 || IRSND_SUPPORT_ACP24_PROTOCOL == 1 || IRSND_SUPPORT_BOSE_PROTOCOL == 1 || \
+    IRSND_SUPPORT_MITSU_HEAVY_PROTOCOL == 1 || IRSND_SUPPORT_IRMP16_PROTOCOL == 1 || IRSND_SUPPORT_MELINERA_PROTOCOL // guard for content of case
                 {
                     if (pulse_counter == 0)
                     {
@@ -2945,7 +3075,11 @@ irsnd_ISR (void)
 
                         if (current_bit >= complete_data_len + has_stop_bit)
                         {
+                            /*
+                             * End of current frame, prepare for a new frame
+                             */
                             current_bit = 0xFF;
+                            new_frame = TRUE;
                             auto_repetition_counter++;
 
                             if (auto_repetition_counter == n_auto_repetitions)
@@ -2953,7 +3087,6 @@ irsnd_ISR (void)
                                 irsnd_busy = FALSE;
                                 auto_repetition_counter = 0;
                             }
-                            new_frame = TRUE;
                         }
 
                         pulse_counter = 0;
@@ -2999,7 +3132,7 @@ irsnd_ISR (void)
     IRSND_SUPPORT_GRUNDIG_PROTOCOL  == 1 || \
     IRSND_SUPPORT_IR60_PROTOCOL     == 1 || \
     IRSND_SUPPORT_NOKIA_PROTOCOL    == 1 || \
-    IRSND_SUPPORT_A1TVBOX_PROTOCOL  == 1
+    IRSND_SUPPORT_A1TVBOX_PROTOCOL  == 1 // guard for content of case
                 {
                     if (pulse_counter == pulse_len && pause_counter == pause_len)
                     {
@@ -3179,13 +3312,15 @@ irsnd_ISR (void)
                     break;
                 }
 #endif // IRSND_SUPPORT_RC5_PROTOCOL == 1 || IRSND_SUPPORT_RC6_PROTOCOL == 1 || || IRSND_SUPPORT_RC6A_PROTOCOL == 1 || IRSND_SUPPORT_SIEMENS_PROTOCOL == 1 ||
-       // IRSND_SUPPORT_RUWIDO_PROTOCOL == 1 || IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRSND_SUPPORT_IR60_PROTOCOL == 1 || IRSND_SUPPORT_NOKIA_PROTOCOL == 1
-
+            // IRSND_SUPPORT_RUWIDO_PROTOCOL == 1 || IRSND_SUPPORT_GRUNDIG_PROTOCOL == 1 || IRSND_SUPPORT_IR60_PROTOCOL == 1 || IRSND_SUPPORT_NOKIA_PROTOCOL == 1
+// @formatter:off
                 default:
                 {
+                    // Just in case ...
                     irsnd_busy = FALSE;
                     break;
                 }
+// @formatter:on
             }
         }
 
@@ -3215,17 +3350,18 @@ irsnd_ISR (void)
                      * Switch to mode: send last trailing space
                      */
                     irsnd_busy = TRUE;
-                    send_trailer = TRUE;
+                    send_last_trailer = TRUE;
                 }
 #endif
                 // cleanup for ending transmission
                 n_repeat_frames = 0;
                 repeat_counter = 0;
+                repeat_frame_pause_len = 0;
             }
         }
     }
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
     if (irsnd_is_on)
     {
         putchar ('0');
@@ -3239,7 +3375,7 @@ irsnd_ISR (void)
     return irsnd_busy;
 }
 
-#ifdef ANALYZE
+#if defined(ANALYZE)
 
 // main function - for unix/linux + windows only!
 // AVR: see main.c!

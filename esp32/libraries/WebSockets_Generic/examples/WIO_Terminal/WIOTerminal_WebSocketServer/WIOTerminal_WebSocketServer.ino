@@ -21,7 +21,7 @@
 
 #warning Using SEEED_WIO_TERMINAL
 
-#define _WEBSOCKETS_LOGLEVEL_     3
+#define _WEBSOCKETS_LOGLEVEL_     2
 
 #define WEBSOCKETS_NETWORK_TYPE           NETWORK_RTL8720DN
 
@@ -40,7 +40,7 @@
 WiFiMulti         WiFiMulti;
 WebSocketsServer  webSocket = WebSocketsServer(81);
 
-void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
+void hexdump(const void *mem, const uint32_t& len, const uint8_t& cols = 16)
 {
   const uint8_t* src = (const uint8_t*) mem;
 
@@ -56,25 +56,30 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
     Serial.printf("%02X ", *src);
     src++;
   }
+
   Serial.printf("\n");
 }
 
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) 
+void webSocketEvent(const uint8_t& num, const WStype_t& type, uint8_t * payload, const size_t& length)
 {
-  switch (type) 
+  switch (type)
   {
     case WStype_DISCONNECTED:
       Serial.printf("[%u] Disconnected!\n", num);
-      break;
-    case WStype_CONNECTED:
-      {
-        IPAddress ip = webSocket.remoteIP(num);
-        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
 
-        // send message to client
-        webSocket.sendTXT(num, "Connected");
-      }
       break;
+
+    case WStype_CONNECTED:
+    {
+      IPAddress ip = webSocket.remoteIP(num);
+      Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+
+      // send message to client
+      webSocket.sendTXT(num, "Connected");
+    }
+
+    break;
+
     case WStype_TEXT:
       Serial.printf("[%u] get Text: %s\n", num, payload);
 
@@ -83,23 +88,28 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
       // send data to all connected clients
       // webSocket.broadcastTXT("message here");
+
       break;
+
     case WStype_BIN:
       Serial.printf("[%u] get binary length: %u\n", num, length);
       hexdump(payload, length);
 
       // send message to client
       webSocket.sendBIN(num, payload, length);
+
       break;
+
     case WStype_ERROR:
     case WStype_FRAGMENT_TEXT_START:
     case WStype_FRAGMENT_BIN_START:
     case WStype_FRAGMENT:
     case WStype_FRAGMENT_FIN:
+
       break;
 
     default:
-      break;  
+      break;
   }
 
 }
@@ -108,9 +118,11 @@ void setup()
 {
   // Serial.begin(921600);
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.println("\nStart WIOTerminal_WebSocketServer on " + String(BOARD_NAME));
+  Serial.print("\nStart WIOTerminal_WebSocketServer on ");
+  Serial.println(BOARD_NAME);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   WiFiMulti.addAP("SSID", "passpasspass");
@@ -121,7 +133,7 @@ void setup()
     Serial.print(".");
     delay(100);
   }
-  
+
   Serial.println();
 
   webSocket.begin();
@@ -132,7 +144,7 @@ void setup()
   Serial.println(WiFi.localIP());
 }
 
-void loop() 
+void loop()
 {
   webSocket.loop();
 }

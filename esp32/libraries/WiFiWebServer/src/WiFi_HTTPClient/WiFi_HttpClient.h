@@ -12,28 +12,27 @@
   @file       Esp8266WebServer.h
   @author     Ivan Grokhotkov
 
-  Version: 1.4.2
+  Version: 1.10.1
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      12/02/2020 Initial coding for SAMD21, Nano 33 IoT, etc running WiFiNINA
-  1.0.1   K Hoang      28/03/2020 Change to use new WiFiNINA_Generic library to support many more boards running WiFiNINA
-  1.0.2   K Hoang      28/03/2020 Add support to SAMD51 and SAM DUE boards
-  1.0.3   K Hoang      22/04/2020 Add support to nRF52 boards, such as AdaFruit Feather nRF52832, nRF52840 Express, BlueFruit Sense, 
-                                  Itsy-Bitsy nRF52840 Express, Metro nRF52840 Express, NINA_B30_ublox, etc. 
-  1.0.4   K Hoang      23/04/2020 Add support to MKR1000 boards using WiFi101 and custom WiFi libraries.
-  1.0.5   K Hoang      21/07/2020 Fix bug not closing client and releasing socket.    
-  1.0.6   K Hoang      24/07/2020 Add support to all STM32F/L/H/G/WB/MP1 and Seeeduino SAMD21/SAMD51 boards. Restructure examples 
-  1.0.7   K Hoang      25/09/2020 Restore support to PROGMEM-related commands, such as sendContent_P() and send_P()
-  1.1.0   K Hoang      17/11/2020 Add basic HTTP and WebSockets Client by merging ArduinoHttpClient
-  1.1.1   K Hoang      27/12/2020 Suppress all possible compiler warnings
-  1.2.0   K Hoang      26/05/2021 Add support to RP2040-based boards using Arduino-pico and Arduino mbed_rp2040 core
-  1.3.0   K Hoang      14/08/2021 Add support to Adafruit nRF52 core v0.22.0+
-  1.3.1   K Hoang      06/09/2021 Add support to ESP32/ESP8266 to use in some rare use-cases
-  1.4.0   K Hoang      07/09/2021 Add support to Portenta H7
-  1.4.1   K Hoang      04/10/2021 Change option for PIO `lib_compat_mode` from default `soft` to `strict`. Update Packages Patches
-  1.4.2   K Hoang      12/10/2021 Update `platform.ini` and `library.json`
- ***************************************************************************************************************************************/
+  ...
+  1.6.0   K Hoang      13/02/2022 Add support to new ESP32-S3 and ESP32_C3
+  1.6.1   K Hoang      13/02/2022 Fix v1.6.0 issue
+  1.6.2   K Hoang      22/02/2022 Add support to megaAVR using Arduino megaAVR core
+  1.6.3   K Hoang      02/03/2022 Fix decoding error bug
+  1.7.0   K Hoang      05/04/2022 Fix issue with Portenta_H7 core v2.7.2+
+  1.8.0   K Hoang      26/04/2022 Add WiFiMulti library support and examples
+  1.9.0   K Hoang      12/08/2022 Add support to RASPBERRY_PI_PICO_W using CYW4343 WiFi
+  1.9.1   K Hoang      13/08/2022 Add WiFiMulti support to RASPBERRY_PI_PICO_W using CYW4343 WiFi
+  1.9.2   K Hoang      16/08/2022 Workaround for RP2040W WiFi.status() bug
+  1.9.3   K Hoang      16/08/2022 Better workaround for RP2040W WiFi.status() bug using ping() to local gateway
+  1.9.4   K Hoang      06/09/2022 Restore support to ESP32 and ESP8266
+  1.9.5   K Hoang      10/09/2022 Restore support to Teensy, etc. Fix bug in examples
+  1.10.0  K Hoang      13/11/2022 Add new features, such as CORS. Update code and examples
+  1.10.1  K Hoang      24/11/2022 Using new WiFi101_Generic library to send larger data
+ *****************************************************************************************************************************/
 
 // Class to simplify HTTP fetching on Arduino
 // (c) Copyright MCQN Ltd. 2010-2012
@@ -41,11 +40,16 @@
 
 #pragma once
 
+#ifndef WiFi_HttpClient_H
+#define WiFi_HttpClient_H
+
 #include <Arduino.h>
 #include <IPAddress.h>
 #include "Client.h"
 
 #include "utility/WiFiDebug.h"
+
+////////////////////////////////////////
 
 static const int HTTP_SUCCESS = 0;
 
@@ -65,6 +69,8 @@ static const int HTTP_ERROR_TIMED_OUT = -3;
 // server?
 static const int HTTP_ERROR_INVALID_RESPONSE = -4;
 
+////////////////////////////////////////
+
 // Define some of the common methods and headers here
 // That lets other code reuse them without having to declare another copy
 // of them, so saves code space and RAM
@@ -80,6 +86,8 @@ static const int HTTP_ERROR_INVALID_RESPONSE = -4;
 #define HTTP_HEADER_USER_AGENT        "User-Agent"
 #define HTTP_HEADER_VALUE_CHUNKED     "chunked"
 
+////////////////////////////////////////
+
 // Number of milliseconds that we wait each time there isn't any data
 // available to be read (during status code and header processing)
 #define kHttpWaitForDataDelay     1000L
@@ -88,6 +96,8 @@ static const int HTTP_ERROR_INVALID_RESPONSE = -4;
 // data before returning HTTP_ERROR_TIMED_OUT (during status code and header
 // processing)
 #define kHttpResponseTimeout      30000L
+
+////////////////////////////////////////
 
 class WiFiHttpClient : public Client
 {
@@ -223,10 +233,14 @@ class WiFiHttpClient : public Client
     */
     void sendHeader(const char* aHeader);
 
+    ////////////////////////////////////////
+
     void sendHeader(const String& aHeader)
     {
       sendHeader(aHeader.c_str());
     }
+
+    ////////////////////////////////////////
 
     /** Send an additional header line.  This is an alternate form of
       sendHeader() which takes the header name and content as separate strings.
@@ -237,10 +251,14 @@ class WiFiHttpClient : public Client
     */
     void sendHeader(const char* aHeaderName, const char* aHeaderValue);
 
+    ////////////////////////////////////////
+
     void sendHeader(const String& aHeaderName, const String& aHeaderValue)
     {
       sendHeader(aHeaderName.c_str(), aHeaderValue.c_str());
     }
+
+    ////////////////////////////////////////
 
     /** Send an additional header line.  This is an alternate form of
       sendHeader() which takes the header name and content separately but where
@@ -252,10 +270,14 @@ class WiFiHttpClient : public Client
     */
     void sendHeader(const char* aHeaderName, const int aHeaderValue);
 
+    ////////////////////////////////////////
+
     void sendHeader(const String& aHeaderName, const int aHeaderValue)
     {
       sendHeader(aHeaderName.c_str(), aHeaderValue);
     }
+
+    ////////////////////////////////////////
 
     /** Send a basic authentication header.  This will encode the given username
       and password, and send them in suitable header line for doing Basic
@@ -265,10 +287,14 @@ class WiFiHttpClient : public Client
     */
     void sendBasicAuth(const char* aUser, const char* aPassword);
 
+    ////////////////////////////////////////
+
     void sendBasicAuth(const String& aUser, const String& aPassword)
     {
       sendBasicAuth(aUser.c_str(), aPassword.c_str());
     }
+
+    ////////////////////////////////////////
 
     /** Get the HTTP status code contained in the response.
       For example, 200 for successful request, 404 for file not found, etc.
@@ -322,16 +348,22 @@ class WiFiHttpClient : public Client
       @return true if we are now at the end of the body, else false
     */
     bool endOfBodyReached();
-    
-    virtual bool endOfStream() 
+
+    ////////////////////////////////////////
+
+    virtual bool endOfStream()
     {
       return endOfBodyReached();
     };
-    
-    virtual bool completed() 
+
+    ////////////////////////////////////////
+
+    virtual bool completed()
     {
       return endOfBodyReached();
     };
+
+    ////////////////////////////////////////
 
     /** Return the length of the body.
       Also skips response headers if they have not been read already
@@ -341,13 +373,17 @@ class WiFiHttpClient : public Client
     */
     int contentLength();
 
+    ////////////////////////////////////////
+
     /** Returns if the response body is chunked
       @return true if response body is chunked, false otherwise
     */
-    int isResponseChunked() 
+    int isResponseChunked()
     {
       return iIsChunked;
     }
+
+    ////////////////////////////////////////
 
     /** Return the response body as a String
       Also skips response headers if they have not been read already
@@ -364,80 +400,107 @@ class WiFiHttpClient : public Client
     */
     void noDefaultRequestHeaders();
 
+    ////////////////////////////////////////
+
     // Inherited from Print
     // Note: 1st call to these indicates the user is sending the body, so if need
     // Note: be we should finish the header first
-    virtual size_t write(uint8_t aByte) 
+    virtual size_t write(uint8_t aByte)
     {
-      if (iState < eRequestSent) 
+      if (iState < eRequestSent)
       {
         finishHeaders();
       };
-      
+
       return iClient-> write(aByte);
     };
-    
-    virtual size_t write(const uint8_t *aBuffer, size_t aSize) 
+
+    ////////////////////////////////////////
+
+    virtual size_t write(const uint8_t *aBuffer, size_t aSize)
     {
-      if (iState < eRequestSent) 
+      if (iState < eRequestSent)
       {
         finishHeaders();
       };
+
       return iClient->write(aBuffer, aSize);
     };
-    
+
+    ////////////////////////////////////////
+
     // Inherited from Stream
     virtual int available();
-    
+
     /** Read the next byte from the server.
       @return Byte read or -1 if there are no bytes available.
     */
     virtual int read();
     virtual int read(uint8_t *buf, size_t size);
-    
-    virtual int peek() 
+
+    ////////////////////////////////////////
+
+    virtual int peek()
     {
       return iClient->peek();
     };
-    
-    virtual void flush() 
+
+    ////////////////////////////////////////
+
+    virtual void flush()
     {
       iClient->flush();
     };
 
+    ////////////////////////////////////////
+
     // Inherited from Client
-    virtual int connect(IPAddress ip, uint16_t port) 
+    virtual int connect(IPAddress ip, uint16_t port)
     {
       return iClient->connect(ip, port);
     };
-    
-    virtual int connect(const char *host, uint16_t port) 
+
+    ////////////////////////////////////////
+
+    virtual int connect(const char *host, uint16_t port)
     {
       return iClient->connect(host, port);
     };
-    
+
+    ////////////////////////////////////////
+
     virtual void stop();
-    
-    virtual uint8_t connected() 
+
+    ////////////////////////////////////////
+
+    virtual uint8_t connected()
     {
       return iClient->connected();
     };
-    
-    virtual operator bool() 
+
+    ////////////////////////////////////////
+
+    virtual operator bool()
     {
       return bool(iClient);
     };
-    
-    virtual uint32_t httpResponseTimeout() 
+
+    ////////////////////////////////////////
+
+    virtual uint32_t httpResponseTimeout()
     {
       return iHttpResponseTimeout;
     };
-    
-    virtual void setHttpResponseTimeout(uint32_t timeout) 
+
+    ////////////////////////////////////////
+
+    virtual void setHttpResponseTimeout(uint32_t timeout)
     {
       iHttpResponseTimeout = timeout;
     };
-    
+
+    ////////////////////////////////////////
+
   protected:
     /** Reset internal state data back to the "just initialised" state
     */
@@ -458,10 +521,12 @@ class WiFiHttpClient : public Client
     /** Reading any pending data from the client (used in connection keep alive mode)
     */
     void flushClientRx();
-   
+
     static const char* kContentLengthPrefix;
     static const char* kTransferEncodingChunked;
-    
+
+    ////////////////////////////////////////
+
     typedef enum
     {
       eIdle,
@@ -476,6 +541,8 @@ class WiFiHttpClient : public Client
       eReadingChunkLength,
       eReadingBodyChunk
     } tHttpState;
+
+    ////////////////////////////////////////
 
     // Client we're using
     Client* iClient = nullptr;
@@ -505,3 +572,5 @@ class WiFiHttpClient : public Client
     bool iSendDefaultRequestHeaders;
     String iHeaderLine;
 };
+
+#endif    // WiFi_HttpClient_H

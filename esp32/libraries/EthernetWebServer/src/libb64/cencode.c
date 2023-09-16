@@ -1,28 +1,18 @@
 /****************************************************************************************************************************
-   cencoder.c - c source to a base64 decoding algorithm implementation
+  cencoder.c - c source to a base64 decoding algorithm implementation
 
-   EthernetWebServer is a library for the Ethernet shields to run WebServer
+  EthernetWebServer is a library for the Ethernet shields to run WebServer
 
-   Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
-   Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
-   Licensed under MIT license
+  Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
+  Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
+  Licensed under MIT license
 
-   Original author:
-   @file       Esp8266WebServer.h
-   @author     Ivan Grokhotkov
-   
-   Version: 1.7.1
+  Original author:
+  @file       Esp8266WebServer.h
+  @author     Ivan Grokhotkov
+ *****************************************************************************************************************************/
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-    1.0.0   K Hoang      13/02/2020 Initial coding for Arduino Mega, Teensy, etc to support Ethernetx libraries
-    ...
-    1.6.0   K Hoang      04/09/2021 Add support to QNEthernet Library for Teensy 4.1
-    1.7.0   K Hoang      09/09/2021 Add support to Portenta H7 Ethernet
-    1.7.1   K Hoang      04/10/2021 Change option for PIO `lib_compat_mode` from default `soft` to `strict`. Update Packages Patches
- *************************************************************************************************************************************/
-
-#if !(ESP32 || ESP8266)
+#if !( defined(ESP32) || defined(ESP8266) )
 
 #include "cencode.h"
 
@@ -42,7 +32,7 @@ char base64_encode_value(char value_in)
   if (value_in > 63)
     return '=';
 
-  return encoding[(int)value_in];
+  return encoding[(unsigned int)value_in];
 }
 
 int base64_encode_block(const char* plaintext_in, int length_in, char* code_out, base64_encodestate* state_in)
@@ -50,8 +40,8 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
   const char* plainchar = plaintext_in;
   const char* const plaintextend = plaintext_in + length_in;
   char* codechar = code_out;
-  char  result;
-  char  fragment;
+  char result;
+  char fragment;
 
   result = state_in->result;
 
@@ -60,7 +50,6 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
       while (1)
       {
       case step_A:
-
         if (plainchar == plaintextend)
         {
           state_in->result = result;
@@ -73,10 +62,9 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
         *codechar++ = base64_encode_value(result);
         result = (fragment & 0x003) << 4;
 
-        break;
+      // fall through
 
       case step_B:
-
         if (plainchar == plaintextend)
         {
           state_in->result = result;
@@ -89,10 +77,9 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
         *codechar++ = base64_encode_value(result);
         result = (fragment & 0x00f) << 2;
 
-        break;
+      // fall through
 
       case step_C:
-
         if (plainchar == plaintextend)
         {
           state_in->result = result;
@@ -114,7 +101,7 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
           state_in->stepcount = 0;
         }
 
-        break;
+        // fall through
       }
   }
 
@@ -133,10 +120,12 @@ int base64_encode_blockend(char* code_out, base64_encodestate* state_in)
       *codechar++ = '=';
       *codechar++ = '=';
       break;
+
     case step_C:
       *codechar++ = base64_encode_value(state_in->result);
       *codechar++ = '=';
       break;
+
     case step_A:
       break;
   }
@@ -152,7 +141,7 @@ int base64_encode_chars(const char* plaintext_in, int length_in, char* code_out)
   base64_init_encodestate(&_state);
   int len = base64_encode_block(plaintext_in, length_in, code_out, &_state);
 
-  return ( len + base64_encode_blockend((code_out + len), &_state) );
+  return len + base64_encode_blockend((code_out + len), &_state);
 }
 
 #endif

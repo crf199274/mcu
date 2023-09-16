@@ -2,7 +2,7 @@
 .\obj\output.o: APP\Output.h
 .\obj\output.o: .\Libraries\CMSIS\stm32f10x.h
 .\obj\output.o: .\Libraries\CMSIS\core_cm3.h
-.\obj\output.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\obj\output.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
 .\obj\output.o: .\Libraries\CMSIS\system_stm32f10x.h
 .\obj\output.o: .\User\stm32f10x_conf.h
 .\obj\output.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h
@@ -35,4 +35,4 @@
 .\obj\output.o: APP\MPU_6050.h
 .\obj\output.o: APP\timer_init.h
 .\obj\output.o: APP\usart.h
-.\obj\output.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+.\obj\output.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdio.h

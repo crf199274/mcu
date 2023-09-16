@@ -20,7 +20,7 @@
 
 #warning Using SEEED_WIO_TERMINAL
 
-#define _WEBSOCKETS_LOGLEVEL_     3
+#define _WEBSOCKETS_LOGLEVEL_     2
 
 #define WEBSOCKETS_NETWORK_TYPE           NETWORK_RTL8720DN
 
@@ -40,10 +40,10 @@ WiFiMulti         WiFiMulti;
 WebSocketsClient  webSocket;
 
 // Select the IP address according to your local network
-IPAddress clientIP(192, 168, 2, 225);
-IPAddress serverIP(192, 168, 2, 140);
+//IPAddress clientIP(192, 168, 2, 225);
+IPAddress serverIP(192, 168, 2, 30);
 
-void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
+void hexdump(const void *mem, const uint32_t& len, const uint8_t& cols = 16)
 {
   const uint8_t* src = (const uint8_t*) mem;
 
@@ -59,12 +59,13 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
     Serial.printf("%02X ", *src);
     src++;
   }
+
   Serial.printf("\n");
 }
 
 bool alreadyConnected = false;
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
+void webSocketEvent(const WStype_t& type, uint8_t * payload, const size_t& length)
 {
   switch (type)
   {
@@ -74,41 +75,51 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
         Serial.println("[WSc] Disconnected!");
         alreadyConnected = false;
       }
-      
-      break;
-    case WStype_CONNECTED:
-      {
-        alreadyConnected = true;
-        
-        Serial.print("[WSc] Connected to url: ");
-        Serial.println((char *) payload);
 
-        // send message to server when Connected
-        webSocket.sendTXT("Connected");
-      }
       break;
+
+    case WStype_CONNECTED:
+    {
+      alreadyConnected = true;
+
+      Serial.print("[WSc] Connected to url: ");
+      Serial.println((char *) payload);
+
+      // send message to server when Connected
+      webSocket.sendTXT("Connected");
+    }
+
+    break;
+
     case WStype_TEXT:
       Serial.printf("[WSc] get text: %s\n", payload);
 
       // send message to server
       webSocket.sendTXT("message here");
+
       break;
+
     case WStype_BIN:
       Serial.printf("[WSc] get binary length: %u\n", length);
       hexdump(payload, length);
 
       // send data to server
       webSocket.sendBIN(payload, length);
+
       break;
 
     case WStype_PING:
       // pong will be send automatically
       Serial.printf("[WSc] get ping\n");
+
       break;
+
     case WStype_PONG:
       // answer to a ping we send
       Serial.printf("[WSc] get pong\n");
-      break;      
+
+      break;
+
     case WStype_ERROR:
     case WStype_FRAGMENT_TEXT_START:
     case WStype_FRAGMENT_BIN_START:
@@ -125,9 +136,11 @@ void setup()
 {
   // Serial.begin(921600);
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.println("\nStart WIOTerminal_WebSocketClient on " + String(BOARD_NAME));
+  Serial.print("\nStart WIOTerminal_WebSocketClient on ");
+  Serial.println(BOARD_NAME);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   WiFiMulti.addAP("SSID", "passpasspass");
@@ -138,7 +151,7 @@ void setup()
     Serial.print(".");
     delay(100);
   }
-  
+
   Serial.println();
 
   // Client address
@@ -148,9 +161,9 @@ void setup()
   // server address, port and URL
   Serial.print("Connecting to WebSockets Server @ IP address: ");
   Serial.println(serverIP);
-  
+
   // server address, port and URL
-  webSocket.begin(serverIP, 81, "/");
+  webSocket.begin(serverIP, 8080, "/");
 
   // event handler
   webSocket.onEvent(webSocketEvent);

@@ -14,8 +14,8 @@ If you don't find anything, please [open a new issue](https://github.com/khoih-p
 
 Please ensure to specify the following:
 
-* Arduino IDE version (e.g. 1.8.16) or Platform.io version
-* Board Core Version (e.g. ESP32 core v2.0.0)
+* Arduino IDE version (e.g. 1.8.19) or Platform.io version
+* Board Core Version (e.g. ESP32 core v2.0.4)
 * Contextual information (e.g. what you were trying to achieve)
 * Simplest possible steps to reproduce
 * Anything that might be relevant in your opinion, such as:
@@ -26,14 +26,14 @@ Please ensure to specify the following:
 ### Example
 
 ```
-Arduino IDE version: 1.8.16
+Arduino IDE version: 1.8.19
 WT32_ETH01 board
-ESP32 core v2.0.0
+ESP32 core v2.0.4
 OS: Ubuntu 20.04 LTS
-Linux xy-Inspiron-3593 5.4.0-86-generic #97-Ubuntu SMP Fri Sep 17 19:19:40 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+Linux xy-Inspiron-3593 5.15.0-46-generic #49~20.04.1-Ubuntu SMP Thu Aug 4 19:15:44 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
 
 Context:
-I encountered a crash while trying to use the Timer Interrupt.
+I encountered a crash while trying to connect to network.
 
 Steps to reproduce:
 1. ...
@@ -50,3 +50,4 @@ There are usually some outstanding feature requests in the [existing issues list
 ### Sending Pull Requests
 
 Pull Requests with changes and fixes are also welcome!
+

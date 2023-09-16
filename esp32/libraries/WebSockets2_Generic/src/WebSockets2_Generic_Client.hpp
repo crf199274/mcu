@@ -9,32 +9,25 @@
   
   Built by Khoi Hoang https://github.com/khoih-prog/Websockets2_Generic
   Licensed under MIT license
-  Version: 1.8.1
+  
+  Version: 1.13.2
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      14/07/2020 Initial coding/porting to support nRF52 and SAMD21/SAMD51 boards. Add SINRIC/Alexa support
-  1.0.1   K Hoang      16/07/2020 Add support to Ethernet W5x00 to nRF52, SAMD21/SAMD51 and SAM DUE boards
-  1.0.2   K Hoang      18/07/2020 Add support to Ethernet ENC28J60 to nRF52, SAMD21/SAMD51 and SAM DUE boards
-  1.0.3   K Hoang      18/07/2020 Add support to STM32F boards using Ethernet W5x00, ENC28J60 and LAN8742A 
-  1.0.4   K Hoang      27/07/2020 Add support to STM32F/L/H/G/WB/MP1 and Seeeduino SAMD21/SAMD51 using 
-                                  Ethernet W5x00, ENC28J60, LAN8742A and WiFiNINA. Add examples and Packages' Patches.
-  1.0.5   K Hoang      29/07/2020 Sync with ArduinoWebsockets v0.4.18 to fix ESP8266 SSL bug.
-  1.0.6   K Hoang      06/08/2020 Add non-blocking WebSocketsServer feature and non-blocking examples.       
-  1.0.7   K Hoang      03/10/2020 Add support to Ethernet ENC28J60 using EthernetENC and UIPEthernet v2.0.9
-  1.1.0   K Hoang      08/12/2020 Add support to Teensy 4.1 using NativeEthernet  
-  1.2.0   K Hoang      16/04/2021 Add limited support (client only) to ESP32-S2 and LAN8720 for STM32F4/F7
-  1.2.1   K Hoang      16/04/2021 Add support to new ESP32-S2 boards. Restore Websocket Server function for ESP32-S2.
-  1.2.2   K Hoang      16/04/2021 Add support to ESP32-C3
-  1.2.3   K Hoang      02/05/2021 Update CA Certs and Fingerprint for EP32 and ESP8266 secured exampled.
-  1.2.4   K Hoang      05/05/2021 Add InSecure mode for ESP32 and examples for ESP32/ESP8266
-  1.3.0   K Hoang      20/05/2021 Add support to WiFi101
-  1.4.0   K Hoang      25/05/2021 Add support to RP2040-based boards using Arduino-pico and Arduino mbed_rp2040 core
-  1.5.0   K Hoang      08/07/2021 Add support to WT32_ETH01 (ESP32 + LAN8720) boards
-  1.6.0   K Hoang      06/09/2021 Add support to QNEthernet Library for Teensy 4.1
-  1.7.0   K Hoang      18/09/2021 Add support to Portenta_H7, using either WiFi or Vision-shield Ethernet
-  1.8.0   K Hoang      03/10/2021 Add support to RP2040, using WiFiNINA, such as Nano_RP2040_Connect
-  1.8.1   K Hoang      12/10/2021 Update `platform.ini` and `library.json`
+  ...
+  1.9.0   K Hoang      30/11/2021 Auto detect ESP32 core version. Fix bug in examples
+  1.9.1   K Hoang      17/12/2021 Fix QNEthernet TCP interface
+  1.10.0  K Hoang      18/12/2021 Supporting case-insensitive headers, according to RFC2616
+  1.10.1  K Hoang      26/02/2022 Reduce QNEthernet latency
+  1.10.2  K Hoang      14/03/2022 Fix bug when using QNEthernet staticIP. Add staticIP option to NativeEthernet
+  1.10.3  K Hoang      11/04/2022 Use Ethernet_Generic library as default. Support SPI1/SPI2 for RP2040
+  1.11.0  K Hoang      08/10/2022 Add support to ESP32 using W5x00 Ethernet
+  1.12.0  K Hoang      09/10/2022 Add support to ENC28J60 using EthernetENC or UIPEthernet for all supported boards
+  1.12.1  K Hoang      09/10/2022 Fix bug in examples
+  1.13.0  K Hoang      11/10/2022 Add support to RP2040W using CYW43439 WiFi
+  1.13.1  K Hoang      24/11/2022 Using new WiFi101_Generic library
+  1.13.2  K Hoang      06/12/2022 Fix compiler error using QNEthernet v0.17.0
  *****************************************************************************************************************************/
 
 #ifndef _WEBSOCKETS2_GENERIC_CLIENT_H
@@ -60,6 +53,8 @@ namespace websockets2_generic
     // Empty
   }
   
+  /////////////////////////////////////////////////////////
+  
   WebsocketsClient::WebsocketsClient(std::shared_ptr<network2_generic::TcpClient> client) :
     _client(client),
     _endpoint(client),
@@ -70,6 +65,8 @@ namespace websockets2_generic
   {
     // Empty
   }
+  
+  /////////////////////////////////////////////////////////
   
   WebsocketsClient::WebsocketsClient(const WebsocketsClient& other) :
     _client(other._client),
@@ -85,6 +82,8 @@ namespace websockets2_generic
     const_cast<WebsocketsClient&>(other)._connectionOpen = false;
   }
   
+  /////////////////////////////////////////////////////////
+  
   WebsocketsClient::WebsocketsClient(const WebsocketsClient&& other) :
     _client(other._client),
     _endpoint(other._endpoint),
@@ -98,6 +97,8 @@ namespace websockets2_generic
     const_cast<WebsocketsClient&>(other)._client = nullptr;
     const_cast<WebsocketsClient&>(other)._connectionOpen = false;
   }
+  
+  /////////////////////////////////////////////////////////
   
   WebsocketsClient& WebsocketsClient::operator=(const WebsocketsClient& other)
   {
@@ -114,8 +115,11 @@ namespace websockets2_generic
     // delete other's client
     const_cast<WebsocketsClient&>(other)._client = nullptr;
     const_cast<WebsocketsClient&>(other)._connectionOpen = false;
+    
     return *this;
   }
+  
+  /////////////////////////////////////////////////////////
   
   WebsocketsClient& WebsocketsClient::operator=(const WebsocketsClient&& other)
   {
@@ -132,8 +136,11 @@ namespace websockets2_generic
     // delete other's client
     const_cast<WebsocketsClient&>(other)._client = nullptr;
     const_cast<WebsocketsClient&>(other)._connectionOpen = false;
+    
     return *this;
   }
+  
+  /////////////////////////////////////////////////////////
   
   // KH
   
@@ -148,18 +155,22 @@ namespace websockets2_generic
     }
   }
   
+  /////////////////////////////////////////////////////////
+  
   WSString WebsocketsClient::getAuthorization(void)
   {
     return base64Authorization;
   }
   
-  //////
+  /////////////////////////////////////////////////////////
   
   struct HandshakeRequestResult
   {
     WSString requestStr;
     WSString expectedAcceptKey;
   };
+  
+  /////////////////////////////////////////////////////////
   
   bool shouldAddDefaultHeader(const std::string& keyWord, const std::vector<std::pair<WSString, WSString>>& customHeaders)
   {
@@ -174,53 +185,56 @@ namespace websockets2_generic
     return true;
   }
   
-  HandshakeRequestResult generateHandshake(const WSString& host, const WSString& uri,
-      const std::vector<std::pair<WSString, WSString>>& customHeaders) {
+  /////////////////////////////////////////////////////////
   
+  // KH 
+  HandshakeRequestResult generateHandshake(const WSString& host, const WSString& uri,
+      const std::vector<std::pair<WSString, WSString>>& customHeaders) 
+  {
     WSString key = crypto2_generic::base64Encode(crypto2_generic::randomBytes(16));
   
     WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
-    handshake += "Host: " + host + "\r\n";
-    handshake += "Sec-WebSocket-Key: " + key + "\r\n";
+    handshake += HEADER_HOST + host + HEADER_HOST_RN;
+    handshake += HEADER_WS_KEY + key + HEADER_HOST_RN;
   
     for (const auto& header : customHeaders)
     {
-      handshake += header.first + ": " + header.second + "\r\n";
+      handshake += header.first + ": " + header.second + HEADER_HOST_RN;
     }
   
-    if (shouldAddDefaultHeader("Upgrade", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_UPGRADE_NORMAL, customHeaders))
     {
-      handshake += "Upgrade: websocket\r\n";
+      handshake += HEADER_UPGRADE_WS;
     }
   
-    if (shouldAddDefaultHeader("Connection", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_CONNECTION_NORMAL, customHeaders))
     {
-      handshake += "Connection: Upgrade\r\n";
+      handshake += HEADER_CONNECTION_UPGRADE;
     }
   
-    if (shouldAddDefaultHeader("Sec-WebSocket-Version", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_WS_VERSION_NORMAL, customHeaders))
     {
-      handshake += "Sec-WebSocket-Version: 13\r\n";
+      handshake += HEADER_WS_VERSION_13;
     }
   
-    if (shouldAddDefaultHeader("User-Agent", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_USER_AGENT_NORMAL, customHeaders))
     {
-      handshake += "User-Agent: TinyWebsockets Client\r\n";
+      handshake += HEADER_USER_AGENT_VALUE;
     }
   
-    if (shouldAddDefaultHeader("Origin", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_ORIGIN_NORMAL, customHeaders))
     {
-      handshake += "Origin: https://github.com/khoih-prog/Websockets2_Generic\r\n";
+      handshake += HEADER_ORIGIN_VALUE;
     }
   
-    handshake += "\r\n";
+    handshake += HEADER_HOST_RN;
   
     HandshakeRequestResult result;
     result.requestStr = handshake;
     
 
     // KH
-    LOGWARN1("WebsocketsClient::generateHandshake: handshake =", internals2_generic::fromInternalString(handshake));
+    LOGINFO1("WebsocketsClient::generateHandshake: handshake =", internals2_generic::fromInternalString(handshake));
     ////// 
 
   
@@ -232,66 +246,66 @@ namespace websockets2_generic
     return result;
   }
   
-  // KH
+  /////////////////////////////////////////////////////////
   
   HandshakeRequestResult generateHandshake(const WSString& host, const WSString& uri,
-      const std::vector<std::pair<WSString, WSString>>& customHeaders, const WSString& base64Authorization) {
-  
+      const std::vector<std::pair<WSString, WSString>>& customHeaders, const WSString& base64Authorization) 
+  {  
     WSString key = crypto2_generic::base64Encode(crypto2_generic::randomBytes(16));
   
     WSString handshake = "GET " + uri + " HTTP/1.1\r\n";
-    handshake += "Host: " + host + "\r\n";
-    handshake += "Sec-WebSocket-Key: " + key + "\r\n";
+    handshake += HEADER_HOST + host + HEADER_HOST_RN;
+    handshake += HEADER_WS_KEY + key + HEADER_HOST_RN;
   
     for (const auto& header : customHeaders)
     {
-      handshake += header.first + ": " + header.second + "\r\n";
+      handshake += header.first + ": " + header.second + HEADER_HOST_RN;
     }
   
-    if (shouldAddDefaultHeader("Upgrade", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_UPGRADE_NORMAL, customHeaders))
     {
-      handshake += "Upgrade: websocket\r\n";
+      handshake += HEADER_UPGRADE_WS;
     }
   
-    if (shouldAddDefaultHeader("Connection", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_CONNECTION_NORMAL, customHeaders))
     {
-      handshake += "Connection: Upgrade\r\n";
+      handshake += HEADER_CONNECTION_UPGRADE;
     }
   
-    if (shouldAddDefaultHeader("Sec-WebSocket-Version", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_WS_VERSION_NORMAL, customHeaders))
     {
-      handshake += "Sec-WebSocket-Version: 13\r\n";
+      handshake += HEADER_WS_VERSION_13;
     }
   
-    if (shouldAddDefaultHeader("User-Agent", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_USER_AGENT_NORMAL, customHeaders))
     {
-      handshake += "User-Agent: TinyWebsockets Client\r\n";
+      handshake += HEADER_USER_AGENT_VALUE;
     }
   
     // KH
     //if (WebsocketsClient::base64Authorization.size() > 0)
     {
-      handshake += "Authorization: Basic ";
-      handshake += base64Authorization + "\r\n";
+      handshake += HEADER_AUTH_BASIC;  
+      handshake += base64Authorization + HEADER_HOST_RN;
       
       // KH
-      LOGWARN1("WebsocketsClient::generateHandshake: base64Authorization =", internals2_generic::fromInternalString(base64Authorization));           
+      LOGINFO1("WebsocketsClient::generateHandshake: base64Authorization =", internals2_generic::fromInternalString(base64Authorization));
       //////
     }
 
-    if (shouldAddDefaultHeader("Origin", customHeaders))
+    if (shouldAddDefaultHeader(HEADER_ORIGIN_NORMAL, customHeaders))
     {
-      handshake += "Origin: https://github.com/khoih-prog/Websockets2_Generic\r\n";
+      handshake += HEADER_ORIGIN_VALUE;
     }
     //////
   
-    handshake += "\r\n";
+    handshake += HEADER_HOST_RN;
   
     HandshakeRequestResult result;
     result.requestStr = handshake;
     
     // KH
-    LOGWARN1("WebsocketsClient::generateHandshake: handshake =", internals2_generic::fromInternalString(handshake));
+    LOGINFO1("WebsocketsClient::generateHandshake: handshake =", internals2_generic::fromInternalString(handshake));
     ////// 
   
   #ifndef _WS_CONFIG_SKIP_HANDSHAKE_ACCEPT_VALIDATION
@@ -301,19 +315,24 @@ namespace websockets2_generic
     // KH, Don't need return std::move(result);
     return result;
   }
-  //////
   
+  /////////////////////////////////////////////////////////
+
   bool isWhitespace(char ch)
   {
     return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
   }
   
+  /////////////////////////////////////////////////////////
+
   struct HandshakeResponseResult
   {
     bool isSuccess;
     WSString serverAccept;
   };
   
+  /////////////////////////////////////////////////////////
+
   bool isCaseInsensetiveEqual(const WSString lhs, const WSString rhs)
   {
     if (lhs.size() != rhs.size())
@@ -331,6 +350,8 @@ namespace websockets2_generic
     return true;
   }
   
+  /////////////////////////////////////////////////////////
+
   HandshakeResponseResult parseHandshakeResponse(std::vector<WSString> responseHeaders)
   {
     bool didUpgradeToWebsockets = false, isConnectionUpgraded = false;
@@ -344,19 +365,19 @@ namespace websockets2_generic
       WSString value = header.substr(colonIndex + 2); // +2 (ignore space and ':')
       
       // KH
-      LOGWARN1("WebsocketsClient::generateHandshake: key =", internals2_generic::fromInternalString(key));
-      LOGWARN1("WebsocketsClient::generateHandshake: value =", internals2_generic::fromInternalString(value));
+      LOGINFO1("WebsocketsClient::generateHandshake: key =", internals2_generic::fromInternalString(key));
+      LOGINFO1("WebsocketsClient::generateHandshake: value =", internals2_generic::fromInternalString(value));
       ////// 
   
-      if (isCaseInsensetiveEqual(key, "upgrade"))
+      if (isCaseInsensetiveEqual(key, HEADER_UPGRADE_LOWER_CASE))
       {
-        didUpgradeToWebsockets = isCaseInsensetiveEqual(value, "Websocket");
+        didUpgradeToWebsockets = isCaseInsensetiveEqual(value, HEADER_WEBSOCKET_LOWER_CASE);
       }
-      else if (isCaseInsensetiveEqual(key, "connection"))
+      else if (isCaseInsensetiveEqual(key, HEADER_CONNECTION_LOWER_CASE))
       {
-        isConnectionUpgraded = isCaseInsensetiveEqual(value, "upgrade");
+        isConnectionUpgraded = isCaseInsensetiveEqual(value, HEADER_UPGRADE_LOWER_CASE);
       }
-      else if (isCaseInsensetiveEqual(key, "Sec-WebSocket-Accept"))
+      else if (isCaseInsensetiveEqual(key, WS_ACCEPT_NORMAL))
       {
         serverAccept = value;
       }
@@ -369,6 +390,8 @@ namespace websockets2_generic
     return result;
   }
   
+  /////////////////////////////////////////////////////////
+
   bool doestStartsWith(WSString str, WSString prefix)
   {
     if (str.size() < prefix.size())
@@ -388,13 +411,15 @@ namespace websockets2_generic
     }
     
     // KH
-    LOGINFO1("WebsocketsClient::doestStartsWith: str =", internals2_generic::fromInternalString(str));
-    LOGINFO1("WebsocketsClient::doestStartsWith: prefix =", internals2_generic::fromInternalString(prefix));
+    LOGDEBUG1("WebsocketsClient::doestStartsWith: str =", internals2_generic::fromInternalString(str));
+    LOGDEBUG1("WebsocketsClient::doestStartsWith: prefix =", internals2_generic::fromInternalString(prefix));
     ////// 
           
     return true;
   }
   
+  /////////////////////////////////////////////////////////
+
   // KH, New in v1.0.5 (sync with v0.4.18)
   void WebsocketsClient::upgradeToSecuredConnection()
   {
@@ -473,13 +498,16 @@ namespace websockets2_generic
     //////
   #endif //_WS_CONFIG_NO_SSL
   }
-  //////
+  
+  /////////////////////////////////////////////////////////
   
   void WebsocketsClient::addHeader(const WSInterfaceString key, const WSInterfaceString value)
   {
     _customHeaders.push_back({internals2_generic::fromInterfaceString(key), internals2_generic::fromInterfaceString(value)});
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::connect(WSInterfaceString _url)
   {
     WSString url = internals2_generic::fromInterfaceString(_url);
@@ -507,7 +535,7 @@ namespace websockets2_generic
       url = url.substr(6); //strlen("wss://") == 6
   
       // KH
-      LOGDEBUG("WebsocketsClient::connect: wss upgradeToSecuredConnection");
+      LOGINFO("WebsocketsClient::connect: wss upgradeToSecuredConnection");
       //////
       
       upgradeToSecuredConnection();
@@ -519,7 +547,7 @@ namespace websockets2_generic
       url = url.substr(8); //strlen("https://") == 8
       
       // KH
-      LOGDEBUG("WebsocketsClient::connect: https upgradeToSecuredConnection");
+      LOGINFO("WebsocketsClient::connect: https upgradeToSecuredConnection");
       //////
   
       upgradeToSecuredConnection();
@@ -566,6 +594,8 @@ namespace websockets2_generic
            );
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::connect(WSInterfaceString host, int port, WSInterfaceString path)
   {
     // KH
@@ -577,7 +607,7 @@ namespace websockets2_generic
     if (!this->_connectionOpen)
     {
       // KH
-      LOGDEBUG3("WebsocketsClient::connect: not _connectionOpen, host =", host, ", port =", port);
+      LOGINFO3("WebsocketsClient::connect: not _connectionOpen, host =", host, ", port =", port);
       //////
     
       return false;
@@ -589,7 +619,7 @@ namespace websockets2_generic
     auto handshake = generateHandshake(internals2_generic::fromInterfaceString(host), 
                         internals2_generic::fromInterfaceString(path), _customHeaders, base64Authorization);
                         
-    LOGINFO1("WebsocketsClient::connect: base64Authorization =", internals2_generic::fromInternalString(base64Authorization));             
+    LOGINFO1("WebsocketsClient::connect: base64Authorization =", internals2_generic::fromInternalString(base64Authorization));
     //////
     
     // KH
@@ -645,7 +675,7 @@ namespace websockets2_generic
         return false;
       }
   
-      if (line == "\r\n")
+      if (line == HEADER_HOST_RN)
         break;
   
       // remove /r/n from line end
@@ -683,11 +713,24 @@ namespace websockets2_generic
     return true;
   }
   
+  /////////////////////////////////////////////////////////
+  
+  bool WebsocketsClient::connectSecure(WSInterfaceString host, int port, WSInterfaceString path) 
+  {
+    upgradeToSecuredConnection();
+
+    return connect(host, port, path);
+  }
+  
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::onMessage(MessageCallback callback)
   {
     this->_messagesCallback = callback;
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::onMessage(PartialMessageCallback callback)
   {
     this->_messagesCallback = [callback](WebsocketsClient&, WebsocketsMessage msg)
@@ -696,11 +739,15 @@ namespace websockets2_generic
     };
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::onEvent(EventCallback callback)
   {
     this->_eventsCallback = callback;
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::onEvent(PartialEventCallback callback)
   {
     this->_eventsCallback = [callback](WebsocketsClient&, WebsocketsEvent event, WSInterfaceString data)
@@ -709,6 +756,8 @@ namespace websockets2_generic
     };
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::poll()
   {
     bool messageReceived = false;
@@ -760,7 +809,8 @@ namespace websockets2_generic
     else
       return {};  
   }
-  //////
+  
+  /////////////////////////////////////////////////////////
   
   WebsocketsMessage WebsocketsClient::readBlocking()
   {
@@ -778,23 +828,31 @@ namespace websockets2_generic
     return {};
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::send(const WSInterfaceString& data)
   {
     auto str = internals2_generic::fromInterfaceString(data);
     return this->send(str.c_str(), str.size());
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::send(const WSInterfaceString&& data)
   {
     auto str = internals2_generic::fromInterfaceString(data);
     return this->send(str.c_str(), str.size());
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::send(const char* data)
   {
     return this->send(data, strlen(data));
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::send(const char* data, const size_t len)
   {
     if (available())
@@ -822,15 +880,20 @@ namespace websockets2_generic
                );
       }
     }
+    
     return false;
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::sendBinary(WSInterfaceString data)
   {
     auto str = internals2_generic::fromInterfaceString(data);
     return this->sendBinary(str.c_str(), str.size());
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::sendBinary(const char* data, const size_t len)
   {
     if (available())
@@ -861,6 +924,8 @@ namespace websockets2_generic
     return false;
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::stream(const WSInterfaceString data)
   {
     if (available() && this->_sendMode == SendMode_Normal)
@@ -875,7 +940,8 @@ namespace websockets2_generic
     return false;
   }
   
-  
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::streamBinary(const WSInterfaceString data)
   {
     if (available() && this->_sendMode == SendMode_Normal)
@@ -890,6 +956,8 @@ namespace websockets2_generic
     return false;
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::end(const WSInterfaceString data)
   {
     if (available() && this->_sendMode == SendMode_Streaming)
@@ -904,14 +972,19 @@ namespace websockets2_generic
     return false;
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::setFragmentsPolicy(const FragmentsPolicy newPolicy)
   {
     _endpoint.setFragmentsPolicy(newPolicy);
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::available(const bool activeTest)
   {
-    if (activeTest)  {
+    if (activeTest)  
+    {
       _endpoint.ping("");
     }
   
@@ -924,9 +997,12 @@ namespace websockets2_generic
     }
   
     this->_connectionOpen = updatedConnectionOpen;
+    
     return this->_connectionOpen;
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::ping(const WSInterfaceString data)
   {
     if (available())
@@ -937,6 +1013,8 @@ namespace websockets2_generic
     return false;
   }
   
+  /////////////////////////////////////////////////////////
+
   bool WebsocketsClient::pong(const WSInterfaceString data)
   {
     if (available())
@@ -947,6 +1025,8 @@ namespace websockets2_generic
     return false;
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::close(const CloseReason reason)
   {
     if (available())
@@ -957,26 +1037,35 @@ namespace websockets2_generic
     }
   }
   
+  /////////////////////////////////////////////////////////
+
   CloseReason WebsocketsClient::getCloseReason() const
   {
     return _endpoint.getCloseReason();
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::_handlePing(const WebsocketsMessage message)
   {
     this->_eventsCallback(*this, WebsocketsEvent::GotPing, message.data());
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::_handlePong(const WebsocketsMessage message)
   {
     this->_eventsCallback(*this, WebsocketsEvent::GotPong, message.data());
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::_handleClose(const WebsocketsMessage message)
   {
     this->_eventsCallback(*this, WebsocketsEvent::ConnectionClosed, message.data());
   }
   
+  /////////////////////////////////////////////////////////
   
   #ifdef ESP8266
   void WebsocketsClient::setFingerprint(const char* fingerprint)
@@ -984,6 +1073,8 @@ namespace websockets2_generic
     this->_optional_ssl_fingerprint = fingerprint;
   }
   
+  /////////////////////////////////////////////////////////
+
   // KH, New in v1.0.5 (sync with v0.4.18)
   void WebsocketsClient::setInsecure() 
   {
@@ -995,29 +1086,38 @@ namespace websockets2_generic
     this->_optional_ssl_trust_anchors = nullptr;
     this->_optional_ssl_known_key = nullptr;
   }
+  
+  /////////////////////////////////////////////////////////
 
   void WebsocketsClient::setClientRSACert(const X509List *cert, const PrivateKey *sk) 
   {
     this->_optional_ssl_rsa_cert = cert;
     this->_optional_ssl_rsa_private_key = sk;
   }
+  
+  /////////////////////////////////////////////////////////
 
   void WebsocketsClient::setClientECCert(const X509List *cert, const PrivateKey *sk) 
   {
     this->_optional_ssl_ec_cert = cert;
     this->_optional_ssl_ec_private_key = sk;
   }
+  
+  /////////////////////////////////////////////////////////
 
   void WebsocketsClient::setTrustAnchors(const X509List *ta) 
   {
     this->_optional_ssl_trust_anchors = ta;
   }
+  
+  /////////////////////////////////////////////////////////
 
   void WebsocketsClient::setKnownKey(const PublicKey *pk) 
   {
     this->_optional_ssl_known_key = pk;
   }
-  //////
+  
+  /////////////////////////////////////////////////////////
   
   #elif defined(ESP32)
   void WebsocketsClient::setCACert(const char* ca_cert)
@@ -1025,16 +1125,22 @@ namespace websockets2_generic
     this->_optional_ssl_ca_cert = ca_cert;
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::setCertificate(const char* client_ca)
   {
     this->_optional_ssl_client_ca = client_ca;
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::setPrivateKey(const char* private_key)
   {
     this->_optional_ssl_private_key = private_key;
   }
   
+  /////////////////////////////////////////////////////////
+
   void WebsocketsClient::setInsecure()
   {
     this->_optional_ssl_ca_cert = nullptr;
@@ -1043,6 +1149,8 @@ namespace websockets2_generic
   }
   #endif
   
+  /////////////////////////////////////////////////////////
+
   WebsocketsClient::~WebsocketsClient()
   {
     if (available())
@@ -1050,6 +1158,9 @@ namespace websockets2_generic
       this->close(CloseReason_GoingAway);
     }
   }
+  
+  /////////////////////////////////////////////////////////
+
 }    //namespace websockets2_generic
 
 #endif    // _WEBSOCKETS2_GENERIC_CLIENT_H

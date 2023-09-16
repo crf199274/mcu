@@ -44,10 +44,15 @@
 
 // To eliminate FW warning when using not latest nina-fw version
 // To use whenever WiFi101-FirmwareUpdater-Plugin is not sync'ed with nina-fw version
-#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.5"
+#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.8"
 
 #include <SPI.h>
-#include <WiFiNINA_Generic.h>
+
+#if USING_WIFI101
+  #include <WiFi101_Generic.h>
+#else
+  #include <WiFiNINA_Generic.h>
+#endif
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;        // your network SSID (name)
@@ -57,7 +62,10 @@ int keyIndex = 0;                 // your network key Index number (needed only 
 
 int status = WL_IDLE_STATUS;
 
-WiFiServer server(23);
+#define TELNET_PORT             23
+
+// telnet defaults to port 23
+WiFiServer server(TELNET_PORT);
 
 boolean alreadyConnected = false; // whether or not the client was connected previously
 
@@ -65,20 +73,29 @@ void setup()
 {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
-  while (!Serial);
 
-  Serial.print(F("\nStart WiFiChatServer on ")); Serial.println(BOARD_NAME);
+  while (!Serial && millis() < 5000);
+
+  Serial.print(F("\nStart WiFiChatServer on "));
+  Serial.println(BOARD_NAME);
+
+// check for the WiFi module:
+#if USING_WIFI101
+  if (WiFi.status() == WL_NO_SHIELD)
+#else
   Serial.println(WIFININA_GENERIC_VERSION);
-
-  // check for the WiFi module:
+  
   if (WiFi.status() == WL_NO_MODULE)
+#endif
   {
     Serial.println(F("Communication with WiFi module failed!"));
+
     // don't continue
     while (true);
   }
 
   String fv = WiFi.firmwareVersion();
+
   if (fv < WIFI_FIRMWARE_LATEST_VERSION)
   {
     Serial.print(F("Your current firmware NINA FW v"));
@@ -122,7 +139,7 @@ void loop()
       alreadyConnected = true;
     }
 
-    if (client.available() > 0) 
+    if (client.available() > 0)
     {
       // read the bytes incoming from the client:
       char thisChar = client.read();

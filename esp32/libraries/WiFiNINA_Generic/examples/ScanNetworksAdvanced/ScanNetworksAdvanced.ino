@@ -44,29 +44,43 @@
 
 // To eliminate FW warning when using not latest nina-fw version
 // To use whenever WiFi101-FirmwareUpdater-Plugin is not sync'ed with nina-fw version
-#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.5"
+#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.8"
 
 #include <SPI.h>
-#include <WiFiNINA_Generic.h>
+
+#if USING_WIFI101
+  #include <WiFi101_Generic.h>
+#else
+  #include <WiFiNINA_Generic.h>
+#endif
 
 void setup()
 {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
-  while (!Serial);
 
-  Serial.print(F("\nStart ScanNetworksAdvanced on ")); Serial.println(BOARD_NAME);
+  while (!Serial && millis() < 5000);
+
+  Serial.print(F("\nStart ScanNetworksAdvanced on "));
+  Serial.println(BOARD_NAME);
+
+// check for the WiFi module:
+#if USING_WIFI101
+  if (WiFi.status() == WL_NO_SHIELD)
+#else
   Serial.println(WIFININA_GENERIC_VERSION);
-
-  // check for the WiFi module:
+  
   if (WiFi.status() == WL_NO_MODULE)
+#endif
   {
     Serial.println(F("Communication with WiFi module failed!"));
+
     // don't continue
     while (true);
   }
 
   String fv = WiFi.firmwareVersion();
+
   if (fv < WIFI_FIRMWARE_LATEST_VERSION)
   {
     Serial.print(F("Your current firmware NINA FW v"));
@@ -103,6 +117,7 @@ void listNetworks()
   if (numSsid == -1)
   {
     Serial.println(F("Couldn't get a WiFi connection"));
+
     while (true);
   }
 
@@ -129,6 +144,7 @@ void listNetworks()
     Serial.println(WiFi.SSID(thisNet));
     Serial.flush();
   }
+
   Serial.println();
 }
 
@@ -140,19 +156,26 @@ void printEncryptionType(int thisType)
     case ENC_TYPE_WEP:
       Serial.print(F("WEP"));
       break;
+
     case ENC_TYPE_TKIP:
       Serial.print(F("WPA"));
       break;
+
     case ENC_TYPE_CCMP:
       Serial.print(F("WPA2"));
       break;
+
     case ENC_TYPE_NONE:
       Serial.print(F("None"));
       break;
+
     case ENC_TYPE_AUTO:
       Serial.print(F("Auto"));
       break;
-    case ENC_TYPE_UNKNOWN:
+
+#if !USING_WIFI101
+     case ENC_TYPE_UNKNOWN:
+#endif    
     default:
       Serial.print(F("Unknown"));
       break;
@@ -165,6 +188,7 @@ void print2Digits(byte thisByte)
   {
     Serial.print(F("0"));
   }
+
   Serial.print(thisByte, HEX);
 }
 
@@ -176,6 +200,7 @@ void printMacAddress(byte mac[])
     {
       Serial.print(F("0"));
     }
+
     Serial.print(mac[i], HEX);
 
     if (i > 0)
@@ -183,6 +208,6 @@ void printMacAddress(byte mac[])
       Serial.print(F(":"));
     }
   }
-  
+
   Serial.println();
 }

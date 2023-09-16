@@ -42,7 +42,7 @@ using namespace websockets2_generic;
 
 WebsocketsServer server;
 
-void heartBeatPrint(void)
+void heartBeatPrint()
 {
   static int num = 1;
 
@@ -79,9 +79,11 @@ void check_status()
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
-  Serial.println("\nStarting ESP8266-Server on " + String(ARDUINO_BOARD));
+  delay(500);
+
+  Serial.print("\nStart ESP8266-Server on "); Serial.println(ARDUINO_BOARD);
   Serial.println(WEBSOCKETS2_GENERIC_VERSION);
 
   // Connect to wifi

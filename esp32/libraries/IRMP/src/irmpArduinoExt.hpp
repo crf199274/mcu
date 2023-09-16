@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019-2020 Armin Joachimsmeyer
  *
- * This file is part of IRMP https://github.com/ukw100/IRMP.
+ * This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@ uint_fast8_t irmp_InputPin; // global variable to hold input pin number. Is refe
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin, bool aIrmpLedFeedbackPinIsActiveLow)
 {
     irmp_InputPin = aIrmpInputPin;
+
+#if !defined(NO_LED_FEEDBACK_CODE)
     irmp_irsnd_LedFeedbackPin = aFeedbackLedPin;
     irmp_irsnd_LedFeedbackPinIsActiveLow = aIrmpLedFeedbackPinIsActiveLow;
 
@@ -39,13 +41,17 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin, bool aI
      * enable feedback LED if (aFeedbackLedPin != 0)
      */
     irmp_irsnd_LEDFeedback(aFeedbackLedPin);
+#else
+    (void) aFeedbackLedPin; // to avoid compiler warnings
+    (void) aIrmpLedFeedbackPinIsActiveLow; // to avoid compiler warnings
+#endif
 
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
     enablePCIInterrupt();
 #  else
     initIRTimerForReceive();
 #  endif
-#  ifdef IRMP_MEASURE_TIMING
+#  if defined(IRMP_MEASURE_TIMING)
     pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
@@ -56,7 +62,11 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin, bool aI
  */
 void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin)
 {
+#if defined(NO_LED_FEEDBACK_CODE)
+    irmp_init(aIrmpInputPin, aFeedbackLedPin, false);
+#else
     irmp_init(aIrmpInputPin, aFeedbackLedPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
+#endif
 }
 
 /*
@@ -64,7 +74,12 @@ void irmp_init(uint_fast8_t aIrmpInputPin, uint_fast8_t aFeedbackLedPin)
  */
 void irmp_init(uint_fast8_t aIrmpInputPin)
 {
+#if defined(NO_LED_FEEDBACK_CODE)
+    irmp_init(aIrmpInputPin, 0, false);
+#else
     irmp_init(aIrmpInputPin, irmp_irsnd_LedFeedbackPin, irmp_irsnd_LedFeedbackPinIsActiveLow);
+#endif
+
 #  if defined(IRMP_FEEDBACK_LED_PIN)
     // set pin if we have one at hand
     irmp_irsnd_LedFeedbackPin = IRMP_FEEDBACK_LED_PIN;
@@ -74,18 +89,18 @@ void irmp_init(uint_fast8_t aIrmpInputPin)
 
 void irmp_init(void)
 {
-#  ifdef IRMP_INPUT_PIN
+#  if defined(IRMP_INPUT_PIN)
     pinModeFast(IRMP_INPUT_PIN, INPUT);                                 // set pin to input
 #  else
     IRMP_PORT &= ~_BV(IRMP_BIT);                                        // deactivate pullup
-    IRMP_DDR &= ~_BV(IRMP_BIT);                                        // set pin to input
+    IRMP_DDR &= ~_BV(IRMP_BIT);// set pin to input
 #  endif
 #  if defined IRMP_ENABLE_PIN_CHANGE_INTERRUPT
     enablePCIInterrupt();
 #  else
     initIRTimerForReceive();
 #  endif
-#  ifdef IRMP_MEASURE_TIMING
+#  if defined(IRMP_MEASURE_TIMING)
     pinModeFast(IR_TIMING_TEST_PIN, OUTPUT);
 #  endif
 }
@@ -94,18 +109,20 @@ void irmp_init(void)
  * Called from the receiver ISR IRMP_ISR() with the raw input value. Receiver signal input is active low!
  * With -oS it is taken as inline function
  */
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 void IRAM_ATTR irmp_DoLEDFeedback(bool aSwitchLedOff)
 #else
 void irmp_DoLEDFeedback(bool aSwitchLedOff)
 #endif
 {
+#if !defined(NO_LED_FEEDBACK_CODE)
     if (irmp_irsnd_LedFeedbackEnabled)
     {
         irmp_irsnd_SetFeedbackLED(!aSwitchLedOff);
     }
+#else
+    (void) aSwitchLedOff; // to avoid compiler warnings
+#endif
 }
 
 /*
@@ -271,7 +288,7 @@ const uint8_t irmp_used_protocol_index[] PROGMEM =
 #if IRMP_SUPPORT_TECHNICS_PROTOCOL == 1
     IRMP_TECHNICS_PROTOCOL,
 #endif
-#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1
+#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1 || IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1 // Panasonic vendor ID for kaseikyo
     IRMP_PANASONIC_PROTOCOL,
 #endif
 #if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1
@@ -452,7 +469,7 @@ const char * const irmp_used_protocol_names[] PROGMEM =
 #if IRMP_SUPPORT_TECHNICS_PROTOCOL == 1
     proto_technics,
 #endif
-#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1
+#if IRMP_SUPPORT_PANASONIC_PROTOCOL == 1 || IRMP_SUPPORT_KASEIKYO_PROTOCOL == 1 // Panasonic vendor ID for kaseikyo
     proto_panasonic,
 #endif
 #if IRMP_SUPPORT_MITSU_HEAVY_PROTOCOL == 1

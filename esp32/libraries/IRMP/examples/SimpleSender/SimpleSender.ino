@@ -1,7 +1,7 @@
 /*
  *  SimpleSender.cpp
  *
- *  Sends Samsung protocol frames.
+ *  Sends NEC or Samsung protocol frames.
  *  Is able to send IR protocol data of 15 main protocols.
  *
  *      Sony SIRCS
@@ -19,7 +19,7 @@
  *  Copyright (C) 2019-2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
- *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,15 +28,17 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
 #include <Arduino.h>
+
+//#define SEND_SAMSUNG // else send NEC
 
 /*
  * Set library modifiers first to set output pin etc.
@@ -48,7 +50,8 @@
 #define IRSND_PROTOCOL_NAMES        1 // Enable protocol number mapping to protocol strings - requires some FLASH.
 
 #include <irsndSelectMain15Protocols.h>
-// or use only one protocol to save programming space
+// or disable #include <irsndSelectMain15Protocols.h> and use only one protocol to save programming space
+//#define IRSND_SUPPORT_NEC_PROTOCOL        1
 //#define IRSND_SUPPORT_NEC_PROTOCOL        1
 
 /*
@@ -58,6 +61,7 @@
 
 IRMP_DATA irsnd_data;
 
+#if defined(SEND_SAMSUNG)
 union WordUnion
 {
     struct
@@ -76,15 +80,12 @@ union WordUnion
     int16_t Word;
     uint8_t *BytePointer;
 };
-
-void setup()
-{
-    Serial.begin(115200);
-#if defined(__AVR_ATmega32U4__) || defined(SERIAL_USB) || defined(SERIAL_PORT_USBVIRTUAL) || defined(ARDUINO_attiny3217)
-    delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
-#if defined(ESP8266)
-    Serial.println(); // to separate it from the internal boot output
+
+void setup() {
+    Serial.begin(115200);
+#if defined(__AVR_ATmega32U4__) || defined(SERIAL_PORT_USBVIRTUAL) || defined(SERIAL_USB) /*stm32duino*/|| defined(USBCON) /*STM32_stm32*/|| defined(SERIALUSB_PID) || defined(ARDUINO_attiny3217)
+    delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
 #endif
 
     // Just to know which program is running on my Arduino
@@ -93,14 +94,9 @@ void setup()
     irsnd_init();
     irmp_irsnd_LEDFeedback(true); // Enable send signal feedback at LED_BUILTIN
 
-#if defined(ARDUINO_ARCH_STM32)
-    Serial.println(F("Ready to send IR signals at pin " IRSND_OUTPUT_PIN_STRING)); // the internal pin numbers are crazy for the STM32 Boards library
-#else
-    Serial.println(F("Ready to send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
-#endif
+    Serial.println(F("Send IR signals at pin " STR(IRSND_OUTPUT_PIN)));
 
-//#define SEND_SAMSUNG // else send NEC
-#ifdef SEND_SAMSUNG
+#if defined(SEND_SAMSUNG)
     /*
      * Send Samsung32
      */
@@ -119,20 +115,18 @@ void setup()
 #endif
 
     // true = wait for frame and trailing space/gap to end. This stores timer state and restores it after sending.
-    if (!irsnd_send_data(&irsnd_data, true))
-    {
+    if (!irsnd_send_data(&irsnd_data, true)) {
         Serial.println(F("Protocol not found")); // name of protocol is printed by irsnd_data_print()
     }
     irsnd_data_print(&Serial, &irsnd_data);
 
 }
 
-void loop()
-{
+void loop() {
     delay(5000);
     irsnd_data.command++;
-#ifdef SEND_SAMSUNG
-    // For my Samsung the high byte is the inverse of the low byte
+#if defined(SEND_SAMSUNG)
+    // For my Samsung remote, the high byte is the inverse of the low byte
     WordUnion tNextCommand; // using WordUnion saves 14 bytes program memory for the next 3 lines
     tNextCommand.UWord = irsnd_data.command;
     tNextCommand.UByte.HighByte = ~tNextCommand.UByte.LowByte;

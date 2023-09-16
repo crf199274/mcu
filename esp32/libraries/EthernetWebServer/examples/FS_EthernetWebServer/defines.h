@@ -1,7 +1,7 @@
 /****************************************************************************************************************************
   defines.h
   EthernetWebServer is a library for the Ethernet shields to run WebServer
-  
+
   Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
   Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
   Licensed under MIT license
@@ -25,7 +25,7 @@
 #if USE_LITTLEFS
   #include <LittleFS.h>
   //LittleFS has higher priority
-  #define CurrentFileFS     "LittleFS"
+  #define FS_Name           "LittleFS"
   FS* filesystem = &LittleFS;
   #define FileFS            LittleFS
   #ifdef USE_SPIFFS
@@ -35,7 +35,7 @@
 #elif USE_SPIFFS
   FS* filesystem = &SPIFFS;
   #define FileFS            SPIFFS
-  #define CurrentFileFS     "SPIFFS"
+  #define FS_Name           SPIFFS"
 #endif
 
 // For ESP8266
@@ -53,9 +53,6 @@
 
 #include <SPI.h>
 
-//#define USE_ETHERNET_WRAPPER    true
-#define USE_ETHERNET_WRAPPER    false
-
 // Use true  for ENC28J60 and UIPEthernet library (https://github.com/UIPEthernet/UIPEthernet)
 // Use false for W5x00 and Ethernetx library      (https://www.arduino.cc/en/Reference/Ethernet)
 
@@ -70,79 +67,68 @@
   // You can define here or customize for each board at same place with BOARD_TYPE
   // Check @ defined(SEEED_XIAO_M0)
   //#define USE_THIS_SS_PIN   22  //21  //5 //4 //2 //15
-  
+
   // Only one if the following to be true
-  #define USE_ETHERNET          true
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
-  #define USE_ETHERNET_ESP8266  false 
+  #define USE_ETHERNET_GENERIC  true
+  #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      false
   #define USE_CUSTOM_ETHERNET   false
-  
-  #if !USE_ETHERNET_WRAPPER
-  
-    #if ( USE_ETHERNET2 || USE_ETHERNET3 || USE_ETHERNET_LARGE || USE_ETHERNET_ESP8266 || USE_ETHERNET_ENC || USE_NATIVE_ETHERNET )
-      #ifdef USE_CUSTOM_ETHERNET
-        #undef USE_CUSTOM_ETHERNET
-      #endif
-      #define USE_CUSTOM_ETHERNET   false
-    #endif
 
-    #if USE_NATIVE_ETHERNET
-      #include "NativeEthernet.h"
-      #warning Using NativeEthernet lib for Teensy 4.1. Must also use Teensy Packages Patch or error
-      #define SHIELD_TYPE           "Custom Ethernet using Teensy 4.1 NativeEthernet Library"
-    #elif USE_ETHERNET3
-      #include "Ethernet3.h"
-      #warning Using Ethernet3 lib
-      #define SHIELD_TYPE           "W5x00 using Ethernet3 Library"
-    #elif USE_ETHERNET2
-      #include "Ethernet2.h"
-      #warning Using Ethernet2 lib
-      #define SHIELD_TYPE           "W5x00 using Ethernet2 Library"
-    #elif USE_ETHERNET_LARGE
-      #include "EthernetLarge.h"
-      #warning Using EthernetLarge lib
-      #define SHIELD_TYPE           "W5x00 using EthernetLarge Library"
-    #elif USE_ETHERNET_ESP8266
-      #include "Ethernet_ESP8266.h"
-      #warning Using Ethernet_ESP8266 lib 
-      #define SHIELD_TYPE           "W5x00 using Ethernet_ESP8266 Library" 
-    #elif USE_ETHERNET_ENC
-      #include "EthernetENC.h"
-      #warning Using EthernetENC lib
-      #define SHIELD_TYPE           "ENC28J60 using EthernetENC Library"
-    #elif USE_CUSTOM_ETHERNET
-      //#include "Ethernet_XYZ.h"
-      #include "EthernetENC.h"
-      #warning Using Custom Ethernet library. You must include a library and initialize.
-      #define SHIELD_TYPE           "Custom Ethernet using Ethernet_XYZ Library"
-    #else
-      #ifdef USE_ETHERNET
-        #undef USE_ETHERNET
-      #endif
-      #define USE_ETHERNET   true
-      #include "Ethernet.h"
-      #warning Using Ethernet lib
-      #define SHIELD_TYPE           "W5x00 using Ethernet Library"
+  #if ( USE_ETHERNET_GENERIC || USE_ETHERNET_ESP8266 || USE_ETHERNET_ENC )
+    #ifdef USE_CUSTOM_ETHERNET
+      #undef USE_CUSTOM_ETHERNET
     #endif
-    
-    // Ethernet_Shield_W5200, EtherCard, EtherSia not supported
-    // Select just 1 of the following #include if uncomment #define USE_CUSTOM_ETHERNET
-    // Otherwise, standard Ethernet library will be used for W5x00
-  
-  #endif    //  USE_ETHERNET_WRAPPER
+    #define USE_CUSTOM_ETHERNET   false
+  #endif
+
+  #if USE_ETHERNET_GENERIC
+
+    #define SHIELD_TYPE           "W5x00 using Ethernet_Generic Library"
+
+    #define ETHERNET_LARGE_BUFFERS
+
+    #define _ETG_LOGLEVEL_                      1
+
+    #include "Ethernet_Generic.h"
+    #warning Using Ethernet_Generic lib
+
+  #elif USE_ETHERNET_ESP8266
+    #include "Ethernet_ESP8266.h"
+    #warning Using Ethernet_ESP8266 lib
+    #define SHIELD_TYPE           "W5x00 using Ethernet_ESP8266 Library"
+  #elif USE_ETHERNET_ENC
+    #include "EthernetENC.h"
+    #warning Using EthernetENC lib
+    #define SHIELD_TYPE           "ENC28J60 using EthernetENC Library"
+  #elif USE_CUSTOM_ETHERNET
+    //#include "Ethernet_XYZ.h"
+    #include "EthernetENC.h"
+    #warning Using Custom Ethernet library. You must include a library and initialize.
+    #define SHIELD_TYPE           "Custom Ethernet using Ethernet_XYZ Library"
+  #else
+    #ifdef USE_ETHERNET_GENERIC
+      #undef USE_ETHERNET_GENERIC
+    #endif
+    #define USE_ETHERNET_GENERIC   true
+    #include "Ethernet_Generic.h"
+    #warning Using default Ethernet_Generic lib
+    #define SHIELD_TYPE           "W5x00 using default Ethernet_Generic Library"
+  #endif
+
+  // Ethernet_Shield_W5200, EtherCard, EtherSia not supported
+  // Select just 1 of the following #include if uncomment #define USE_CUSTOM_ETHERNET
+  // Otherwise, standard Ethernet library will be used for W5x00
+
 #elif USE_UIP_ETHERNET
-    #include "UIPEthernet.h"
-    #warning Using UIPEthernet library
-    #define SHIELD_TYPE           "ENC28J60 using UIPEthernet Library"
+  #include "UIPEthernet.h"
+  #warning Using UIPEthernet library
+  #define SHIELD_TYPE           "ENC28J60 using UIPEthernet Library"
 #endif      // #if !USE_UIP_ETHERNET
 
 #include <EthernetWebServer.h>
 
 #ifndef SHIELD_TYPE
-  #define SHIELD_TYPE     "Unknown Ethernet shield/library" 
+  #define SHIELD_TYPE     "Unknown Ethernet shield/library"
 #endif
 
 // Enter a MAC address and IP address for your controller below.

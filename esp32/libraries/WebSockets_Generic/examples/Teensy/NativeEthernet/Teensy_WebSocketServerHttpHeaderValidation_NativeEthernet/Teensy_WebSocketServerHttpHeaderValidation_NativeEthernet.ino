@@ -1,13 +1,13 @@
 /****************************************************************************************************************************
   Teensy_WebSocketServerHttpHeaderValidation_NativeEthernet.ino
   For Teensy 4.1 boards using NativeEthernet Ethernet Shield/Module
-  
+
   Based on and modified from WebSockets libarary https://github.com/Links2004/arduinoWebSockets
   to support other boards such as  SAMD21, SAMD51, Adafruit's nRF52 boards, etc.
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/WebSockets_Generic
   Licensed under MIT license
-  
+
   First created on: 08.06.2016
   Original Author: Markus Sattler
  *****************************************************************************************************************************/
@@ -15,7 +15,7 @@
 #if ( defined(CORE_TEENSY) )
   // Default pin 10 to SS/CS
   #define USE_THIS_SS_PIN       10
-  
+
   #if defined(__IMXRT1062__)
     // For Teensy 4.1/4.0
     #if defined(ARDUINO_TEENSY41)
@@ -27,7 +27,7 @@
       #define BOARD_TYPE      "TEENSY 4.0"
     #else
       #define BOARD_TYPE      "TEENSY 4.x"
-    #endif      
+    #endif
   #elif defined(__MK66FX1M0__)
     #define BOARD_TYPE "Teensy 3.6"
   #elif defined(__MK64FX512__)
@@ -54,25 +54,22 @@
   #define BOARD_NAME    BOARD_TYPE
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_     3
+#define _WEBSOCKETS_LOGLEVEL_     2
 
 #define USE_UIP_ETHERNET        false
 
 // Only one if the following to be true
-#define USE_ETHERNET            false
-#define USE_ETHERNET2           false
-#define USE_ETHERNET3           false
-#define USE_ETHERNET_LARGE      false
+#define USE_ETHERNET_GENERIC    false
 #define USE_ETHERNET_ESP8266    false
 #define USE_ETHERNET_ENC        false
 
-#if ( USE_ETHERNET2 || USE_ETHERNET3 || USE_ETHERNET_LARGE || USE_ETHERNET )
+#if ( USE_ETHERNET_GENERIC )
   #define WEBSOCKETS_NETWORK_TYPE   NETWORK_W5100
 #elif (USE_ETHERNET_ENC)
   #define WEBSOCKETS_NETWORK_TYPE   NETWORK_ETHERNET_ENC
 #endif
 
-#if ( USE_ETHERNET2 || USE_ETHERNET3 || USE_ETHERNET_LARGE || USE_ETHERNET_ESP8266 || USE_ETHERNET_ENC || USE_NATIVE_ETHERNET )
+#if ( USE_ETHERNET_GENERIC || USE_ETHERNET_ESP8266 || USE_ETHERNET_ENC || USE_NATIVE_ETHERNET )
   #ifdef USE_CUSTOM_ETHERNET
     #undef USE_CUSTOM_ETHERNET
   #endif
@@ -83,39 +80,36 @@
   #include "NativeEthernet.h"
   #warning Using NativeEthernet lib for Teensy 4.1. Must also use Teensy Packages Patch or error
   #define SHIELD_TYPE           "Custom Ethernet using Teensy 4.1 NativeEthernet Library"
-#elif USE_ETHERNET3
-  #include "Ethernet3.h"
-  #warning Using Ethernet3 lib
-  #define SHIELD_TYPE           "W5x00 using Ethernet3 Library"
-#elif USE_ETHERNET2
-  #include "Ethernet2.h"
-  #warning Using Ethernet2 lib
-  #define SHIELD_TYPE           "W5x00 using Ethernet2 Library"
-#elif USE_ETHERNET_LARGE
-  #include "EthernetLarge.h"
-  #warning Using EthernetLarge lib
-  #define SHIELD_TYPE           "W5x00 using EthernetLarge Library"
+#elif USE_ETHERNET_GENERIC
+  #include "Ethernet_Generic.h"
+  #warning Using Ethernet_Generic lib
+
+  #define ETHERNET_LARGE_BUFFERS
+
+  #define _ETG_LOGLEVEL_        1
+
+  #define SHIELD_TYPE           "W5x00 using Ethernet_Generic Library"
 #elif USE_ETHERNET_ESP8266
   #include "Ethernet_ESP8266.h"
-  #warning Using Ethernet_ESP8266 lib 
-  #define SHIELD_TYPE           "W5x00 using Ethernet_ESP8266 Library" 
+  #warning Using Ethernet_ESP8266 lib
+  #define SHIELD_TYPE           "W5x00 using Ethernet_ESP8266 Library"
 #elif USE_ETHERNET_ENC
   #include "EthernetENC.h"
   #warning Using EthernetENC lib
   #define SHIELD_TYPE           "ENC28J60 using EthernetENC Library"
 #elif USE_CUSTOM_ETHERNET
   //#include "Ethernet_XYZ.h"
-  #include "EthernetENC.h"
+  #include "Ethernet.h"
   //#warning Using Custom Ethernet library. You must include a library and initialize.
   #define SHIELD_TYPE           "Custom Ethernet using Ethernet_XYZ Library"
 #else
-  #ifdef USE_ETHERNET
-    #undef USE_ETHERNET
+  #ifdef USE_ETHERNET_GENERIC
+    #undef USE_ETHERNET_GENERIC
   #endif
-  #define USE_ETHERNET   true
-  #include "Ethernet.h"
+  #define USE_ETHERNET_GENERIC   true
+  #include "Ethernet_Generic.h"
   #warning Using Ethernet lib
-  #define SHIELD_TYPE           "W5x00 using Ethernet Library"
+  #define SHIELD_TYPE           "W5x00 using default Ethernet_Generic Library"
 #endif
 
 // Default pin 10 to SS/CS
@@ -172,13 +166,14 @@ IPAddress ip(192, 168, 2, 222);
    Returns a bool value as an indicator to describe whether a user is allowed to initiate a websocket upgrade
    based on the value of a cookie. This function expects the rawCookieHeaderValue to look like this "sessionId=<someSessionIdNumberValue>|"
 */
-bool isCookieValid(String rawCookieHeaderValue)
+bool isCookieValid(const String& rawCookieHeaderValue)
 {
   if (rawCookieHeaderValue.indexOf("sessionId") != -1)
   {
-    String sessionIdStr = rawCookieHeaderValue.substring(rawCookieHeaderValue.indexOf("sessionId=") + 10, rawCookieHeaderValue.indexOf("|"));
+    String sessionIdStr = rawCookieHeaderValue.substring(rawCookieHeaderValue.indexOf("sessionId=") + 10,
+                                                         rawCookieHeaderValue.indexOf("|"));
     unsigned long int sessionId = strtoul(sessionIdStr.c_str(), NULL, 10);
-    
+
     return sessionId == validSessionId;
   }
 
@@ -188,7 +183,7 @@ bool isCookieValid(String rawCookieHeaderValue)
 /*
    The WebSocketServerHttpHeaderValFunc delegate passed to webSocket.onValidateHttpHeader
 */
-bool validateHttpHeader(String headerName, String headerValue)
+bool validateHttpHeader(const String& headerName, const String& headerValue)
 {
   //assume a true response for any headers not handled by this validator
   bool valid = true;
@@ -206,10 +201,13 @@ void setup()
 {
   // Serial.begin(921600);
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.print("\nStart Teensy_WebSocketServerHttpHeaderValidation_NativeEthernet on " + String(BOARD_NAME));
-  Serial.println(" with " + String(SHIELD_TYPE));
+  Serial.print("\nStart Teensy_WebSocketServerHttpHeaderValidation_NativeEthernet on ");
+  Serial.print(BOARD_NAME);
+  Serial.print(" with ");
+  Serial.println(SHIELD_TYPE);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
 #if !USE_NATIVE_ETHERNET
@@ -223,23 +221,14 @@ void setup()
   WS_LOGWARN(F("========================="));
 #endif
 
-  #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-    // For other boards, to change if necessary
-    #if ( USE_ETHERNET || USE_ETHERNET_LARGE || USE_ETHERNET2  || USE_ETHERNET_ENC )
-      // Must use library patch for Ethernet, Ethernet2, EthernetLarge libraries
-      Ethernet.init (USE_THIS_SS_PIN);
-    
-    #elif USE_ETHERNET3
-      // Use  MAX_SOCK_NUM = 4 for 4K, 2 for 8K, 1 for 16K RX/TX buffer
-      #ifndef ETHERNET3_MAX_SOCK_NUM
-        #define ETHERNET3_MAX_SOCK_NUM      4
-      #endif
-    
-      Ethernet.setCsPin (USE_THIS_SS_PIN);
-      Ethernet.init (ETHERNET3_MAX_SOCK_NUM);
-       
-    #endif  //( ( USE_ETHERNET || USE_ETHERNET_LARGE || USE_ETHERNET2  || USE_ETHERNET_ENC )
-  #endif
+#if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
+  // For other boards, to change if necessary
+#if ( USE_ETHERNET_GENERIC  || USE_ETHERNET_ENC )
+  // Must use library patch for Ethernet, Ethernet2, EthernetLarge libraries
+  Ethernet.init (USE_THIS_SS_PIN);
+
+#endif  //( ( USE_ETHERNET_GENERIC || USE_ETHERNET_ENC )
+#endif
 
   // start the ethernet connection and the server:
   // Use DHCP dynamic IP and random mac

@@ -163,8 +163,9 @@ uint8_t WiFiClient::status() {
 IPAddress WiFiClient::remoteIP() {
   IPAddress ip;
   uint16_t port = 0;
+  uint16_t lport = 0;
   if (stream && stream->getLinkId() != NO_LINK) {
-    EspAtDrv.remoteParamsQuery(stream->getLinkId(), ip, port);
+    EspAtDrv.remoteParamsQuery(stream->getLinkId(), ip, port, lport);
   }
   return ip;
 }
@@ -172,8 +173,15 @@ IPAddress WiFiClient::remoteIP() {
 uint16_t WiFiClient::remotePort() {
   IPAddress ip;
   uint16_t port = 0;
+  uint16_t lport = 0;
   if (stream && stream->getLinkId() != NO_LINK) {
-    EspAtDrv.remoteParamsQuery(stream->getLinkId(), ip, port);
+    EspAtDrv.remoteParamsQuery(stream->getLinkId(), ip, port, lport);
   }
   return port;
+}
+
+uint16_t WiFiClient::localPort() {
+  if (stream && stream->getLinkId() == NO_LINK)
+    return 0;
+  return EspAtDrv.localPortQuery(stream->getLinkId());
 }

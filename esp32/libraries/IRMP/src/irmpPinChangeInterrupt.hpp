@@ -7,7 +7,7 @@
  *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
- *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,16 +16,16 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
-#ifndef IRMP_PIN_CHANGE_INTERRUPT_CPP_H
-#define IRMP_PIN_CHANGE_INTERRUPT_CPP_H
+#ifndef _IRMP_PIN_CHANGE_INTERRUPT_HPP
+#define _IRMP_PIN_CHANGE_INTERRUPT_HPP
 
 //#define PCI_DEBUG
 
@@ -43,9 +43,7 @@ uint32_t irmp_last_change_micros; // microseconds of last Pin Change Interrupt. 
  * Requires micros() for timing.
  */
 //#define PCI_DEBUG
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR irmp_PCI_ISR(void)
-#elif defined(ESP32)
+#if defined(ESP8266) || defined(ESP32)
 void IRAM_ATTR irmp_PCI_ISR(void)
 #else
 void irmp_PCI_ISR(void)
@@ -83,9 +81,9 @@ void irmp_PCI_ISR(void)
         if (irmp_start_bit_detected) {
             irmp_pause_time += tTicks;
         } else { // start pulse here -> set pause or time between repetitions
-            if (tTicks > 0xFFFF) {
+            if (tTicks > UINT16_MAX) {
                 // avoid overflow for 16 bit key_repetition_len
-                tTicks = 0xFFFF;
+                tTicks = UINT16_MAX;
             }
             key_repetition_len = tTicks;
         }
@@ -102,7 +100,7 @@ void irmp_PCI_ISR(void)
          * IRMP may be waiting for stop bit, but detects it only at the next call, so do one additional call.
          * !!! ATTENTION !!! This will NOT work if we try to receive simultaneously two protocols which are only different in length like NEC16 and NEC42
          */
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
         Serial.write('x');
         if (irmp_bit > 0 && irmp_bit == irmp_param.complete_len)
         {
@@ -111,13 +109,13 @@ void irmp_PCI_ISR(void)
 #endif
         if (irmp_start_bit_detected && irmp_bit == irmp_param.complete_len && irmp_param.stop_bit == TRUE) {
             // Try to detect a nec repeat irmp_bit is 0
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("R"));
 #endif
             PAUSE_LEN irmp_pause_time_store = irmp_pause_time;
             irmp_pause_time = STOP_BIT_PAUSE_LEN_MIN + 1; // set pause time to minimal pause required to detect a stop bit
             irmp_ISR(); // Call to detect a NEC repeat
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("E")); // print info after call
             Serial.println();
 #endif
@@ -130,13 +128,13 @@ void irmp_PCI_ISR(void)
         // For condition see also line 4203 and 5098 in irmp.hpp
         if (irmp_start_bit_detected && irmp_bit > 0 && irmp_bit == irmp_param.complete_len) {
             // Complete length of bit now received -> try to detect end of protocol
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("S")); // print info before call
 #endif
             PAUSE_LEN irmp_pause_time_store = irmp_pause_time;
             irmp_pause_time = STOP_BIT_PAUSE_LEN_MIN + 1; // set pause time to minimal pause required to detect a stop bit
             irmp_ISR(); // Call to detect end of protocol, irmp_param.stop_bit (printed as Sb) should be set to 0 if stop bit was successfully detected.
-#ifdef PCI_DEBUG
+#if defined(PCI_DEBUG)
             irmp_debug_print(F("E")); // print info after call
             Serial.println();
 #endif
@@ -154,7 +152,7 @@ void irmp_PCI_ISR(void)
                     || (irmp_bit == irmp_param.complete_len - 2 && tTicks > irmp_param.pause_1_len_max))
             && (irmp_param.flags & IRMP_PARAM_FLAG_IS_MANCHESTER) && irmp_start_bit_detected)
     {
-#  ifdef PCI_DEBUG
+#  if defined(PCI_DEBUG)
     Serial.println('M'); // Try to detect a Manchester end of protocol
 #  endif
     irmp_pause_time = 2 * irmp_param.pause_1_len_max;
@@ -381,4 +379,4 @@ void irmp_debug_print(const char *aMessage, bool aDoShortOutput)
     Serial.println();
 }
 
-#endif // IRMP_PIN_CHANGE_INTERRUPT_CPP_H
+#endif // _IRMP_PIN_CHANGE_INTERRUPT_HPP

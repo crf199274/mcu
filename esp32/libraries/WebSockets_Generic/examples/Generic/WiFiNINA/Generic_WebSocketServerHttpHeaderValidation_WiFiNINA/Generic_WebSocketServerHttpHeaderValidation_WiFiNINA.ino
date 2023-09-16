@@ -1,13 +1,13 @@
 /****************************************************************************************************************************
   Generic_WebSocketServerHttpHeaderValidation_WiFiNINA.ino
   For Generic boards using WiFiNINA Shield/Module
-  
+
   Based on and modified from WebSockets libarary https://github.com/Links2004/arduinoWebSockets
   to support other boards such as  SAMD21, SAMD51, Adafruit's nRF52 boards, etc.
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/WebSockets_Generic
   Licensed under MIT license
-  
+
   Originally Created on: 08.06.2016
   Original Author: Markus Sattler
  *****************************************************************************************************************************/
@@ -16,7 +16,7 @@
   // Default pin 10 to SS/CS
   #define USE_THIS_SS_PIN       10
   #define BOARD_TYPE      "SAM DUE"
-#elif ( defined(CORE_TEENSY) )  
+#elif ( defined(CORE_TEENSY) )
   #error You have to use examples written for Teensy
 #endif
 
@@ -24,7 +24,7 @@
   #define BOARD_NAME    BOARD_TYPE
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_     3
+#define _WEBSOCKETS_LOGLEVEL_     2
 #define WEBSOCKETS_NETWORK_TYPE   NETWORK_WIFININA
 
 #include <WebSocketsServer_Generic.h>
@@ -44,13 +44,14 @@ const unsigned long int validSessionId = 12345; //some arbitrary value to act as
    Returns a bool value as an indicator to describe whether a user is allowed to initiate a websocket upgrade
    based on the value of a cookie. This function expects the rawCookieHeaderValue to look like this "sessionId=<someSessionIdNumberValue>|"
 */
-bool isCookieValid(String rawCookieHeaderValue)
+bool isCookieValid(const String& rawCookieHeaderValue)
 {
   if (rawCookieHeaderValue.indexOf("sessionId") != -1)
   {
-    String sessionIdStr = rawCookieHeaderValue.substring(rawCookieHeaderValue.indexOf("sessionId=") + 10, rawCookieHeaderValue.indexOf("|"));
+    String sessionIdStr = rawCookieHeaderValue.substring(rawCookieHeaderValue.indexOf("sessionId=") + 10,
+                                                         rawCookieHeaderValue.indexOf("|"));
     unsigned long int sessionId = strtoul(sessionIdStr.c_str(), NULL, 10);
-    
+
     return sessionId == validSessionId;
   }
 
@@ -60,7 +61,7 @@ bool isCookieValid(String rawCookieHeaderValue)
 /*
    The WebSocketServerHttpHeaderValFunc delegate passed to webSocket.onValidateHttpHeader
 */
-bool validateHttpHeader(String headerName, String headerValue)
+bool validateHttpHeader(const String& headerName, const String& headerValue)
 {
   //assume a true response for any headers not handled by this validator
   bool valid = true;
@@ -93,12 +94,14 @@ void printWifiStatus()
 }
 
 void setup()
-{ 
+{
   // Serial.begin(921600);
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.println("\nStart Generic_WebSocketServerHttpHeaderValidation_WiFiNINA on " + String(BOARD_NAME));
+  Serial.print("\nStart Generic_WebSocketServerHttpHeaderValidation_WiFiNINA on ");
+  Serial.println(BOARD_NAME);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   Serial.println("Used/default SPI pinout:");
@@ -115,11 +118,13 @@ void setup()
   if (WiFi.status() == WL_NO_MODULE)
   {
     Serial.println("Communication with WiFi module failed!");
+
     // don't continue
     while (true);
   }
 
   String fv = WiFi.firmwareVersion();
+
   if (fv < WIFI_FIRMWARE_LATEST_VERSION)
   {
     Serial.println("Please upgrade the firmware");

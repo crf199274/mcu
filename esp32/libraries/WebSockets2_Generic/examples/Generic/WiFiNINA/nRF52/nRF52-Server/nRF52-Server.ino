@@ -38,7 +38,7 @@ using namespace websockets2_generic;
 
 WebsocketsServer server;
 
-void heartBeatPrint(void)
+void heartBeatPrint()
 {
   static int num = 1;
 
@@ -75,7 +75,7 @@ void check_status()
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   Serial.println("\nStarting nRF52-Server with WiFiNINA on " + String(BOARD_NAME));
   Serial.println(WEBSOCKETS2_GENERIC_VERSION);

@@ -112,9 +112,9 @@ void drawGraph()
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
-  Serial.println("\nStarting Esp8266-AdvancedWebServer on " + String(ARDUINO_BOARD));
+  Serial.print("\nStart ESP8266-AdvancedWebServer on "); Serial.println(ARDUINO_BOARD);
   Serial.println(WEBSOCKETS2_GENERIC_VERSION);
 
   Serial.print("Attempting to connect to SSID: ");

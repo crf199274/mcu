@@ -65,7 +65,12 @@ public:
   bool setPersistent(bool persistent = true);
 
   bool setAutoConnect(bool autoConnect);
+
+#ifdef WIFIESPAT1
   int begin(const char* ssid, const char *passphrase = nullptr, const uint8_t* bssid = nullptr);
+#else
+  int begin(const char* ssid = nullptr, const char *passphrase = nullptr, const uint8_t* bssid = nullptr);
+#endif
   int beginEnterprise(const char* ssid, uint8_t method, const char* username, const char* passphrase, const char* identity, uint8_t security);
   int disconnect(bool persistent = false);
 
@@ -89,7 +94,8 @@ public:
   int32_t RSSI();
 
   // enumerate WiFi access points
-  int8_t scanNetworks(WiFiApData* _apData = apDataInternal, uint8_t apDataSize = WIFIESPAT_INTERNAL_AP_LIST_SIZE); // using the default parameter will occupy a lot of SRAM
+  int8_t scanNetworks(); // using internal array will occupy a lot of SRAM
+  int8_t scanNetworks(WiFiApData* _apData, uint8_t apDataSize); // optional version
   const char* SSID(uint8_t index);
   uint8_t encryptionType(uint8_t index);
   uint8_t* BSSID(uint8_t index, uint8_t* bssid);
@@ -105,7 +111,7 @@ public:
   bool ping(const char* hostname);
   bool ping(IPAddress ip);
 
-  bool sntp(int8_t timezone, const char* server1, const char* server2 = nullptr);
+  bool sntp(const char* server1, const char* server2 = nullptr);
   unsigned long getTime();
 
   // AP related functions:
@@ -134,7 +140,7 @@ public:
 
   bool sleepMode(EspAtSleepMode mode);
   bool deepSleep();
-  bool reset(uint8_t resetPin);
+  bool reset(uint8_t resetPin = -1);
 
 private:
   uint8_t mapAtEnc2ArduinoEnc(uint8_t encryptionType);

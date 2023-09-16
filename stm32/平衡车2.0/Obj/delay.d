@@ -2,7 +2,7 @@
 .\obj\delay.o: Public\delay.h
 .\obj\delay.o: .\Libraries\CMSIS\stm32f10x.h
 .\obj\delay.o: .\Libraries\CMSIS\core_cm3.h
-.\obj\delay.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\obj\delay.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
 .\obj\delay.o: .\Libraries\CMSIS\system_stm32f10x.h
 .\obj\delay.o: .\User\stm32f10x_conf.h
 .\obj\delay.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h

@@ -1,4 +1,4 @@
-## WebSockets2_Generic
+## WebSockets2_Generic Library
 
 [![arduino-library-badge](https://www.ardu-badge.com/badge/WebSockets2_Generic.svg?)](https://www.ardu-badge.com/WebSockets2_Generic)
 [![GitHub release](https://img.shields.io/github/release/khoih-prog/WebSockets2_Generic.svg)](https://github.com/khoih-prog/WebSockets2_Generic/releases)
@@ -6,12 +6,29 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/WebSockets2_Generic.svg)](http://github.com/khoih-prog/WebSockets2_Generic/issues)
 
+
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
+
+
 ---
 ---
 
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Release v1.13.2](#release-v1132)
+  * [Release v1.13.1](#release-v1131)
+  * [Release v1.13.0](#release-v1130)
+  * [Release v1.12.1](#release-v1121)
+  * [Release v1.12.0](#release-v1120)
+  * [Release v1.11.0](#release-v1110)
+  * [Release v1.10.3](#release-v1103)
+  * [Release v1.10.2](#release-v1102)
+  * [Release v1.10.1](#release-v1101)
+  * [Major Release v1.10.0](#major-release-v1100)
+  * [Release v1.9.1](#release-v191)
+  * [Major Release v1.9.0](#major-release-v190)
   * [Release v1.8.1](#release-v181)
   * [Major Release v1.8.0](#major-release-v180)
   * [Major Release v1.7.0](#major-release-v170)
@@ -38,6 +55,84 @@
 ---
 
 ## Changelog
+
+### Release v1.13.2
+
+1. Fix compiler error using Teensy 4.1 QNEthernet `v0.17.0`
+
+### Release v1.13.1
+
+1. Using new [`WiFi101_Generic library`](https://github.com/khoih-prog/WiFi101_Generic) for sending larger data
+2. Add astyle using `allman` style. Restyle the library
+3. Update `Packages' Patches`
+
+### Release v1.13.0
+
+1. Add support to `RP2040W` using `CYW43439 WiFi` or `Ethernet` with `arduino-pico` core
+
+### Release v1.12.1
+
+1. Improve and fix bug in examples
+
+### Release v1.12.0
+
+1. Add support to ENC28J60 using `EthernetENC` or `UIPEthernet` Library for these supported boards
+
+- ESP32
+- nRF52
+- RP2040
+- SAM DUE
+- SAMD
+- STM32
+- Teensy
+
+
+### Release v1.11.0
+
+1. Add support to `ESP32` using `W5x00` Ethernet
+2. Update `Packages' Patches`
+
+### Release v1.10.3
+
+1. Use new [Ethernet_Generic library](https://github.com/khoih-prog/Ethernet_Generic) as default for W5x00.
+2. Add support to SPI2 for ESP32
+3. Add support to SPI1 for RP2040 using [arduino-pico core](https://github.com/earlephilhower/arduino-pico)
+4. Rewrite all the examples to support new features
+5. Use new `waitForLink()` function of QNEthernet
+6. Update `Packages' Patches`
+
+### Release v1.10.2
+
+1. Fix bug when using `QNEthernet` staticIP. Check [QNEthernet and NativeEthernet staticIP not working with WS Server #39](https://github.com/khoih-prog/WebSockets2_Generic/issues/39)
+2. Add staticIP option to `NativeEthernet` examples
+2. Update `Packages' Patches`
+
+### Release v1.10.1
+
+1. Reduce QNEthernet latency. Check [QNEthernet higher latency #38](https://github.com/khoih-prog/WebSockets2_Generic/issues/38)
+2. Update `Packages' Patches`
+
+### Major Release v1.10.0
+
+1. Supporting case-insensitive headers, according to RFC2616
+2. Sync with [ArduinoWebsockets releases v0.5.3](https://github.com/gilmaimon/ArduinoWebsockets/releases/tag/0.5.3)
+  - Add `connectSecure` method to support WSS connection with the classic interface (host, port, path)
+  - Add 1 second `connection timeout` for ESP32/ESP8266, Teensy 4.1 NativeEthernet and QNEthernet
+3. Improve debug
+  
+
+### Release v1.9.1
+
+1. Fix compile error for `Teensy 4.1` using new [QNEthernet library version](https://github.com/ssilverman/QNEthernet). Check [Fix QNEthernet TCP interface #35](https://github.com/khoih-prog/WebSockets2_Generic/pull/35)
+2. Update `Packages' Patches`
+3. Verify working with new Arduino IDE `v1.8.18`
+4. Update `library.json` and `platform.ini` newly published [QNEthernet library](https://github.com/ssilverman/QNEthernet)
+
+### Major Release v1.9.0
+
+1. Auto detect ESP32 core to use for WT32_ETH01
+2. Fix bug in WT32_ETH01 examples to reduce connection time
+3. Replace deprecated `echo.websocket.org` in examples.
 
 ### Release v1.8.1
 
@@ -103,7 +198,7 @@
 3. Add Packages' Patches for STM32 to use LAN8720 with STM32Ethernet and LwIP libraries
 4. Update `echo.websocket.org` **fingerprint add CA Certificate** for ESP8266 and ESP32. Check [Secured-Esp32-Client Example not works on NodeMcu32s (Esp32s) #16](https://github.com/khoih-prog/WebSockets2_Generic/issues/16)
 5. Add limited (client-only) support to **ESP32-S2** (ESP32-S2 Saola, AI-Thinker ESP-12K, etc.)
-6. Update [HOWTO Install esp32-s2 core for ESP32-S2](https://github.com/khoih-prog/WebSockets2_Generic#howto-install-esp32-s2-core-for-esp32-s2-saola-ai-thinker-esp-12k-boards-into-arduino-ide) to accomodate [Latest esp32 core v1.0.6](https://github.com/espressif/arduino-esp32/releases/tag/1.0.6)
+6. Update [HOWTO Install esp32-s2 core for ESP32-S2](https://github.com/khoih-prog/WebSockets2_Generic#howto-install-esp32-s2-core-for-esp32-s2-saola-ai-thinker-esp-12k-boards-into-arduino-ide) to accommodate [Latest esp32 core v1.0.6](https://github.com/espressif/arduino-esp32/releases/tag/1.0.6)
 7. Update README to reflect [`LittleFS_esp32 library`](https://github.com/lorol/LITTLEFS) has been included in [Latest esp32 core v1.0.6](https://github.com/espressif/arduino-esp32/releases/tag/1.0.6) and many steps are not necessary anymore
 
 ### Major Release v1.1.0
@@ -156,7 +251,7 @@
 
 1. Add support to **SAM DUE** boards.
 2. Add support to **Ethernet W5x00, using either Ethernet, EthernetLarge or Ethernet2 library.**
-3. Restructure code to provide flexibility to support many more WiFi/Ethernet modules/shields in the future. Please delete the *.cpp files, replaced with coresponding *.hpp files, in the library src directory, if the *.cpp files still exist after installing new version.
+3. Restructure code to provide flexibility to support many more WiFi/Ethernet modules/shields in the future. Please delete the *.cpp files, replaced with corresponding *.hpp files, in the library src directory, if the *.cpp files still exist after installing new version.
 
 #### Release v1.0.0
 

@@ -4,7 +4,7 @@
  *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
- *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,17 +13,17 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
 #if defined(ARDUINO)
-#ifndef IRSND_ARDUINO_EXT_H
-#define IRSND_ARDUINO_EXT_H
+#ifndef _IRSND_ARDUINO_EXT_H
+#define _IRSND_ARDUINO_EXT_H
 
 #include "irmpVersion.h"
 
@@ -83,5 +83,5 @@ void irsnd_data_print(Print *aSerial, IRMP_DATA *aIRMPDataPtr);
 extern volatile uint8_t irsnd_is_on;                // Used by IRTimer.hpp
 extern volatile uint8_t irsnd_busy;                 // Used by IRTimer.hpp
 
-#endif /* IRSND_ARDUINO_EXT_H */
+#endif /* _IRSND_ARDUINO_EXT_H */
 #endif // ARDUINO

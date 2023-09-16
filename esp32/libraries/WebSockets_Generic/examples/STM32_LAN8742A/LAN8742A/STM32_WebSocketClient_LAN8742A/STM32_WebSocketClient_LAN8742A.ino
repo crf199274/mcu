@@ -1,16 +1,16 @@
 /****************************************************************************************************************************
   STM32_WebSocketClient_LAN8742A.ino
   For STM32 boards using LAN8742A Ethernet Shield/Module
-  
+
   Based on and modified from WebSockets libarary https://github.com/Links2004/arduinoWebSockets
   to support other boards such as  SAMD21, SAMD51, Adafruit's nRF52 boards, etc.
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/WebSockets_Generic
   Licensed under MIT license
-  
+
   Example for connecting and maintining a connection with a SockJS+STOMP websocket connection.
   In this example, we connect to a Spring application (see https://docs.spring.io/spring/docs/current/spring-framework-reference/html/websocket.html).
-  
+
   Originally Created on: 24.05.2015
   Original Author: Markus Sattler
  *****************************************************************************************************************************/
@@ -18,14 +18,14 @@
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
        defined(STM32WB) || defined(STM32MP1) )
-  #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
+#error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_       4
+#define _WEBSOCKETS_LOGLEVEL_       2
 
 #define WEBSOCKETS_NETWORK_TYPE     NETWORK_LAN8742A
 
-#warning Using LAN8742A Ethernet & STM32Ethernet lib
+//#warning Using LAN8742A Ethernet & STM32Ethernet lib
 #define SHIELD_TYPE           "LAN8742A Ethernet & STM32Ethernet Library"
 
 #include <WebSocketsClient_Generic.h>
@@ -63,17 +63,18 @@ byte mac[][NUMBER_OF_MAC] =
 #define USE_SSL         false
 
 #if USE_SSL
+  // Deprecated echo.websocket.org to be replaced
   #define WS_SERVER           "wss://echo.websocket.org"
   #define WS_PORT             443
 #else
-  //#define WS_SERVER           "ws://echo.websocket.org"
-  #define WS_SERVER           "192.168.2.87"
-  #define WS_PORT             81
+  // To run a local WebSocket Server
+  #define WS_SERVER           "192.168.2.30"
+  #define WS_PORT             8080
 #endif
 
 bool alreadyConnected = false;
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
+void webSocketEvent(const WStype_t& type, uint8_t * payload, const size_t& length)
 {
   switch (type)
   {
@@ -83,67 +84,79 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
         Serial.println("[WSc] Disconnected!");
         alreadyConnected = false;
       }
-      
-      break;
-    case WStype_CONNECTED:
-      {
-        alreadyConnected = true;
-        
-        Serial.print("[WSc] Connected to url: ");
-        Serial.println((char *) payload);
 
-        // send message to server when Connected
-        webSocketClient.sendTXT("Connected");
-      }
       break;
+
+    case WStype_CONNECTED:
+    {
+      alreadyConnected = true;
+
+      Serial.print("[WSc] Connected to url: ");
+      Serial.println((char *) payload);
+
+      // send message to server when Connected
+      webSocketClient.sendTXT("Connected");
+    }
+
+    break;
+
     case WStype_TEXT:
 
       if (alreadyConnected)
       {
         Serial.print("[WSc] get text: ");
         Serial.println((char *) payload);
-  
+
         // send message to server
         // webSocketClient.sendTXT("message here");
       }
+
       break;
+
     case WStype_BIN:
 
       if (alreadyConnected)
       {
         Serial.print("[WSc] get binary length: ");
         Serial.println(length);
-        
+
         // KH, To check
         // hexdump(payload, length);
-  
+
         // send data to server
         webSocketClient.sendBIN(payload, length);
       }
+
       break;
 
     case WStype_PING:
       // pong will be send automatically
       Serial.println("[WSc] get ping");
+
       break;
+
     case WStype_PONG:
       // answer to a ping we send
       Serial.println("[WSc] get pong");
+
       break;
-      
+
     default:
       break;
   }
 }
 
-void setup() 
+void setup()
 {
   // Debug console
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.print("\nStart STM32_WebSocketClient_LAN8742A on " + String(BOARD_NAME));
-  Serial.println(" with " + String(SHIELD_TYPE));
+  Serial.print("\nStart STM32_WebSocketClient_LAN8742A on ");
+  Serial.print(BOARD_NAME);
+  Serial.print(" with ");
+  Serial.println(SHIELD_TYPE);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   // start the ethernet connection and the server:
@@ -152,7 +165,7 @@ void setup()
   // Use Static IP
   //Ethernet.begin(mac[index], clientIP);
   Ethernet.begin(mac[index]);
- 
+
   Serial.print("WebSockets Client IP address: ");
   Serial.println(Ethernet.localIP());
 
@@ -183,7 +196,7 @@ void setup()
   Serial.println(WS_SERVER);
 }
 
-void loop() 
+void loop()
 {
   webSocketClient.loop();
 }

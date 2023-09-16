@@ -1,32 +1,40 @@
 /****************************************************************************************************************************
-   Ethernet_WebSocketClient.h - Dead simple HTTP WebSockets Client.
-   For Ethernet shields
+  Ethernet_WebSocketClient.h - Dead simple HTTP WebSockets Client.
+  For Ethernet shields
 
-   EthernetWebServer is a library for the Ethernet shields to run WebServer
+  EthernetWebServer is a library for the Ethernet shields to run WebServer
 
-   Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
-   Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
-   Licensed under MIT license
+  Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
+  Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
+  Licensed under MIT license
 
-   Original author:
-   @file       Esp8266WebServer.h
-   @author     Ivan Grokhotkov
-   
-   Version: 1.7.1
+  Original author:
+  @file       Esp8266WebServer.h
+  @author     Ivan Grokhotkov
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-    1.0.0   K Hoang      13/02/2020 Initial coding for Arduino Mega, Teensy, etc to support Ethernetx libraries
-    ...
-    1.6.0   K Hoang      04/09/2021 Add support to QNEthernet Library for Teensy 4.1
-    1.7.0   K Hoang      09/09/2021 Add support to Portenta H7 Ethernet
-    1.7.1   K Hoang      04/10/2021 Change option for PIO `lib_compat_mode` from default `soft` to `strict`. Update Packages Patches
+  Version: 2.4.1
+
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.0.0   K Hoang      13/02/2020 Initial coding for Arduino Mega, Teensy, etc to support Ethernetx libraries
+  ...
+  2.2.0   K Hoang      05/05/2022 Add support to custom SPI for Teensy, Mbed RP2040, Portenta_H7, etc.
+  2.2.1   K Hoang      25/08/2022 Auto-select SPI SS/CS pin according to board package
+  2.2.2   K Hoang      06/09/2022 Slow SPI clock for old W5100 shield or SAMD Zero. Improve support for SAMD21
+  2.2.3   K Hoang      17/09/2022 Add support to AVR Dx (AVR128Dx, AVR64Dx, AVR32Dx, etc.) using DxCore
+  2.2.4   K Hoang      26/10/2022 Add support to Seeed XIAO_NRF52840 and XIAO_NRF52840_SENSE using `mbed` or `nRF52` core
+  2.3.0   K Hoang      15/11/2022 Add new features, such as CORS. Update code and examples to send big data
+  2.4.0   K Hoang      22/12/2022 Fix compile errors for new ESP32 core v2.0.6
+  2.4.1   K Hoang      06/01/2023 Add support to `WIZNet W6100` using IPv4
  *************************************************************************************************************************************/
- 
+
 // (c) Copyright Arduino. 2016
 // Released under Apache License, version 2.0
 
 #pragma once
+
+#ifndef ETHERNET_WEBSOCKET_CLIENT_H
+#define ETHERNET_WEBSOCKET_CLIENT_H
 
 #include <Arduino.h>
 
@@ -45,8 +53,10 @@ class EthernetWebSocketClient : public EthernetHttpClient
 {
   public:
     EthernetWebSocketClient(Client& aClient, const char* aServerName, uint16_t aServerPort = EthernetHttpClient::kHttpPort);
-    EthernetWebSocketClient(Client& aClient, const String& aServerName, uint16_t aServerPort = EthernetHttpClient::kHttpPort);
-    EthernetWebSocketClient(Client& aClient, const IPAddress& aServerAddress, uint16_t aServerPort = EthernetHttpClient::kHttpPort);
+    EthernetWebSocketClient(Client& aClient, const String& aServerName,
+                            uint16_t aServerPort = EthernetHttpClient::kHttpPort);
+    EthernetWebSocketClient(Client& aClient, const IPAddress& aServerAddress,
+                            uint16_t aServerPort = EthernetHttpClient::kHttpPort);
 
     /** Start the Web Socket connection to the specified path
       @param aURLPath     Path to use in request (optional, "/" is used by default)
@@ -97,7 +107,7 @@ class EthernetWebSocketClient : public EthernetHttpClient
     // Inherited from Print
     virtual size_t write(uint8_t aByte);
     virtual size_t write(const uint8_t *aBuffer, size_t aSize);
-    
+
     // Inherited from Stream
     virtual int   available();
     /** Read the next byte from the server.
@@ -123,3 +133,4 @@ class EthernetWebSocketClient : public EthernetHttpClient
     uint8_t   iRxMaskKey[4];
 };
 
+#endif  // ETHERNET_WEBSOCKET_CLIENT_H

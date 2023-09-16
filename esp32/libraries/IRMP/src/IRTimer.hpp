@@ -4,7 +4,7 @@
  *  Copyright (C) 2020  Armin Joachimsmeyer
  *  armin.joachimsmeyer@gmail.com
  *
- *  This file is part of IRMP https://github.com/ukw100/IRMP.
+ *  This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  *  IRMP is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/gpl.html>.
+ *  along with this program. If not, see <http://www.gnu.org/licenses/gpl.html>.
  *
  */
 
@@ -34,10 +34,10 @@
 // NO GUARD here, we have the GUARD below with #ifdef _IRSND_H_ and #ifdef _IRMP_H_.
 #include "IRTimer.h"
 
-#ifndef TIMER_DECLARED
+#if !defined(TIMER_DECLARED)
 #define TIMER_DECLARED
 #  if defined(ESP32)
-static hw_timer_t *sESP32Timer = NULL;
+static hw_timer_t *sReceiveAndSendInterruptTimer = NULL;
 
 // BluePill in 2 flavors see https://samuelpinches.com.au/3d-printer/cutting-through-some-confusion-on-stm32-and-arduino/
 #  elif defined(__STM32F1__) || defined(ARDUINO_ARCH_STM32F1) // Recommended original Arduino_STM32 by Roger Clark.
@@ -48,7 +48,7 @@ static hw_timer_t *sESP32Timer = NULL;
  * Use timer 3 as IRMP timer.
  * Timer 3 blocks PA6, PA7, PB0, PB1, so if you require one of them as tone() or Servo output, you must choose another timer.
  */
-HardwareTimer sSTM32Timer(3);
+HardwareTimer sReceiveAndSendInterruptTimer(3);
 
 #  elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) // STM32duino by ST Microsystems.
 // stm32 architecture for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
@@ -59,17 +59,28 @@ HardwareTimer sSTM32Timer(3);
  * Timer 4 blocks PB6, PB7, PB8, PB9, so if you require one of them as tone() or Servo output, you must choose another timer.
  */
 #    if defined(TIM4)
-HardwareTimer sSTM32Timer(TIM4);
+HardwareTimer sReceiveAndSendInterruptTimer(TIM4);
 #    else
-HardwareTimer sSTM32Timer(TIM2);
+HardwareTimer sReceiveAndSendInterruptTimer(TIM2);
 #    endif
 
 #elif defined(ARDUINO_ARCH_MBED) // Arduino Nano 33 BLE + Sparkfun Apollo3
-mbed::Ticker sMbedTimer;
+mbed::Ticker sReceiveAndSendInterruptTimer;
+
+/*
+ * RP2040 based boards for pico core
+ * https://github.com/earlephilhower/arduino-pico
+ * https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+ * Can use any pin for PWM, no timer restrictions
+ */
+#elif defined(ARDUINO_ARCH_RP2040) // Raspberry Pi Pico, Adafruit Feather RP2040, etc.
+#include "pico/time.h"
+repeating_timer_t sReceiveAndSendInterruptTimer;
+bool IRTimerInterruptHandlerHelper(repeating_timer_t*);
 
 #elif defined(TEENSYDUINO)
 // common for all Teensy
-IntervalTimer sIntervalTimer;
+IntervalTimer sReceiveAndSendInterruptTimer;
 
 #  endif
 #endif // TIMER_DECLARED
@@ -86,7 +97,9 @@ IntervalTimer sIntervalTimer;
 
 #endif // defined(_IRMP_H_)
 
-//@formatter:off
+// The eclipse formatter has problems with // comments in undefined code blocks
+// !!! Must be without comment and closed by @formatter:on
+// @formatter:off
 #if defined(_IRMP_H_)
 void initIRTimerForReceive(void)
 #elif defined(_IRSND_H_)
@@ -207,6 +220,17 @@ void initIRTimerForSend(void)
     TIFR2 = _BV(OCF2B) | _BV(OCF2A) | _BV(TOV2);                    // reset interrupt flags
     TIMSK2 = _BV(OCIE2B);                                           // enable TIMER2_COMPB_vect interrupt to be compatible with tone() library
 
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    TCCR1A = 0;
+    TCCR1B = _BV(WGM12) | _BV(CS10);                                // CTC mode, no prescaling
+    OCR1A = (F_CPU / IR_INTERRUPT_FREQUENCY) - 1;                   // 209 for 76000 interrupts per second @ 16MHz
+    TCNT1 = 0;
+#    if defined(TIMSK1)
+    TIMSK1 = _BV(OCIE1A);                                           // Timer/Counter1, Output Compare A Match Interrupt Enable
+#    else // ATmega128 ?
+    TIMSK = _BV(OCIE1A);                                            // Timer/Counter1, Output Compare A Match Interrupt Enable
+#    endif
+
 #  else // if defined(__AVR_ATmega16__) etc
 #error "This AVR CPU is not supported by IRMP"
 #  endif // if defined(__AVR_ATmega16__)
@@ -225,10 +249,12 @@ void initIRTimerForSend(void)
 #elif defined(ESP32)
     // Tasmota requires timer 3 (last of 4 timers)
     // Use timer with 1 microsecond resolution, main clock is 80MHZ
-    sESP32Timer = timerBegin(3, 80, true);
-    timerAttachInterrupt(sESP32Timer, irmp_timer_ISR, true);
-    timerAlarmWrite(sESP32Timer, ((getApbFrequency() / 80) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY, true);
-    timerAlarmEnable(sESP32Timer);
+    if(sReceiveAndSendInterruptTimer == NULL) {
+        sReceiveAndSendInterruptTimer = timerBegin(3, 80, true);
+        timerAttachInterrupt(sReceiveAndSendInterruptTimer, irmp_timer_ISR, false); // false -> level interrupt, true -> edge interrupt, but this is not supported :-(
+        timerAlarmWrite(sReceiveAndSendInterruptTimer, ((getApbFrequency() / 80) + (IR_INTERRUPT_FREQUENCY / 2)) / IR_INTERRUPT_FREQUENCY, true);
+    }
+    timerAlarmEnable(sReceiveAndSendInterruptTimer);
 
 #  if defined(DEBUG) && defined(ESP32)
     Serial.print("CPU frequency=");
@@ -242,21 +268,21 @@ void initIRTimerForSend(void)
 // BluePill in 2 flavors
 #elif defined(__STM32F1__) || defined(ARDUINO_ARCH_STM32F1) // Recommended original Arduino_STM32 by Roger Clark.
     // http://dan.drown.org/stm32duino/package_STM32duino_index.json
-    sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-    sSTM32Timer.setPrescaleFactor(1);
-    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY);
-    //sSTM32Timer.setPeriod(1000000 / IR_INTERRUPT_FREQUENCY);
-    sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-    sSTM32Timer.refresh();                                  // Set the timer's count to 0 and update the prescaler and overflow values.
+    sReceiveAndSendInterruptTimer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
+    sReceiveAndSendInterruptTimer.setPrescaleFactor(1);
+    sReceiveAndSendInterruptTimer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY);
+    //sReceiveAndSendInterruptTimer.setPeriod(1000000 / IR_INTERRUPT_FREQUENCY);
+    sReceiveAndSendInterruptTimer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
+    sReceiveAndSendInterruptTimer.refresh();                                  // Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) // STM32duino by ST Microsystems.
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);              // used for generating only interrupts, no pin specified
-    sSTM32Timer.setPrescaleFactor(1);
-    sSTM32Timer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);           // clock cycles period
-    //sSTM32Timer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT);   // microsecond period
-    sSTM32Timer.attachInterrupt(irmp_timer_ISR);                                    // this sets update interrupt enable
-    sSTM32Timer.resume();                           // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
+    sReceiveAndSendInterruptTimer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC);              // used for generating only interrupts, no pin specified
+    sReceiveAndSendInterruptTimer.setPrescaleFactor(1);
+    sReceiveAndSendInterruptTimer.setOverflow(F_CPU / IR_INTERRUPT_FREQUENCY, TICK_FORMAT);           // clock cycles period
+    //sReceiveAndSendInterruptTimer.setOverflow(1000000 / IR_INTERRUPT_FREQUENCY, MICROSEC_FORMAT);   // microsecond period
+    sReceiveAndSendInterruptTimer.attachInterrupt(irmp_timer_ISR);                                    // this sets update interrupt enable
+    sReceiveAndSendInterruptTimer.resume();                           // Start or resume HardwareTimer: all channels are resumed, interrupts are enabled if necessary
 
 #elif defined(ARDUINO_ARCH_SAMD)
     REG_GCLK_CLKCTRL = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID_TCC2_TC3); // GCLK1=32kHz,  GCLK0=48MHz
@@ -295,21 +321,25 @@ void initIRTimerForSend(void)
 //    NVIC_EnableIRQ(CTIMER_IRQn);
 
 #elif defined(ARDUINO_ARCH_MBED)
-    sMbedTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
+    sReceiveAndSendInterruptTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
+
+#elif defined(ARDUINO_ARCH_RP2040) // Raspberry Pi Pico, Adafruit Feather RP2040, etc.
+    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, NULL, &sReceiveAndSendInterruptTimer); // 13.15 us
 
 #elif defined(TEENSYDUINO)
-    sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+    sReceiveAndSendInterruptTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 #endif // defined(__AVR__)
 }
 
-//@formatter:on
-#ifndef TIMER_FUNCTIONS_DEFINED
+// @formatter:on
+#if !defined(TIMER_FUNCTIONS_DEFINED)
 #define TIMER_FUNCTIONS_DEFINED
 /** Temporarily storage for timer register*/
 #if defined(__AVR__)
 uint8_t sTimerTCCRA;
 uint8_t sTimerTCCRB;
-#  if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
+#  if defined(__AVR_ATtiny87__) || defined(__AVR_ATtiny167__) || defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) \
+    || defined(__AVR_ATtiny3217__) || defined(__AVR_ATmega4809__)
 uint16_t sTimerOCR; // we have a 12/16 bit timer
 #  else
 uint8_t sTimerOCR;
@@ -336,8 +366,7 @@ uint16_t sTimerCompareCapureValue;
  * But for AVR saving the timer settings is possible anyway, since it only consists of saving registers.
  * This helps cooperation with other libraries using the same timer.
  */
-void storeIRTimer(void)
-{
+void storeIRTimer(void) {
 #if defined(__AVR_ATmega16__)
     sTimerTCCRA = TCCR2;
     sTimerOCR = OCR2;
@@ -391,13 +420,28 @@ void storeIRTimer(void)
     sTimerOCRB = TCD0.CTRLC;
     sTimerTIMSK = TCD0.INTCTRL;
 
-#elif defined(__AVR__)
-// store current timer state
+#elif defined(OCF2B)  // __AVR_ATmega328__ here
+    // store current timer state
     sTimerTCCRA = TCCR2A;
     sTimerTCCRB = TCCR2B;
     sTimerOCR = OCR2A;
     sTimerOCRB = OCR2B;
     sTimerTIMSK = TIMSK2;
+
+#elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    // store current timer state
+    sTimerTCCRA = TCCR1A;
+    sTimerTCCRB = TCCR1B;
+    sTimerOCR = OCR1A;
+    sTimerOCRB = OCR1B;
+#    if defined(TIMSK1)
+    sTimerTIMSK = TIMSK1;
+#    else
+    sTimerTIMSK = TIMSK;
+#    endif
+
+#elif defined(__AVR__)
+// #error "This AVR CPU is not supported by IRMP"
 
 #elif defined(ESP8266)
     sTimerLoadValue= T1L;
@@ -406,16 +450,16 @@ void storeIRTimer(void)
 #if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
     // If we do not use receive, we have no timer defined at the first call of this function
 #  if defined(ESP32)
-    sTimerAlarmValue = timerAlarmRead(sESP32Timer);
+    sTimerAlarmValue = timerAlarmRead(sReceiveAndSendInterruptTimer);
 
 #  elif defined(STM32F1xx)
-    sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
+    sTimerOverflowValue = sReceiveAndSendInterruptTimer.getOverflow(TICK_FORMAT);
 
 #  elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
-    sTimerOverflowValue = sSTM32Timer.getOverflow(TICK_FORMAT);
+    sTimerOverflowValue = sReceiveAndSendInterruptTimer.getOverflow(TICK_FORMAT);
 
 #  elif defined(__STM32F1__)
-    sTimerOverflowValue = sSTM32Timer.getOverflow();
+    sTimerOverflowValue = sReceiveAndSendInterruptTimer.getOverflow();
 
 #  elif defined(ARDUINO_ARCH_SAMD)
     sTimerCompareCapureValue = TC3->COUNT16.CC[0].reg;
@@ -429,8 +473,7 @@ void storeIRTimer(void)
 /*
  * Restore settings of the timer e.g. for IRSND
  */
-void restoreIRTimer(void)
-{
+void restoreIRTimer(void) {
 #if defined(__AVR_ATmega16__)
     TCCR2 = sTimerTCCRA;
     OCR2 = sTimerOCR;
@@ -484,12 +527,26 @@ void restoreIRTimer(void)
     TCD0.INTCTRL = sTimerTIMSK;
     TCD0.CTRLA = sTimerTCCRA;
 
-#elif defined(__AVR__)
+#elif defined(OCF2B)  // __AVR_ATmega328__ here
     TCCR2A = sTimerTCCRA;
     TCCR2B = sTimerTCCRB;
     OCR2A = sTimerOCR;
     OCR2B = sTimerOCRB;
     TIMSK2 = sTimerTIMSK;
+
+#elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+    // store current timer state
+     TCCR1A = sTimerTCCRA;
+     TCCR1B = sTimerTCCRB;
+     OCR1A = sTimerOCR;
+     OCR1B = sTimerOCRB;
+#    if defined(TIMSK1)
+     TIMSK1 = sTimerTIMSK;
+#    else
+     TIMSK = sTimerTIMSK;
+#    endif
+#elif defined(__AVR__)
+// #error "This AVR CPU is not supported by IRMP"
 
 #elif defined(ESP8266)
     timer1_write(sTimerLoadValue);
@@ -497,16 +554,16 @@ void restoreIRTimer(void)
 
 #if defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 #  if defined(ESP32)
-    timerAlarmWrite(sESP32Timer, sTimerAlarmValue, true);
+    timerAlarmWrite(sReceiveAndSendInterruptTimer, sTimerAlarmValue, true);
 
 #  elif defined(STM32F1xx)
-    sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
+    sReceiveAndSendInterruptTimer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
 
 #  elif defined(ARDUINO_ARCH_STM32) // Untested! use settings from BluePill / STM32F1xx
-    sSTM32Timer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
+    sReceiveAndSendInterruptTimer.setOverflow(sTimerOverflowValue, TICK_FORMAT);
 
 #  elif defined(__STM32F1__)
-    sSTM32Timer.setOverflow(sTimerOverflowValue);
+    sReceiveAndSendInterruptTimer.setOverflow(sTimerOverflowValue);
 
 #  elif defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.CC[0].reg = sTimerCompareCapureValue;
@@ -515,10 +572,13 @@ void restoreIRTimer(void)
 //    am_hal_ctimer_compare_set(3, AM_HAL_CTIMER_TIMERB, 0, sTimerCompareCapureValue);
 
 #  elif defined(ARDUINO_ARCH_MBED)
-    sMbedTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
+    sReceiveAndSendInterruptTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
+
+#elif defined(ARDUINO_ARCH_RP2040)
+    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, NULL, &sReceiveAndSendInterruptTimer);
 
 #  elif defined(TEENSYDUINO)
-    sIntervalTimer.update(1000000 / IR_INTERRUPT_FREQUENCY);
+    sReceiveAndSendInterruptTimer.update(1000000 / IR_INTERRUPT_FREQUENCY);
 #  endif
 #endif // defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 }
@@ -527,8 +587,7 @@ void restoreIRTimer(void)
  * NOT used if IRMP_ENABLE_PIN_CHANGE_INTERRUPT is defined
  * Initialize timer to generate interrupts at a rate F_INTERRUPTS (15000) per second to poll the input pin.
  */
-void disableIRTimerInterrupt(void)
-{
+void disableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -556,23 +615,36 @@ void disableIRTimerInterrupt(void)
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     TCD0.INTCTRL = 0;           // overflow interrupt
 
-#  else
+#  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TIMSK2 = 0; // disable interrupt
+
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+#    if defined(TIMSK1)
+    TIMSK1 = 0;
+#    else
+    TIMSK = 0;
+#    endif
+
+#  else
+// #error "This AVR CPU is not supported by IRMP"
+
 #  endif // defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)
     timer1_detachInterrupt(); // disables interrupt too
 
 #elif defined(ESP32)
-    timerAlarmDisable(sESP32Timer);
+    if (sReceiveAndSendInterruptTimer != NULL) {
+        timerAlarmDisable(sReceiveAndSendInterruptTimer);
+    }
 
 #elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32)     // STM32duino by ST Microsystems.
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
-    sSTM32Timer.detachInterrupt();
+    sReceiveAndSendInterruptTimer.setMode(LL_TIM_CHANNEL_CH1, TIMER_DISABLED);
+    sReceiveAndSendInterruptTimer.detachInterrupt();
 
 #elif defined(__STM32F1__) || defined(ARDUINO_ARCH_STM32F1) // Recommended original Arduino_STM32 by Roger Clark.
-    sSTM32Timer.setMode(TIMER_CH1, TIMER_DISABLED);
-    sSTM32Timer.detachInterrupt(TIMER_CH1);
+    sReceiveAndSendInterruptTimer.setMode(TIMER_CH1, TIMER_DISABLED);
+    sReceiveAndSendInterruptTimer.detachInterrupt(TIMER_CH1);
 
 #elif defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
@@ -582,15 +654,18 @@ void disableIRTimerInterrupt(void)
 //    am_hal_ctimer_int_disable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #elif defined(ARDUINO_ARCH_MBED)
-    sMbedTimer.detach();
+    sReceiveAndSendInterruptTimer.detach();
+
+#elif defined(ARDUINO_ARCH_RP2040)
+    cancel_repeating_timer(&sReceiveAndSendInterruptTimer);
 
 #elif defined(TEENSYDUINO)
-    sIntervalTimer.end();
+    sReceiveAndSendInterruptTimer.end();
 #endif // defined(__AVR__)
 }
 
-void enableIRTimerInterrupt(void)
-{
+// used by AllProtocols example
+void enableIRTimerInterrupt(void) {
 #if defined(__AVR__)
 // Use Timer 2
 #  if defined(__AVR_ATmega16__)
@@ -618,27 +693,40 @@ void enableIRTimerInterrupt(void)
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
     TCD0.INTCTRL = TCD_OVF_bm;      // overflow interrupt
 
-#  else
+#  elif defined(OCF2B)  // __AVR_ATmega328__ here
     TIMSK2 = _BV(OCIE2B); // enable interrupt
+
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+#    if defined(TIMSK1)
+    TIMSK1 = _BV(OCIE1A);
+#    else
+    TIMSK = _BV(OCIE1A);
+#    endif
+
+#  else
+// #error "This AVR CPU is not supported by IRMP"
+
 #  endif // defined(__AVR_ATmega16__)
 
 #elif defined(ESP8266)
     timer1_attachInterrupt(irmp_timer_ISR); // enables interrupt too
 
 #elif defined(ESP32)
-    timerAlarmEnable(sESP32Timer);
+    if (sReceiveAndSendInterruptTimer != NULL) {
+        timerAlarmEnable(sReceiveAndSendInterruptTimer);
+    }
 
 #elif defined(__STM32F1__) || defined(ARDUINO_ARCH_STM32F1) // Recommended original Arduino_STM32 by Roger Clark.
     // http://dan.drown.org/stm32duino/package_STM32duino_index.json
-    sSTM32Timer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
-    sSTM32Timer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
-    sSTM32Timer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
+    sReceiveAndSendInterruptTimer.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);
+    sReceiveAndSendInterruptTimer.attachInterrupt(TIMER_CH1, irmp_timer_ISR);
+    sReceiveAndSendInterruptTimer.refresh(); // Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(STM32F1xx) || defined(ARDUINO_ARCH_STM32) // STM32duino by ST Microsystems.
     // https://github.com/stm32duino/BoardManagerFiles/raw/master/STM32/package_stm_index.json
-    sSTM32Timer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
-    sSTM32Timer.attachInterrupt(irmp_timer_ISR);
-    sSTM32Timer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
+    sReceiveAndSendInterruptTimer.setMode(LL_TIM_CHANNEL_CH1, TIMER_OUTPUT_COMPARE, NC); // used for generating only interrupts, no pin specified
+    sReceiveAndSendInterruptTimer.attachInterrupt(irmp_timer_ISR);
+    sReceiveAndSendInterruptTimer.refresh();// Set the timer's count to 0 and update the prescaler and overflow values.
 
 #elif defined(ARDUINO_ARCH_SAMD)
     TC3->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
@@ -649,10 +737,13 @@ void enableIRTimerInterrupt(void)
 //    am_hal_ctimer_int_enable(AM_HAL_CTIMER_INT_TIMERB3);
 
 #elif defined(ARDUINO_ARCH_MBED)
-    sMbedTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
+    sReceiveAndSendInterruptTimer.attach(irmp_timer_ISR, std::chrono::microseconds(1000000 / IR_INTERRUPT_FREQUENCY));
+
+#elif defined(ARDUINO_ARCH_RP2040)
+    add_repeating_timer_us(-1000000 / IR_INTERRUPT_FREQUENCY, IRTimerInterruptHandlerHelper, NULL, &sReceiveAndSendInterruptTimer);
 
 #elif defined(TEENSYDUINO)
-    sIntervalTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
+    sReceiveAndSendInterruptTimer.begin(irmp_timer_ISR, 1000000 / IR_INTERRUPT_FREQUENCY);
 #else
 #warning Board / CPU is not covered by definitions using pre-processor symbols -> no timer available. Please extend IRTimer.hpp.
 #endif // defined(__AVR__)
@@ -663,10 +754,10 @@ void enableIRTimerInterrupt(void)
 /*
  * If both irmp and irsnd are used, compile it only once in the second step, when all variables are declared.
  */
-#if (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(IRMP_ARDUINO_EXT_H) && defined(IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)
-#ifndef ISR_DEFINED
+#if (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(_IRMP_ARDUINO_EXT_H) && defined(_IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)
+#  if !defined(ISR_DEFINED)
 #define ISR_DEFINED
-#endif
+#  endif
 /*
  * ISR is active while signal is sent AND during the trailing pause of IR frame
  * Called every 13.5us
@@ -689,10 +780,10 @@ ISR(TIMER0_COMPB_vect)
 ISR(TIMER1_COMPB_vect)
 #    endif
 
-#elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
+#  elif defined(__AVR_ATmega4809__) // Uno WiFi Rev 2, Nano Every
 ISR(TCB0_INT_vect)
 
-#elif defined(__AVR_ATmega8__)
+#  elif defined(__AVR_ATmega8__)
 ISR(TIMER2_COMP_vect)
 
 #  elif defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__)  || defined(__AVR_ATmega32U2__) // Leonardo etc.
@@ -701,22 +792,33 @@ ISR(TIMER3_COMPB_vect)
 #  elif defined(__AVR_ATtiny1616__)  || defined(__AVR_ATtiny3216__) || defined(__AVR_ATtiny3217__)
 ISR(TCD0_OVF_vect)
 
-#  else
+#  elif defined(OCF2B)  // __AVR_ATmega328__ here
 ISR(TIMER2_COMPB_vect)
+
+#  elif defined(TCCR1B)  // __AVR_ATtiny88__ here
+ISR(TIMER1_COMPB_vect)
+
+#  else
+// #error "This AVR CPU is not supported by IRMP"
+
 #  endif // defined(__AVR_ATmega16__)
 
-#elif defined(ESP8266)
-// Required because irmp_ISR is declared as uint8_t
-void ICACHE_RAM_ATTR irmp_timer_ISR(void)
-
-#elif defined(ESP32)
-IRAM_ATTR void irmp_timer_ISR(void)
+#elif defined(ESP8266) || defined(ESP32)
+void IRAM_ATTR irmp_timer_ISR(void)
 
 #elif defined(ARDUINO_ARCH_SAMD)
 void TC3_Handler(void)
 
 #elif defined(STM32F1xx) && STM32_CORE_VERSION_MAJOR == 1 &&  STM32_CORE_VERSION_MINOR <= 8 // for "Generic STM32F1 series" from "STM32 Boards (selected from submenu)" of Arduino Board manager
 void irmp_timer_ISR(HardwareTimer *aDummy __attribute__((unused))) // old 1.8 version - changed in stm32duino 1.9 - 5/2020
+
+#elif defined(ARDUINO_ARCH_RP2040)
+void irmp_timer_ISR(void);
+bool IRTimerInterruptHandlerHelper(repeating_timer_t*) { // we are called with a different signature
+    irmp_timer_ISR();
+    return true;
+}
+void irmp_timer_ISR(void)
 
 #else // STM32F1xx (v1.9), __STM32F1__, ARDUINO_ARCH_APOLLO3, MBED, TEENSYDUINO
 void irmp_timer_ISR(void)
@@ -779,13 +881,16 @@ void irmp_timer_ISR(void)
             // This in turn calls irsnd_on() or irsnd_off(). Empty call requires additional 0.7 us.
             if (!irsnd_ISR())
             {
+                // End of frame
                 restoreIRTimer();
 #  if ! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
 // only send mode required -> disable interrupt
                 disableIRTimerInterrupt();
 #  endif
+                sDivider = 1; // to call irsnd_ISR() directly at next interrupt
+            } else {
+                sDivider = 4;
             }
-            sDivider = 4;
         }
     } // if(irsnd_busy)
 #endif // defined(_IRSND_H_) || defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND)
@@ -809,4 +914,4 @@ void irmp_timer_ISR(void)
     digitalWriteFast(IR_TIMING_TEST_PIN, LOW); // 2 clock cycles
 #endif
 }
-#endif // (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(IRMP_ARDUINO_EXT_H) && defined(IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)
+#endif // (! defined(USE_ONE_TIMER_FOR_IRMP_AND_IRSND) || ( defined(_IRMP_ARDUINO_EXT_H) && defined(_IRSND_ARDUINO_EXT_H) )) && ! defined(ISR_DEFINED)

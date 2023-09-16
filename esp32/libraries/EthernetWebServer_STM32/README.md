@@ -6,6 +6,9 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/EthernetWebServer_STM32.svg)](http://github.com/khoih-prog/EthernetWebServer_STM32/issues)
 
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
+
 ---
 ---
 
@@ -40,13 +43,14 @@
     * [Select **one and only one** Ethernet library to use as follows:](#select-one-and-only-one-ethernet-library-to-use-as-follows)
     * [To use built-in LAN8742A](#to-use-built-in-lan8742a)
     * [To use LAN8720](#to-use-lan8720)
-    * [To use W5x00 Ethernet, for example using EthernetLarge library](#to-use-w5x00-ethernet-for-example-using-ethernetlarge-library)
+    * [To use W5x00 Ethernet, for example using Ethernet_Generic library](#to-use-w5x00-ethernet-for-example-using-Ethernet_Generic-library)
     * [To use ENC28J60 Ethernet, using EthernetENC library (**NEW and Better**)](#to-use-enc28j60-ethernet-using-ethernetenc-library-new-and-better)
     * [To use ENC28J60 Ethernet, using UIPEthernet library](#to-use-enc28j60-ethernet-using-uipethernet-library)
+  * [2. How to select which SPI to use](#2-How-to-select-which-SPI-to-use)
   * [Important](#important)
-  * [2. How to connect or select another CS/SS pin to use](#2-how-to-connect-or-select-another-csss-pin-to-use)
-  * [3. How to increase W5x00 TX/RX buffer](#3-how-to-increase-w5x00-txrx-buffer)
-  * [4. How to adjust sendContent_P() and send_P() buffer size](#4-how-to-adjust-sendcontent_p-and-send_p-buffer-size)
+  * [3. How to connect or select another CS/SS pin to use](#3-how-to-connect-or-select-another-csss-pin-to-use)
+  * [4. How to increase W5x00 TX/RX buffer](#4-how-to-increase-w5x00-txrx-buffer)
+  * [5. How to adjust sendContent_P() and send_P() buffer size](#5-how-to-adjust-sendcontent_p-and-send_p-buffer-size)
 * [Usage](#usage)
   * [Class Constructor](#class-constructor)
   * [Basic Operation](#basic-operations)
@@ -72,6 +76,7 @@
     * [12. WebClient](examples/WebClient)
     * [13. WebClientRepeating](examples/WebClientRepeating)
     * [14. WebServer](examples/WebServer)
+    * [15. multiFileProject](examples/multiFileProject) **New**
   * [HTTP and WebSocket Client New Examples](#http-and-websocket-client-new-examples)
     * [ 1. BasicAuthGet](examples/HTTPClient/BasicAuthGet)
     * [ 2. CustomHeader](examples/HTTPClient/CustomHeader)
@@ -121,16 +126,17 @@
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [ 1. AdvancedWebServer on NUCLEO_F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library](#1-advancedwebserver-on-nucleo_f767zi-using-built-in-lan8742a-ethernet-and-stm32ethernet-library)
   * [ 2. WebClientRepeating on NUCLEO_F767ZI using ENC28J60 and new EthernetENC Library](#2-webclientrepeating-on-nucleo_f767zi-using-enc28j60-and-new-ethernetenc-library)
-  * [ 3. UdpNTPClient on NUCLEO_F767ZI using W5500 and Ethernet2 Library](#3-udpntpclient-on-nucleo_f767zi-using-w5500-and-ethernet2-library)
+  * [ 3. UdpNTPClient on NUCLEO_F767ZI using W5500 and Ethernet_Generic Library](#3-udpntpclient-on-nucleo_f767zi-using-w5500-and-Ethernet_Generic-library)
   * [ 4. SimpleWebSocket on NUCLEO_F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library](#4-simplewebsocket-on-nucleo_f767zi-using-built-in-lan8742a-ethernet-and-stm32ethernet-library)
-  * [ 5. SimpleWebSocket on NUCLEO_F767ZI using W5x00 and Ethernet3 Library](#5-simplewebsocket-on-nucleo_f767zi-using-w5x00-and-ethernet3-library)
+  * [ 5. SimpleWebSocket on NUCLEO_F767ZI using W5x00 and Ethernet_Generic Library](#5-simplewebsocket-on-nucleo_f767zi-using-w5x00-and-Ethernet_Generic-library)
   * [ 6. SimpleHTTPExample on NUCLEO_F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library](#6-simplehttpexample-on-nucleo_f767zi-using-built-in-lan8742a-ethernet-and-stm32ethernet-library)
   * [ 7. MQTTClient_Auth on NUCLEO_F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library](#7-mqttclient_auth-on-nucleo_f767zi-using-built-in-lan8742a-ethernet-and-stm32ethernet-library)
   * [ 8. MQTTClient_Auth on NUCLEO_F767ZI using ENC28J60 and EthernetENC Library](#8-mqttclient_auth-on-nucleo_f767zi-using-enc28j60-and-ethernetenc-library)
-  * [ 9. MQTTClient_Auth on NUCLEO_F767ZI using W5x00 and Ethernet2 Library](#9-mqttclient_auth-on-nucleo_f767zi-using-w5x00-and-ethernet2-library)
+  * [ 9. MQTTClient_Auth on NUCLEO_F767ZI using W5x00 and Ethernet_Generic Library](#9-mqttclient_auth-on-nucleo_f767zi-using-w5x00-and-Ethernet_Generic-library)
   * [10. SimpleWebSocket_LAN8720 on BLACK_F407VE using LAN8720 Ethernet and STM32Ethernet Library](#10-simplewebsocket_lan8720-on-black_f407ve-using-lan8720-ethernet-and-stm32ethernet-library)
   * [11. WebClient_LAN8720 on BLACK_F407VE using LAN8720 Ethernet and STM32Ethernet Library](#11-webclient_lan8720-on-black_f407ve-using-lan8720-ethernet-and-stm32ethernet-library)
   * [12. AdvancedWebServer_LAN8720 on BLACK_F407VE using LAN8720 Ethernet and STM32Ethernet Library](#12-advancedwebserver_lan8720-on-black_f407ve-using-lan8720-ethernet-and-stm32ethernet-library)
+  * [13. AdvancedWebServer on NUCLEO_L552ZE_Q with W5x00 using Ethernet_Generic Library and custom SPI](#13-AdvancedWebServer-on-NUCLEO_L552ZE_Q-with-W5x00-using-Ethernet_Generic-Library-and-custom-SPI)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Not supported boards](#Not-supported-boards)
@@ -237,7 +243,7 @@ Check [`EthernetWebServer Library Issue: Support for STM32F Series`](https://git
 - Nucleo-64
 - Discovery
 - Generic STM32F0, STM32F1, STM32F2, STM32F3, STM32F4, STM32F7 (with 64+K Flash): x8 and up
-- STM32L0, STM32L1, STM32L4
+- STM32L0, STM32L1, STM32L4, STM32L5
 - STM32G0, STM32G4
 - STM32H7
 - STM32WB
@@ -255,11 +261,13 @@ Check [`EthernetWebServer Library Issue: Support for STM32F Series`](https://git
 
 #### Currently supported Ethernet shields/modules
 
-1. W5x00 using [`Ethernet`](https://www.arduino.cc/en/Reference/Ethernet), [`EthernetLarge`](https://github.com/OPEnSLab-OSU/EthernetLarge), [`Ethernet2`](https://github.com/adafruit/Ethernet2) or [`Ethernet3`](https://github.com/sstaub/Ethernet3) library
+1. W5x00 using [`Ethernet_Generic`](https://github.com/khoih-prog/Ethernet_Generic) library
 
-2. ENC28J60 using new [`EthernetENC`](https://github.com/jandrassy/EthernetENC) or [`UIPEthernet`](https://github.com/UIPEthernet/UIPEthernet) library
+2. W5x00 using [`Ethernet`](https://www.arduino.cc/en/Reference/Ethernet), [`EthernetLarge`](https://github.com/OPEnSLab-OSU/EthernetLarge), [`Ethernet2`](https://github.com/adafruit/Ethernet2) or [`Ethernet3`](https://github.com/sstaub/Ethernet3) library
 
-3. LAN8720 using new [`STM32Ethernet`](https://github.com/stm32duino/STM32Ethernet) and [`LwIP`](https://github.com/stm32duino/LwIP) libraries.
+3. ENC28J60 using new [`EthernetENC`](https://github.com/jandrassy/EthernetENC) or [`UIPEthernet`](https://github.com/UIPEthernet/UIPEthernet) library
+
+4. LAN8720 using new [`STM32Ethernet`](https://github.com/stm32duino/STM32Ethernet) and [`LwIP`](https://github.com/stm32duino/LwIP) libraries.
 
 ---
 ---
@@ -267,20 +275,17 @@ Check [`EthernetWebServer Library Issue: Support for STM32F Series`](https://git
 
 ## Prerequisites
 
- 1. [`Arduino IDE 1.8.16+` for Arduino](https://www.arduino.cc/en/Main/Software)
- 2. [`Arduino Core for STM32 v2.1.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
- 3.  [`Functional-VLPP library v1.0.2+`](https://github.com/khoih-prog/functional-vlpp) to use server's lambda function. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Functional-Vlpp.svg?)](https://www.ardu-badge.com/Functional-Vlpp)
+ 1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
+ 2. [`Arduino Core for STM32 v2.2.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
+ 3.  [`Functional-Vlpp library v1.0.2+`](https://github.com/khoih-prog/functional-vlpp) to use server's lambda function. To install. check [![arduino-library-badge](https://www.ardu-badge.com/badge/Functional-Vlpp.svg?)](https://www.ardu-badge.com/Functional-Vlpp)
  4. For built-in LAN8742A or LAN8720 Ethernet:
-   - [`STM32Ethernet library v1.2.0+`](https://github.com/stm32duino/STM32Ethernet) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/STM32Ethernet.svg)](https://github.com/stm32duino/STM32Ethernet/releases/latest)
+   - [`STM32Ethernet library v1.3.0+`](https://github.com/stm32duino/STM32Ethernet) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/STM32Ethernet.svg)](https://github.com/stm32duino/STM32Ethernet/releases/latest)
    - [`LwIP library v2.1.2+`](https://github.com/stm32duino/LwIP) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/LwIP.svg)](https://github.com/stm32duino/LwIP/releases/latest)
  5. For W5x00 Ethernet:
-   - [`Ethernet library v2.0.0+`](https://github.com/arduino-libraries/Ethernet) for W5100, W5200 and W5500.  [![GitHub release](https://img.shields.io/github/release/arduino-libraries/Ethernet.svg)](https://github.com/arduino-libraries/Ethernet/releases/latest)
-   - [`EthernetLarge library v2.0.0+`](https://github.com/OPEnSLab-OSU/EthernetLarge) for W5100, W5200 and W5500.
-   - [`Ethernet2 library v1.0.4+`](https://github.com/khoih-prog/Ethernet2) for W5500. [![GitHub release](https://img.shields.io/github/release/adafruit/Ethernet2.svg)](https://github.com/adafruit/Ethernet2/releases/latest)
-   - [`Ethernet3 library v1.5.5+`](https://github.com/sstaub/Ethernet3) for W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip. [![GitHub release](https://img.shields.io/github/release/sstaub/Ethernet3.svg)](https://github.com/sstaub/Ethernet3/releases/latest)
+   - [`Ethernet_Generic library v2.2.0+`](https://github.com/khoih-prog/Ethernet_Generic) for W5100, W5200 and W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip.  [![GitHub release](https://img.shields.io/github/release/khoih-prog/Ethernet_Generic.svg)](https://github.com/khoih-prog/Ethernet_Generic/releases/latest)
  6. For ENC28J60 Ethernet:
-   - [`EthernetENC library v2.0.0+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
-   - [`UIPEthernet library v2.0.10+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
+   - [`EthernetENC library v2.0.2+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
+   - [`UIPEthernet library v2.0.11+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
 
 
 ---
@@ -304,7 +309,7 @@ You can also use this link [![arduino-library-badge](https://www.ardu-badge.com/
 
 1. Install [VS Code](https://code.visualstudio.com/)
 2. Install [PlatformIO](https://platformio.org/platformio-ide)
-3. Install [**EthernetWebServer_STM32** library](https://platformio.org/lib/show/7077/EthernetWebServer_STM32) by using [Library Manager](https://platformio.org/lib/show/7077/EthernetWebServer_STM32/installation). Search for **EthernetWebServer_STM32** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
+3. Install [**EthernetWebServer_STM32** library](https://registry.platformio.org/libraries/khoih-prog/EthernetWebServer_STM32) by using [Library Manager](https://registry.platformio.org/libraries/khoih-prog/EthernetWebServer_STM32/installation). Search for **EthernetWebServer_STM32** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
 4. Use included [platformio.ini](platformio/platformio.ini) file from examples to ensure that all dependent libraries will installed automatically. Please visit documentation for the other options and examples at [Project Configuration File](https://docs.platformio.org/page/projectconf.html)
 
 ---
@@ -320,12 +325,12 @@ To use LAN8720 on some STM32 boards
 - **Discovery (DISCO_F746NG)**
 - **STM32F4 boards (BLACK_F407VE, BLACK_F407VG, BLACK_F407ZE, BLACK_F407ZG, BLACK_F407VE_Mini, DIYMORE_F407VGT, FK407M1)**
 
-you have to copy the files [stm32f4xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/2.1.0/system/STM32F4xx) and [stm32f7xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/2.1.0/system/STM32F7xx) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/2.1.0/system) to overwrite the old files.
+you have to copy the files [stm32f4xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/2.2.0/system/STM32F4xx) and [stm32f7xx_hal_conf_default.h](Packages_Patches/STM32/hardware/stm32/2.2.0/system/STM32F7xx) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/2.2.0/system) to overwrite the old files.
 
-Supposing the STM32 stm32 core version is 2.1.0. These files must be copied into the directory:
+Supposing the STM32 stm32 core version is 2.2.0. These files must be copied into the directory:
 
-- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/system/STM32F4xx/stm32f4xx_hal_conf_default.h` for STM32F4.
-- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/system/STM32F7xx/stm32f7xx_hal_conf_default.h` for Nucleo-144 STM32F7.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.2.0/system/STM32F4xx/stm32f4xx_hal_conf_default.h` for STM32F4.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.2.0/system/STM32F7xx/stm32f7xx_hal_conf_default.h` for Nucleo-144 STM32F7.
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz,
 theses files must be copied into the corresponding directory:
@@ -336,12 +341,12 @@ theses files must be copied into the corresponding directory:
 
 #### 2. For STM32 boards to use Serial1
 
-**To use Serial1 on some STM32 boards without Serial1 definition (Nucleo-144 NUCLEO_F767ZI, Nucleo-64 NUCLEO_L053R8, etc.) boards**, you have to copy the files [STM32 variant.h](Packages_Patches/STM32/hardware/stm32/2.1.0) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/2.1.0). You have to modify the files corresponding to your boards, this is just an illustration how to do.
+**To use Serial1 on some STM32 boards without Serial1 definition (Nucleo-144 NUCLEO_F767ZI, Nucleo-64 NUCLEO_L053R8, etc.) boards**, you have to copy the files [STM32 variant.h](Packages_Patches/STM32/hardware/stm32/2.2.0) into STM32 stm32 directory (~/.arduino15/packages/STM32/hardware/stm32/2.2.0). You have to modify the files corresponding to your boards, this is just an illustration how to do.
 
-Supposing the STM32 stm32 core version is 2.1.0. These files must be copied into the directory:
+Supposing the STM32 stm32 core version is 2.2.0. These files must be copied into the directory:
 
-- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/variants/STM32F7xx/F765Z(G-I)T_F767Z(G-I)T_F777ZIT/NUCLEO_F767ZI/variant.h` for Nucleo-144 NUCLEO_F767ZI.
-- `~/.arduino15/packages/STM32/hardware/stm32/2.1.0/variants/STM32L0xx/L052R(6-8)T_L053R(6-8)T_L063R8T/NUCLEO_L053R8/variant.h` for Nucleo-64 NUCLEO_L053R8.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.2.0/variants/STM32F7xx/F765Z(G-I)T_F767Z(G-I)T_F777ZIT/NUCLEO_F767ZI/variant.h` for Nucleo-144 NUCLEO_F767ZI.
+- `~/.arduino15/packages/STM32/hardware/stm32/2.2.0/variants/STM32L0xx/L052R(6-8)T_L053R(6-8)T_L063R8T/NUCLEO_L053R8/variant.h` for Nucleo-64 NUCLEO_L053R8.
 
 Whenever a new version is installed, remember to copy this file into the new version directory. For example, new version is x.yy.zz,
 theses files must be copied into the corresponding directory:
@@ -367,6 +372,8 @@ To fix [`Ethernet library`](https://www.arduino.cc/en/Reference/Ethernet), just 
 - [w5100.h](LibraryPatches/Ethernet/src/utility/w5100.h)
 - [w5100.cpp](LibraryPatches/Ethernet/src/utility/w5100.cpp)
 
+You can also use the forked and modified library at [Patched Ethernet](https://github.com/khoih-prog/Ethernet)
+
 #### 3. For EthernetLarge library
 
 To fix [`EthernetLarge library`](https://github.com/OPEnSLab-OSU/EthernetLarge), just copy these following files into the [`EthernetLarge library`](https://github.com/OPEnSLab-OSU/EthernetLarge) directory to overwrite the old files:
@@ -376,6 +383,7 @@ To fix [`EthernetLarge library`](https://github.com/OPEnSLab-OSU/EthernetLarge),
 - [w5100.h](LibraryPatches/EthernetLarge/src/utility/w5100.h)
 - [w5100.cpp](LibraryPatches/EthernetLarge/src/utility/w5100.cpp)
 
+You can also use the forked and modified library at [Patched EthernetLarge](https://github.com/khoih-prog/EthernetLarge)
 
 #### 4. For Ethernet2 library
 
@@ -389,11 +397,15 @@ To add UDP Multicast support, necessary for the [**UPnP_Generic library**](https
 - [EthernetUdp2.h](LibraryPatches/Ethernet2/src/EthernetUdp2.h)
 - [EthernetUdp2.cpp](LibraryPatches/Ethernet2/src/EthernetUdp2.cpp)
 
+You can also use the forked and modified library at [Patched Ethernet2](https://github.com/khoih-prog/Ethernet2)
+
 #### 5. For Ethernet3 library
 
-To fix [`Ethernet3 library`](https://github.com/sstaub/Ethernet3), just copy these following files into the [`Ethernet3 library`](https://github.com/sstaub/Ethernet3) directory to overwrite the old files:
+5. To fix [`Ethernet3 library`](https://github.com/sstaub/Ethernet3), just copy these following files into the [`Ethernet3 library`](https://github.com/sstaub/Ethernet3) directory to overwrite the old files:
 - [Ethernet3.h](LibraryPatches/Ethernet3/src/Ethernet3.h)
 - [Ethernet3.cpp](LibraryPatches/Ethernet3/src/Ethernet3.cpp)
+
+You can also use the forked and modified library at [Patched Ethernet3](https://github.com/khoih-prog/Ethernet3)
 
 #### 6. For UIPEthernet library
 
@@ -417,9 +429,9 @@ Check if you need to install the UIPthernet patch [new STM32 core F3/F4 compatib
 
 #### Select **one and only one** Ethernet library to use as follows:
 
-- Standard W5x00 Ethernet library 
+- Standard W5x00 Ethernet_Generic library 
 
-Standard W5x00 using Ethernet library is used by default, in the sketch, just be sure to comment out or leave these #defines to be false :
+Standard W5x00 is using `Ethernet_Generic` library by default, in the sketch, just be sure to comment out or leave these #defines to be false :
 
 ```cpp
 #define USE_BUILTIN_ETHERNET    false
@@ -427,10 +439,7 @@ Standard W5x00 using Ethernet library is used by default, in the sketch, just be
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
   // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
+  #define USE_ETHERNET_GENERIC  true
   #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      false
   #define USE_CUSTOM_ETHERNET   false
@@ -445,10 +454,7 @@ Standard W5x00 using Ethernet library is used by default, in the sketch, just be
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
   // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
+  #define USE_ETHERNET_GENERIC  false
   #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      false
   #define USE_CUSTOM_ETHERNET   false
@@ -464,17 +470,14 @@ Standard W5x00 using Ethernet library is used by default, in the sketch, just be
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
   // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
+  #define USE_ETHERNET_GENERIC  false
   #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      false
   #define USE_CUSTOM_ETHERNET   false
 #endif
 ```
 
-#### To use W5x00 Ethernet, for example using EthernetLarge library
+#### To use W5x00 Ethernet, for example using Ethernet_Generic library
 
 ```cpp
 #define USE_BUILTIN_ETHERNET    false
@@ -482,10 +485,7 @@ Standard W5x00 using Ethernet library is used by default, in the sketch, just be
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
   // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    true
+  #define USE_ETHERNET_GENERIC  true
   #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      false
   #define USE_CUSTOM_ETHERNET   false
@@ -500,10 +500,7 @@ Standard W5x00 using Ethernet library is used by default, in the sketch, just be
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
   // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
+  #define USE_ETHERNET_GENERIC  false
   #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      true
   #define USE_CUSTOM_ETHERNET   false
@@ -518,28 +515,7 @@ Standard W5x00 using Ethernet library is used by default, in the sketch, just be
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
   // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
-  #define USE_ETHERNET_ESP8266  false
-  #define USE_ETHERNET_ENC      false
-  #define USE_CUSTOM_ETHERNET   false
-#endif
-```
-
-- To use any of the Ethernet libraries, such as Ethernet2, Ethernet3, EthernetLarge, EthernetENC:
-
-```cpp
-#define USE_BUILTIN_ETHERNET    false
-#define USE_UIP_ETHERNET        false
-
-#if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-  // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         true
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
+  #define USE_ETHERNET_GENERIC  false
   #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      false
   #define USE_CUSTOM_ETHERNET   false
@@ -547,7 +523,7 @@ Standard W5x00 using Ethernet library is used by default, in the sketch, just be
 ```
 
 - To use another Ethernet library
-For example, Ethernet_XYZ library uses **Ethernet_XYZ.h**
+For example, EthernetLarge library
 
 ```cpp
 #define USE_BUILTIN_ETHERNET    false
@@ -555,10 +531,7 @@ For example, Ethernet_XYZ library uses **Ethernet_XYZ.h**
 
 #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
   // Only one of the following to be true
-  #define USE_ETHERNET          false
-  #define USE_ETHERNET2         false
-  #define USE_ETHERNET3         false
-  #define USE_ETHERNET_LARGE    false
+  #define USE_ETHERNET_GENERIC  false
   #define USE_ETHERNET_ESP8266  false
   #define USE_ETHERNET_ENC      false
   #define USE_CUSTOM_ETHERNET   true
@@ -568,19 +541,69 @@ For example, Ethernet_XYZ library uses **Ethernet_XYZ.h**
 
 #elif USE_CUSTOM_ETHERNET
   //#include "Ethernet_XYZ.h"
-  #include "EthernetENC.h"
+  #include "EthernetLarge.h"
   #warning Using Custom Ethernet library. You must include a library and initialize.
   #define SHIELD_TYPE           "Custom Ethernet & Ethernet_XYZ Library"
 #else
-  #define USE_ETHERNET          true
-  #include "Ethernet.h"
-  #warning Using Ethernet lib
-  #define SHIELD_TYPE           "W5x00 & Ethernet Library"
+  #define USE_ETHERNET_GENERIC   true
+  #include "Ethernet_Generic.h"
+  #warning Using default Ethernet_Generic lib
+  #define SHIELD_TYPE           "W5x00 using default Ethernet_Generic Library"
 #endif  
 ...
 
 #include <EthernetWebServer.h>
 ```
+
+#### 2. How to select which SPI to use
+
+
+To use standard SPI, check if 
+
+```cpp
+#define USING_CUSTOM_SPI        false
+#define USING_SPI2              false
+```
+
+
+To use SPI2 or any custom SPI
+
+
+```cpp
+// Be sure to use true only if necessary for your board, or compile error
+#define USING_CUSTOM_SPI            true
+
+#if ( USING_CUSTOM_SPI )
+  // Currently test OK for F767ZI and L552ZE_Q
+  #define USING_SPI2                  true
+
+  #if (USING_SPI2)
+    //#include <SPI.h>
+    // For L552ZE-Q, F767ZI, but you can change the pins for any other boards
+    // SCK: 23,  MOSI: 22, MISO: 25, SS/CS: 24 for SPI1
+    #define CUR_PIN_MISO              25
+    #define CUR_PIN_MOSI              22
+    #define CUR_PIN_SCK               23
+    #define CUR_PIN_SS                24
+
+    #define SPI_NEW_INITIALIZED       true
+
+    // Don't create the instance with CUR_PIN_SS, or Ethernet not working
+    // To change for other boards' SPI libraries
+    SPIClass SPI_New(CUR_PIN_MOSI, CUR_PIN_MISO, CUR_PIN_SCK);
+    
+    //#warning Using USE_THIS_SS_PIN = CUR_PIN_SS = 24
+
+    #if defined(USE_THIS_SS_PIN)
+      #undef USE_THIS_SS_PIN
+    #endif   
+    #define USE_THIS_SS_PIN       CUR_PIN_SS    //24
+    
+  #endif
+  
+#endif
+```
+
 
 ---
 
@@ -591,7 +614,7 @@ For example, Ethernet_XYZ library uses **Ethernet_XYZ.h**
 
 ---
 
-### 2. How to connect or select another CS/SS pin to use
+### 3. How to connect or select another CS/SS pin to use
 
 **The default CS/SS pin is 10 for all boards, and is configurable in code.**
 
@@ -616,22 +639,31 @@ Increase debug level to 2 in `defines.h` of any example:
 #define _ETHERNET_WEBSERVER_LOGLEVEL_       2
 ```
 
-The Debug Terminal will then show that the current SPI pin usage of **NUCLEO_F767ZI ==> SS/CS: D10, MOSI: D11, MISO: D12 and SCK: D13**
+The Debug Terminal will then show that the current SPI pin usage of **NUCLEO_F767ZI ==> SS/CS: D10, MOSI: D11, MISO: D12 and SCK: D13** when using W5x00
 
 ```
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
+
+Start AdvancedWebServer on NUCLEO_F767ZI, using W5x00 using Ethernet_Generic Library
+EthernetWebServer_STM32 v1.5.0
+[EWS] Board : NUCLEO_F767ZI , setCsPin: 10
+[EWS] Default SPI pinout:
+[EWS] MOSI: 11
+[EWS] MISO: 12
+[EWS] SCK: 13
+[EWS] SS: 10
+[EWS] =========================
+Connected! IP address: 192.168.2.89
 ```
 
 Connect the wires according to the displayed information.
 
 
-### 3. How to increase W5x00 TX/RX buffer
+### 4. How to increase W5x00 TX/RX buffer
+
+- For **Ethernet_Generic** library only,  simply use as follows to have large buffer similar to EthernetLarge library
+```
+#define ETHERNET_LARGE_BUFFERS
+```
 
 - For **Ethernet3** library only,  use as follows
 
@@ -646,7 +678,7 @@ Connect the wires according to the displayed information.
 ```
 
 
-### 4. How to adjust sendContent_P() and send_P() buffer size
+### 5. How to adjust sendContent_P() and send_P() buffer size
 
 sendContent_P() and send_P() buffer size is set default at 4 Kbytes, and minimum is 512 bytes. If you need to change, just add a definition, e.g.:
 
@@ -892,6 +924,7 @@ Connect FDTI (USB to Serial) as follows:
 12. [WebClient](examples/WebClient)
 13. [WebClientRepeating](examples/WebClientRepeating)
 14. [WebServer](examples/WebServer)
+15. [multiFileProject](examples/multiFileProject) **New**
 
 #### HTTP and WebSocket Client New Examples
 
@@ -949,344 +982,13 @@ Connect FDTI (USB to Serial) as follows:
 
 #### 1. File [AdvancedWebServer.ino](examples/AdvancedWebServer/AdvancedWebServer.ino)
 
+https://github.com/khoih-prog/EthernetWebServer_STM32/blob/7b79d4dc38f194ba00d51de8cfb7389e68af4360/examples/AdvancedWebServer/AdvancedWebServer.ino#L40-L269
 
-```cpp
-/*
-   Currently support
-   1) STM32 boards with built-in Ethernet (to use USE_BUILTIN_ETHERNET = true) such as :
-      - Nucleo-144 (F429ZI, F767ZI)
-      - Discovery (STM32F746G-DISCOVERY)
-      - STM32 boards (STM32F/L/H/G/WB/MP1) with 32K+ Flash, with Built-in Ethernet, 
-      - See How To Use Built-in Ethernet at (https://github.com/khoih-prog/EthernetWebServer_STM32/issues/1)
-   2) STM32F/L/H/G/WB/MP1 boards (with 32+K Flash) running ENC28J60 shields (to use USE_BUILTIN_ETHERNET = false)
-   3) STM32F/L/H/G/WB/MP1 boards (with 32+K Flash) running W5x00 shields
-*/
-
-#include "defines.h"
-
-EthernetWebServer server(80);
-
-const int led = 13;
-
-void handleRoot()
-{
-  digitalWrite(led, 1);
-
-#define BUFFER_SIZE     400
-
-  char temp[BUFFER_SIZE];
-  int sec = millis() / 1000;
-  int min = sec / 60;
-  int hr = min / 60;
-  int day = hr / 24;
-
-  hr = hr % 24;
-
-  snprintf(temp, BUFFER_SIZE - 1,
-           "<html>\
-<head>\
-<meta http-equiv='refresh' content='5'/>\
-<title>AdvancedWebServer %s</title>\
-<style>\
-body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Color: #000088; }\
-</style>\
-</head>\
-<body>\
-<h2>Hi from EthernetWebServer!</h2>\
-<h3>on %s</h3>\
-<p>Uptime: %d d %02d:%02d:%02d</p>\
-<img src=\"/test.svg\" />\
-</body>\
-</html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
-
-  server.send(200, "text/html", temp);
-
-  digitalWrite(led, 0);
-}
-
-void handleNotFound()
-{
-  digitalWrite(led, 1);
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-
-  for (uint8_t i = 0; i < server.args(); i++)
-  {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
-
-  server.send(404, "text/plain", message);
-  digitalWrite(led, 0);
-}
-
-void drawGraph()
-{
-  String out;
-  out.reserve(3000);
-  char temp[70];
-  out += "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n";
-  out += "<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"1\" stroke=\"rgb(0, 0, 0)\" />\n";
-  out += "<g stroke=\"black\">\n";
-  int y = rand() % 130;
-
-  for (int x = 10; x < 300; x += 10)
-  {
-    int y2 = rand() % 130;
-    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"1\" />\n", x, 140 - y, x + 10, 140 - y2);
-    out += temp;
-    y = y2;
-  }
-  out += "</g>\n</svg>\n";
-
-  server.send(200, "image/svg+xml", out);
-}
-
-void setup(void)
-{
-  pinMode(led, OUTPUT);
-  digitalWrite(led, 0);
-
-  Serial.begin(115200);
-  Serial.println("\nStart AdvancedWebServer on " + String(BOARD_NAME) + ", using " + String(SHIELD_TYPE));
-  Serial.println(ETHERNET_WEBSERVER_STM32_VERSION);
-
-  ET_LOGWARN3(F("Board :"), BOARD_NAME, F(", setCsPin:"), USE_THIS_SS_PIN);
-
-  ET_LOGWARN(F("Default SPI pinout:"));
-  ET_LOGWARN1(F("MOSI:"), MOSI);
-  ET_LOGWARN1(F("MISO:"), MISO);
-  ET_LOGWARN1(F("SCK:"),  SCK);
-  ET_LOGWARN1(F("SS:"),   SS);
-  ET_LOGWARN(F("========================="));
-
-  #if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-    // For other boards, to change if necessary
-    #if ( USE_ETHERNET || USE_ETHERNET_LARGE || USE_ETHERNET2  || USE_ETHERNET_ENC )
-      // Must use library patch for Ethernet, Ethernet2, EthernetLarge libraries
-      Ethernet.init (USE_THIS_SS_PIN);
-    
-    #elif USE_ETHERNET3
-      // Use  MAX_SOCK_NUM = 4 for 4K, 2 for 8K, 1 for 16K RX/TX buffer
-      #ifndef ETHERNET3_MAX_SOCK_NUM
-        #define ETHERNET3_MAX_SOCK_NUM      4
-      #endif
-    
-      Ethernet.setCsPin (USE_THIS_SS_PIN);
-      Ethernet.init (ETHERNET3_MAX_SOCK_NUM);
-  
-    #elif USE_CUSTOM_ETHERNET
-      // You have to add initialization for your Custom Ethernet here
-      // This is just an example to setCSPin to USE_THIS_SS_PIN, and can be not correct and enough
-      //Ethernet.init(USE_THIS_SS_PIN);
-      
-    #endif  //( ( USE_ETHERNET || USE_ETHERNET_LARGE || USE_ETHERNET2  || USE_ETHERNET_ENC )
-  #endif
-  
-  // start the ethernet connection and the server:
-  // Use DHCP dynamic IP and random mac
-  uint16_t index = millis() % NUMBER_OF_MAC;
-  // Use Static IP
-  //Ethernet.begin(mac[index], ip);
-  Ethernet.begin(mac[index]);
-
-  server.on("/", handleRoot);
-  server.on("/test.svg", drawGraph);
-  server.on("/inline", []()
-  {
-    server.send(200, "text/plain", "This works as well");
-  });
-
-  server.onNotFound(handleNotFound);
-  server.begin();
-
-  Serial.print(F("HTTP EthernetWebServer is @ IP : "));
-  Serial.println(Ethernet.localIP());
-}
-
-void loop(void)
-{
-  server.handleClient();
-}
-```
 
 #### 2. File [defines.h](examples/AdvancedWebServer/defines.h)
 
-```cpp
-#ifndef defines_h
-#define defines_h
+https://github.com/khoih-prog/EthernetWebServer_STM32/blob/7b79d4dc38f194ba00d51de8cfb7389e68af4360/examples/AdvancedWebServer/defines.h#L13-L224
 
-#if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
-       defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
-       defined(STM32WB) || defined(STM32MP1) )
-  #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
-#endif
-
-#define DEBUG_ETHERNET_WEBSERVER_PORT       Serial
-
-// Debug Level from 0 to 4
-#define _ETHERNET_WEBSERVER_LOGLEVEL_       2
-
-// If USE_BUILTIN_ETHERNET == false and USE_UIP_ETHERNET == false => 
-// either use W5x00 with EthernetXYZ library
-// or ENC28J60 with EthernetENC library
-//#define USE_BUILTIN_ETHERNET    true
-#define USE_BUILTIN_ETHERNET    false
-
-//#define USE_UIP_ETHERNET        true
-#define USE_UIP_ETHERNET        false
-
-// To override the default CS/SS pin. Don't use unless you know exactly which pin to use
-// You can define here or customize for each board at same place with BOARD_TYPE
-//#define USE_THIS_SS_PIN   22  //21  //5 //4 //2 //15
-// Default pin 10 to SS/CS. To change according to your board, if necessary
-#define USE_THIS_SS_PIN       10
-
-#if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-  // Only one if the following to be true
-  #define USE_ETHERNET          false //true
-  #define USE_ETHERNET2         false //true
-  #define USE_ETHERNET3         false //true
-  #define USE_ETHERNET_LARGE    false
-  #define USE_ETHERNET_ESP8266  false //true
-  #define USE_ETHERNET_ENC      true
-  #define USE_CUSTOM_ETHERNET   false
-#endif
-
-#if ( USE_ETHERNET2 || USE_ETHERNET3 || USE_ETHERNET_LARGE || USE_ETHERNET_ESP8266 || USE_ETHERNET_ENC )
-  #ifdef USE_CUSTOM_ETHERNET
-    #undef USE_CUSTOM_ETHERNET
-  #endif
-  #define USE_CUSTOM_ETHERNET   false //true
-#endif
-
-#if (USE_BUILTIN_ETHERNET)
-  #warning Using LAN8742A Ethernet & STM32Ethernet lib
-  #define SHIELD_TYPE           "LAN8742A Ethernet & STM32Ethernet Library"
-#elif (USE_UIP_ETHERNET)
-  #warning Using ENC28J60 & UIPEthernet lib
-  #define SHIELD_TYPE           "ENC28J60 & UIPEthernet Library"
-#elif USE_ETHERNET3
-  #include "Ethernet3.h"
-  #warning Using W5x00 & Ethernet3 lib
-  #define SHIELD_TYPE           "W5x00 & Ethernet3 Library"
-#elif USE_ETHERNET2
-  #include "Ethernet2.h"
-  #warning Using W5x00 & Ethernet2 lib
-  #define SHIELD_TYPE           "W5x00 & Ethernet2 Library"
-#elif USE_ETHERNET_LARGE
-  #include "EthernetLarge.h"
-  #warning Using W5x00 & EthernetLarge lib
-  #define SHIELD_TYPE           "W5x00 & EthernetLarge Library"
-#elif USE_ETHERNET_ESP8266
-  #include "Ethernet_ESP8266.h"
-  #warning Using W5x00 & Ethernet_ESP8266 lib 
-  #define SHIELD_TYPE           "W5x00 & Ethernet_ESP8266 Library" 
-#elif USE_ETHERNET_ENC
-  #include "EthernetENC.h"
-  #warning Using ENC28J60 & EthernetENC lib
-  #define SHIELD_TYPE           "ENC28J60 & EthernetENC Library"
-#elif USE_CUSTOM_ETHERNET
-  //#include "Ethernet_XYZ.h"
-  #include "EthernetENC.h"
-  #warning Using Custom Ethernet library. You must include a library and initialize.
-  #define SHIELD_TYPE           "Custom Ethernet & Ethernet_XYZ Library"
-#else
-  #define USE_ETHERNET          true
-  #include "Ethernet.h"
-  #warning Using Ethernet lib
-  #define SHIELD_TYPE           "W5x00 & Ethernet Library"
-#endif
-
-#if defined(STM32F0)
-  #warning STM32F0 board selected
-  #define BOARD_TYPE  "STM32F0"
-#elif defined(STM32F1)
-  #warning STM32F1 board selected
-  #define BOARD_TYPE  "STM32F1"
-#elif defined(STM32F2)
-  #warning STM32F2 board selected
-  #define BOARD_TYPE  "STM32F2"
-#elif defined(STM32F3)
-  #warning STM32F3 board selected
-  #define BOARD_TYPE  "STM32F3"
-#elif defined(STM32F4)
-  #warning STM32F4 board selected
-  #define BOARD_TYPE  "STM32F4"
-#elif defined(STM32F7)
-  #warning STM32F7 board selected
-  #define BOARD_TYPE  "STM32F7"
-#elif defined(STM32L0)
-  #warning STM32L0 board selected
-  #define BOARD_TYPE  "STM32L0"
-#elif defined(STM32L1)
-  #warning STM32L1 board selected
-  #define BOARD_TYPE  "STM32L1"
-#elif defined(STM32L4)
-  #warning STM32L4 board selected
-  #define BOARD_TYPE  "STM32L4"
-#elif defined(STM32H7)
-  #warning STM32H7 board selected
-  #define BOARD_TYPE  "STM32H7"
-#elif defined(STM32G0)
-  #warning STM32G0 board selected
-  #define BOARD_TYPE  "STM32G0"
-#elif defined(STM32G4)
-  #warning STM32G4 board selected
-  #define BOARD_TYPE  "STM32G4"
-#elif defined(STM32WB)
-  #warning STM32WB board selected
-  #define BOARD_TYPE  "STM32WB"
-#elif defined(STM32MP1)
-  #warning STM32MP1 board selected
-  #define BOARD_TYPE  "STM32MP1"
-#else
-  #warning STM32 unknown board selected
-  #define BOARD_TYPE  "STM32 Unknown"
-#endif
-
-#ifndef BOARD_NAME
-  #define BOARD_NAME    BOARD_TYPE
-#endif
-
-#include <EthernetWebServer_STM32.h>
-
-// Enter a MAC address and IP address for your controller below.
-#define NUMBER_OF_MAC      20
-
-byte mac[][NUMBER_OF_MAC] =
-{
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x01 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x02 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x03 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x04 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x05 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x06 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x07 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x08 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x09 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x0A },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x0B },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x0C },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x0D },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x0E },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x0F },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x10 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x11 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x12 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x13 },
-  { 0xDE, 0xAD, 0xBE, 0xEF, 0x32, 0x14 },
-};
-// Select the IP address according to your local network
-IPAddress ip(192, 168, 2, 232);
-
-#endif    //defines_h
-```
 
 ---
 ---
@@ -1303,7 +1005,7 @@ Following is debug terminal output and screen shot when running example [Advance
 
 ```
 Start AdvancedWebServer on NUCLEO_F767ZI, using LAN8742A Ethernet & STM32Ethernet Library
-EthernetWebServer_STM32 v1.2.1
+EthernetWebServer_STM32 v1.5.0
 HTTP EthernetWebServer is @ IP : 192.168.2.117
 EthernetWebServer::handleClient: New Client
 method:  GET
@@ -1427,36 +1129,41 @@ The following is debug terminal output when running example [WebClientRepeating]
 
 ```
 Start WebClientRepeating on NUCLEO_F767ZI, using ENC28J60 & EthernetENC Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
+EthernetWebServer_STM32 v1.5.0
+[EWS] Board : NUCLEO_F767ZI , setCsPin: 10
+[EWS] Default SPI pinout:
+[EWS] MOSI: 11
+[EWS] MISO: 12
+[EWS] SCK: 13
+[EWS] SS: 10
+[EWS] =========================
 You're connected to the network, IP = 192.168.2.123
 
 Connecting...
 HTTP/1.1 200 OK
-Server: nginx/1.4.2
-Date: Wed, 16 Sep 2020 22:17:04 GMT
+Date: Wed, 27 Apr 2022 17:12:43 GMT
 Content-Type: text/plain
 Content-Length: 2263
-Last-Modified: Wed, 02 Oct 2013 13:46:47 GMT
 Connection: close
-Vary: Accept-Encoding
-ETag: "524c23c7-8d7"
-Accept-Ranges: bytes
+x-amz-id-2: Y0KDwqmE5CUvFMSLnxWUV4XoqEDCUL1h9GN+vWHRz7vpjDK77h8fqAbuEqBXVEZRm3Ybv7bCZtE=
+x-amz-request-id: EFJSRB21CQFZQDRX
+Last-Modified: Wed, 23 Feb 2022 14:56:42 GMT
+ETag: "667cf48afcc12c38c8c1637947a04224"
+CF-Cache-Status: DYNAMIC
+Report-To: {"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=T2F7koaxDm8y3draFWHzKSKtqF3brIseyVbvIpy%2FDp4RGAh7d6Lc%2F7rw%2B96w7hYckhvRgN1l9sMJJuNuQCxG8JZeCIelNLNXDBKH5BJajxjC7kMiQ3PwdUm8jFr%2B0aA%3D"}],"group":"cf-nel","max_age":604800}
+NEL: {"success_fraction":0,"report_to":"cf-nel","max_age":604800}
+Server: cloudflare
+CF-RAY: 70292f44ceb3a253-YYZ
+alt-svc: h3=":443"; ma=86400, h3-29=":443"; ma=86400
 
 
            `:;;;,`                      .:;;:.           
         .;;;;;;;;;;;`                :;;;;;;;;;;:     TM 
-      `;;;;;;;;;;;;;;;`            :;;;;;;;;;;;;;;;
-     :;;;;;;;;;;;;;;;;;;         `;;;;;;;;;;;;;;;;;;
-    ;;;;;;;;;;;;;;;;;;;;;       .;;;;;;;;;;;;;;;;;;;;
-   ;;;;;;;;:`   `;;;;;;;;;     ,;;;;;;;;.`   .;;;;;;;;
-  .;;;;;;,         :;;;;;;;   .;;;;;;;          ;;;;;;;
+      `;;;;;;;;;;;;;;;`            :;;;;;;;;;;;;;;;      
+     :;;;;;;;;;;;;;;;;;;         `;;;;;;;;;;;;;;;;;;     
+    ;;;;;;;;;;;;;;;;;;;;;       .;;;;;;;;;;;;;;;;;;;;    
+   ;;;;;;;;:`   `;;;;;;;;;     ,;;;;;;;;.`   .;;;;;;;;   
+  .;;;;;;,         :;;;;;;;   .;;;;;;;          ;;;;;;;  
   ;;;;;;             ;;;;;;;  ;;;;;;,            ;;;;;;. 
  ,;;;;;               ;;;;;;.;;;;;;`              ;;;;;; 
  ;;;;;.                ;;;;;;;;;;;`      ```       ;;;;;`
@@ -1470,25 +1177,25 @@ Accept-Ranges: bytes
  ;;;;;                 .;;;;;;;;;;       ;;;       ;;;;;,
  ;;;;;;               `;;;;;;;;;;;;                ;;;;; 
  `;;;;;,             .;;;;;; ;;;;;;;              ;;;;;; 
-  ;;;;;;:           :;;;;;;.  ;;;;;;;            ;;;;;;
-   ;;;;;;;`       .;;;;;;;,    ;;;;;;;;        ;;;;;;;:
-    ;;;;;;;;;:,:;;;;;;;;;:      ;;;;;;;;;;:,;;;;;;;;;;
-    `;;;;;;;;;;;;;;;;;;;.        ;;;;;;;;;;;;;;;;;;;;
-      ;;;;;;;;;;;;;;;;;           :;;;;;;;;;;;;;;;;:
-       ,;;;;;;;;;;;;;,              ;;;;;;;;;;;;;; 
+  ;;;;;;:           :;;;;;;.  ;;;;;;;            ;;;;;;  
+   ;;;;;;;`       .;;;;;;;,    ;;;;;;;;        ;;;;;;;:  
+    ;;;;;;;;;:,:;;;;;;;;;:      ;;;;;;;;;;:,;;;;;;;;;;   
+    `;;;;;;;;;;;;;;;;;;;.        ;;;;;;;;;;;;;;;;;;;;    
+      ;;;;;;;;;;;;;;;;;           :;;;;;;;;;;;;;;;;:     
+       ,;;;;;;;;;;;;;,              ;;;;;;;;;;;;;;       
          .;;;;;;;;;`                  ,;;;;;;;;:         
                                                          
                                                          
                                                          
                                                          
-    ;;;   ;;;;;`  ;;;;:  .;;  ;; ,;;;;;, ;;. `;,  ;;;;
-    ;;;   ;;:;;;  ;;;;;; .;;  ;; ,;;;;;: ;;; `;, ;;;:;;
-   ,;:;   ;;  ;;  ;;  ;; .;;  ;;   ,;,   ;;;,`;, ;;  ;;
+    ;;;   ;;;;;`  ;;;;:  .;;  ;; ,;;;;;, ;;. `;,  ;;;;   
+    ;;;   ;;:;;;  ;;;;;; .;;  ;; ,;;;;;: ;;; `;, ;;;:;;  
+   ,;:;   ;;  ;;  ;;  ;; .;;  ;;   ,;,   ;;;,`;, ;;  ;;  
    ;; ;:  ;;  ;;  ;;  ;; .;;  ;;   ,;,   ;;;;`;, ;;  ;;. 
    ;: ;;  ;;;;;:  ;;  ;; .;;  ;;   ,;,   ;;`;;;, ;;  ;;` 
-  ,;;;;;  ;;`;;   ;;  ;; .;;  ;;   ,;,   ;; ;;;, ;;  ;;
-  ;;  ,;, ;; .;;  ;;;;;:  ;;;;;: ,;;;;;: ;;  ;;, ;;;;;;
-  ;;   ;; ;;  ;;` ;;;;.   `;;;:  ,;;;;;, ;;  ;;,  ;;;;
+  ,;;;;;  ;;`;;   ;;  ;; .;;  ;;   ,;,   ;; ;;;, ;;  ;;  
+  ;;  ,;, ;; .;;  ;;;;;:  ;;;;;: ,;;;;;: ;;  ;;, ;;;;;;  
+  ;;   ;; ;;  ;;` ;;;;.   `;;;:  ,;;;;;, ;;  ;;,  ;;;; 
 
 Disconnecting from server...
 
@@ -1496,20 +1203,21 @@ Disconnecting from server...
 
 ---
 
-#### 3. UdpNTPClient on NUCLEO_F767ZI using W5500 and Ethernet2 Library
+#### 3. UdpNTPClient on NUCLEO_F767ZI using W5500 and Ethernet_Generic Library
 
-The following is debug terminal output when running example [UdpNTPClient](examples/UdpNTPClient) on STM32F7 Nucleo-144 NUCLEO_F767ZI using **W5500 and Ethernet2 Library**
+The following is debug terminal output when running example [UdpNTPClient](examples/UdpNTPClient) on STM32F7 Nucleo-144 NUCLEO_F767ZI using **W5500 and Ethernet_Generic Library**
 
 ```
-Start UdpNTPClient on NUCLEO_F767ZI, using W5x00 & Ethernet2 Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
+Start UdpNTPClient on NUCLEO_F767ZI, using W5x00 & Ethernet_Generic Library
+Ethernet_Generic v2.2.0
+EthernetWebServer_STM32 v1.5.0
+[EWS] Board : NUCLEO_F767ZI , setCsPin: 10
+[EWS] Default SPI pinout:
+[EWS] MOSI: 11
+[EWS] MISO: 12
+[EWS] SCK: 13
+[EWS] SS: 10
+[EWS] =========================
 You're connected to the network, IP = 192.168.2.123
 UDP Packet received, size 48
 From 132.163.97.1, port 123
@@ -1526,22 +1234,7 @@ The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with LAN8742A Ethernet
 
 ```
 Starting SimpleWebSocket on NUCLEO_F767ZI with LAN8742A Ethernet & STM32Ethernet Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-=========================
-Currently Used SPI pinout:
-MOSI:11
-MISO:12
-SCK:13
-SS:10
-=========================
+EthernetWebServer_STM32 v1.5.0
 Using mac index = 10
 Connected! IP address: 192.168.2.139
 starting WebSocket client
@@ -1565,32 +1258,21 @@ Received a message:
 
 ---
 
-#### 5. SimpleWebSocket on NUCLEO_F767ZI using W5x00 and Ethernet3 Library
+#### 5. SimpleWebSocket on NUCLEO_F767ZI using W5x00 and Ethernet_Generic Library
 
-The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with W5x00 & Ethernet3 Library** running [SimpleWebSocket example](examples/HTTPClient/SimpleWebSocket) to demonstrate newly-added WebSocket Client feature.
+The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library** running [SimpleWebSocket example](examples/HTTPClient/SimpleWebSocket) to demonstrate newly-added WebSocket Client feature.
 
 ```
-Starting SimpleWebSocket on NUCLEO_F767ZI with W5x00 & Ethernet3 Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] =========== USE_ETHERNET3 ===========
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-
-Ethernet3 W5500 init, using SPI_CS = 10, number of sockets = 10
-=========================
-Currently Used SPI pinout:
-MOSI:11
-MISO:12
-SCK:13
-SS:10
-SPI_CS:10
-=========================
-Using mac index = 10
+Starting SimpleWebSocket on NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library
+Ethernet_Generic v2.2.0
+EthernetWebServer_STM32 v1.5.0
+[EWS] =========== USE_Ethernet_Generic ===========
+[EWS] Default SPI pinout:
+[EWS] MOSI: 11
+[EWS] MISO: 12
+[EWS] SCK: 13
+[EWS] SS: 10
+[EWS] =========================
 Connected! IP address: 192.168.2.139
 starting WebSocket client
 Sending Hello 0
@@ -1623,23 +1305,7 @@ The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with LAN8742A Ethernet
 
 ```
 Starting SimpleHTTPExample on NUCLEO_F767ZI with LAN8742A Ethernet & STM32Ethernet Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-=========================
-Currently Used SPI pinout:
-MOSI:11
-MISO:12
-SCK:13
-SS:10
-=========================
-Using mac index = 10
+EthernetWebServer_STM32 v1.5.0
 Connected! IP address: 192.168.2.139
 startedRequest ok
 Got status code: 200
@@ -1686,6 +1352,7 @@ Body returned follows:
   ,;;;;;  ;;`;;   ;;  ;; .;;  ;;   ,;,   ;; ;;;, ;;  ;;  
   ;;  ,;, ;; .;;  ;;;;;:  ;;;;;: ,;;;;;: ;;  ;;, ;;;;;;  
   ;;   ;; ;;  ;;` ;;;;.   `;;;:  ,;;;;;, ;;  ;;,  ;;;;   
+
 ```
 
 ---
@@ -1696,23 +1363,7 @@ The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with LAN8742A Ethernet
 
 ```
 Start MQTTClient_Auth on NUCLEO_F767ZI with LAN8742A Ethernet & STM32Ethernet Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-=========================
-Currently Used SPI pinout:
-MOSI:11
-MISO:12
-SCK:13
-SS:10
-=========================
-Using mac index = 13
+EthernetWebServer_STM32 v1.5.0
 Connected! IP address: 192.168.2.152
 Attempting MQTT connection to broker.emqx.io...connected
 Message Send : MQTT_Pub => Hello from MQTTClient_Auth on NUCLEO_F767ZI with LAN8742A Ethernet & STM32Ethernet Library
@@ -1735,15 +1386,15 @@ The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with ENC28J60 & Ethern
 
 ```
 Start MQTTClient_Auth on NUCLEO_F767ZI with ENC28J60 & EthernetENC Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] =========== USE_ETHERNET_ENC ===========
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
+EthernetWebServer_STM32 v1.5.0
+[EWS] =========== USE_ETHERNET_ENC ===========
+[EWS] Default SPI pinout:
+[EWS] MOSI: 11
+[EWS] MISO: 12
+[EWS] SCK: 13
+[EWS] SS: 10
+[EWS] =========================
+[EWS] Board : NUCLEO_F767ZI , setCsPin: 10
 C=========================
 Currently Used SPI pinout:
 MOSI:11
@@ -1768,35 +1419,27 @@ Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on NUCLEO_F767ZI with ENC2
 
 ---
 
-#### 9. MQTTClient_Auth on NUCLEO_F767ZI using W5x00 and Ethernet2 Library
+#### 9. MQTTClient_Auth on NUCLEO_F767ZI using W5x00 and Ethernet_Generic Library
 
-The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with W5x00 & Ethernet2 Library** running [MQTTClient_Auth example](examples/MQTTClient_Auth) to demonstrate newly-added HTTP Client feature.
+The terminal output of **STM32F7 Nucleo-144 NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library** running [MQTTClient_Auth example](examples/MQTTClient_Auth) to demonstrate newly-added HTTP Client feature.
 
 ```
-Start MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet2 Library
-EthernetWebServer_STM32 v1.2.1
-[ETHERNET_WEBSERVER] =========== USE_ETHERNET2 ===========
-[ETHERNET_WEBSERVER] Default SPI pinout:
-[ETHERNET_WEBSERVER] MOSI: 11
-[ETHERNET_WEBSERVER] MISO: 12
-[ETHERNET_WEBSERVER] SCK: 13
-[ETHERNET_WEBSERVER] SS: 10
-[ETHERNET_WEBSERVER] =========================
-[ETHERNET_WEBSERVER] Board : NUCLEO_F767ZI , setCsPin: 10
-=========================
-Currently Used SPI pinout:
-MOSI:11
-MISO:12
-SCK:13
-SS:10
-=========================
-Using mac index = 12
+Start MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library
+Ethernet_Generic v2.2.0
+EthernetWebServer_STM32 v1.5.0
+[EWS] =========== USE_Ethernet_Generic ===========
+[EWS] Default SPI pinout:
+[EWS] MOSI: 11
+[EWS] MISO: 12
+[EWS] SCK: 13
+[EWS] SS: 10
+[EWS] =========================
 Connected! IP address: 192.168.2.78
 Attempting MQTT connection to broker.emqx.io...connected
-Message Send : MQTT_Pub => Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet2 Library
-Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet2 Library
-Message Send : MQTT_Pub => Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet2 Library
-Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet2 Library
+Message Send : MQTT_Pub => Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library
+Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library
+Message Send : MQTT_Pub => Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library
+Message arrived [MQTT_Pub] Hello from MQTTClient_Auth on NUCLEO_F767ZI with W5x00 & Ethernet_Generic Library
 
 ```
 
@@ -1808,7 +1451,7 @@ The terminal output of **STM32F4 BLACK_F407VE with LAN8720 Ethernet and STM32Eth
 
 ```
 Starting SimpleWebSocket_LAN8720 on BLACK_F407VE with LAN8720 Ethernet & STM32Ethernet Library
-EthernetWebServer_STM32 v1.2.1
+EthernetWebServer_STM32 v1.5.0
 Using mac index = 6
 Connected! IP address: 192.168.2.138
 starting WebSocket client
@@ -1833,21 +1476,24 @@ The terminal output of **BLACK_F407VE using LAN8720 Ethernet and STM32Ethernet L
 
 ```
 Start WebClient_LAN8720 on BLACK_F407VE, using LAN8720 Ethernet & STM32Ethernet Library
-EthernetWebServer_STM32 v1.2.1
+EthernetWebServer_STM32 v1.5.0
 You're connected to the network, IP = 192.168.2.139
-
-Starting connection to server...
-Connected to server
+Connecting...
 HTTP/1.1 200 OK
-Server: nginx/1.4.2
-Date: Sun, 11 Apr 2021 04:37:16 GMT
+Date: Wed, 27 Apr 2022 17:12:43 GMT
 Content-Type: text/plain
 Content-Length: 2263
-Last-Modified: Wed, 02 Oct 2013 13:46:47 GMT
 Connection: close
-Vary: Accept-Encoding
-ETag: "524c23c7-8d7"
-Accept-Ranges: bytes
+x-amz-id-2: Y0KDwqmE5CUvFMSLnxWUV4XoqEDCUL1h9GN+vWHRz7vpjDK77h8fqAbuEqBXVEZRm3Ybv7bCZtE=
+x-amz-request-id: EFJSRB21CQFZQDRX
+Last-Modified: Wed, 23 Feb 2022 14:56:42 GMT
+ETag: "667cf48afcc12c38c8c1637947a04224"
+CF-Cache-Status: DYNAMIC
+Report-To: {"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=T2F7koaxDm8y3draFWHzKSKtqF3brIseyVbvIpy%2FDp4RGAh7d6Lc%2F7rw%2B96w7hYckhvRgN1l9sMJJuNuQCxG8JZeCIelNLNXDBKH5BJajxjC7kMiQ3PwdUm8jFr%2B0aA%3D"}],"group":"cf-nel","max_age":604800}
+NEL: {"success_fraction":0,"report_to":"cf-nel","max_age":604800}
+Server: cloudflare
+CF-RAY: 70292f44ceb3a253-YYZ
+alt-svc: h3=":443"; ma=86400, h3-29=":443"; ma=86400
 
 
            `:;;;,`                      .:;;:.           
@@ -1888,10 +1534,11 @@ Accept-Ranges: bytes
    ;: ;;  ;;;;;:  ;;  ;; .;;  ;;   ,;,   ;;`;;;, ;;  ;;` 
   ,;;;;;  ;;`;;   ;;  ;; .;;  ;;   ,;,   ;; ;;;, ;;  ;;  
   ;;  ,;, ;; .;;  ;;;;;:  ;;;;;: ,;;;;;: ;;  ;;, ;;;;;;  
-  ;;   ;; ;;  ;;` ;;;;.   `;;;:  ,;;;;;, ;;  ;;,  ;;;;   
+  ;;   ;; ;;  ;;` ;;;;.   `;;;:  ,;;;;;, ;;  ;;,  ;;;; 
 
 Disconnecting from server... 
 ```
+
 
 ---
 
@@ -1906,10 +1553,40 @@ Following is debug terminal output and screen shot when running example [Advance
 
 ```
 Start AdvancedWebServer_LAN8720 on BLACK_F407VE, using LAN8720 Ethernet & STM32Ethernet Library
-EthernetWebServer_STM32 v1.2.1
-HTTP EthernetWebServer is @ IP : 192.168.2.138
+EthernetWebServer_STM32 v1.5.0
+.[EWS] String Len = 0, extend to 2048
+......... .......... .......... .......... .......... .......... .......... ..........
+```
+
+
+---
+
+#### 13. AdvancedWebServer on NUCLEO_L552ZE_Q with W5x00 using Ethernet_Generic Library and custom SPI
+
+Following is debug terminal output and screen shot when running example [AdvancedWebServer](examples/AdvancedWebServer) on NUCLEO_L552ZE_Q, using W5500 Ethernet with Ethernet_Generic Library and custom SPI
+
+<p align="center">
+    <img src="https://github.com/khoih-prog/EthernetWebServer_STM32/blob/master/pics/AdvancedWebServer_NUCLEO_L552ZE_Q.png">
+</p>
+
 
 ```
+Start AdvancedWebServer on NUCLEO_L552ZE_Q, with W5x00 using Ethernet_Generic Library and custom SPI
+Ethernet_Generic v2.2.0
+EthernetWebServer_STM32 v1.5.0
+[EWS] Default SPI pinout:
+[EWS] MOSI: 22
+[EWS] MISO: 25
+[EWS] SCK: 23
+[EWS] SS: 24
+[EWS] =========================
+Connected! IP address: 192.168.2.116
+HTTP EthernetWebServer is @ IP : 192.168.2.116
+.[EWS] String Len = 0, extend to 2048
+........ ....
+```
+
+
 
 ---
 ---
@@ -1960,7 +1637,6 @@ Submit issues to: [EthernetWebServer_STM32 issues](https://github.com/khoih-prog
 1. Bug Searching and Killing
 2. Support more non-compatible Ethernet Libraries such as Ethernet_Shield_W5200, EtherCard, EtherSia
 3. Add mDNS features.
-4. Use AsyncTCP features from [Phil Bowles' STM32AsyncTCP](https://github.com/philbowles/STM32AsyncTCP).
 
 ### DONE
 
@@ -1972,7 +1648,16 @@ Submit issues to: [EthernetWebServer_STM32 issues](https://github.com/khoih-prog
  6. Add **High-level HTTP (GET, POST, PUT, PATCH, DELETE) and WebSocket Client**
  7. Add SSL/TLS Server support in [EthernetWebServer_SSL_STM32](https://github.com/khoih-prog/EthernetWebServer_SSL_STM32)
  8. Add support to **Ethernet LAN8720** using [STM32Ethernet library](https://github.com/stm32duino/STM32Ethernet), for boards such as **Nucleo-144 (F429ZI, NUCLEO_F746NG, NUCLEO_F746ZG, NUCLEO_F756ZG), Discovery (DISCO_F746NG)** and **STM32F4 boards (BLACK_F407VE, BLACK_F407VG, BLACK_F407ZE, BLACK_F407ZG, BLACK_F407VE_Mini, DIYMORE_F407VGT, FK407M1)**
- 
+ 9. Reduce usage of Arduino String with std::string
+10. Optimize library code and examples by using **reference-passing instead of value-passing**
+11. Fix authenticate issue and compiler warnings caused by libb64
+12. Use new [**Ethernet_Generic** library](https://github.com/khoih-prog/Ethernet_Generic) as default for W5x00.
+13. Rewrite library and add example [multiFileProject](examples/multiFileProject) to demo for multiple-file project to fix `multiple-definitions` linker error
+14. Change from `arduino.cc` to `arduino.tips` in examples
+15. Add support to any custom hardware / software `SPI` for W5x00 using [Ethernet_Generic Library](https://github.com/khoih-prog/Ethernet_Generic)
+16. Add support to STM32L5 boards, such as `Nucleo-L552ZE-Q`
+
+---
 ---
 
 ### Contributions and Thanks
@@ -2004,6 +1689,7 @@ If you want to contribute to this project:
 - Create issues and pull requests
 - Tell other people about this library
 
+---
 ---
 
 ### License

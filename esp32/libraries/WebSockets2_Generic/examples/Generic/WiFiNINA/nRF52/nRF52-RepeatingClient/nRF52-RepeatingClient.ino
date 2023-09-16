@@ -64,7 +64,7 @@ void onEventsCallback(WebsocketsEvent event, String data)
 void setup() 
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   Serial.println("\nStarting nRF52-Client with WiFiNINA on " + String(BOARD_NAME));
   Serial.println(WEBSOCKETS2_GENERIC_VERSION);
@@ -78,6 +78,7 @@ void setup()
   }
 
   String fv = WiFi.firmwareVersion();
+  
   if (fv < WIFI_FIRMWARE_LATEST_VERSION) 
   {
     Serial.println("Please upgrade the firmware");
@@ -120,7 +121,7 @@ void setup()
   client.onEvent(onEventsCallback);
 }
 
-void sendMessage(void)
+void sendMessage()
 {
 // try to connect to Websockets server
   bool connected = client.connect(websockets_server_host, websockets_server_port, "/");
@@ -142,10 +143,10 @@ void checkToSendMessage()
 {
   #define REPEAT_INTERVAL    10000L
   
-  static unsigned long checkstatus_timeout = 0;
+  static unsigned long checkstatus_timeout = 1000;
 
   // Send WebSockets message every REPEAT_INTERVAL (10) seconds.
-  if ((millis() > checkstatus_timeout) || (checkstatus_timeout == 0))
+  if (millis() > checkstatus_timeout)
   {
     sendMessage();
     checkstatus_timeout = millis() + REPEAT_INTERVAL;

@@ -47,7 +47,7 @@ void handleNotFound()
   server.send(404, "text/plain", message);
 }
 
-void setup(void)
+void setup()
 {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
@@ -63,6 +63,9 @@ void setup(void)
   // Use Static IP
   //Ethernet.begin(mac[index], ip);
   Ethernet.begin(mac[index]);
+  
+  Serial.print(F("Connected! IP address: "));
+  Serial.println(Ethernet.localIP());
 
   server.on("/", handleRoot);
 
@@ -98,7 +101,7 @@ void setup(void)
   Serial.println(Ethernet.localIP());
 }
 
-void loop(void)
+void loop()
 {
   server.handleClient();
 }

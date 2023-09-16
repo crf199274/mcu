@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2020-2021 Armin Joachimsmeyer
  *
- * This file is part of IRMP https://github.com/ukw100/IRMP.
+ * This file is part of IRMP https://github.com/IRMP-org/IRMP.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,11 +12,20 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
+#ifndef _IR_FEEDBACK_LED_HPP
+#define _IR_FEEDBACK_LED_HPP
+
 #if defined(ARDUINO)
-#ifndef IR_FEEDBACK_LED_CPP_H
-#define IR_FEEDBACK_LED_CPP_H
 
 #include "IRFeedbackLED.h"
+
+#if defined(NO_LED_FEEDBACK_CODE)
+// dummy void function in this case
+void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
+{
+    (void)aEnableBlinkLed;
+}
+#else // defined(NO_LED_FEEDBACK_CODE)
 
 static bool irmp_irsnd_LedFeedbackEnabled;
 
@@ -83,13 +92,10 @@ void irmp_irsnd_LEDFeedback(bool aEnableBlinkLed)
 /*
  * Internally used from IRMP_ISR() with -oS it is taken as inline function
  */
-#if defined(ESP8266)
-void ICACHE_RAM_ATTR irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
-#elif defined(ESP32)
-void IRAM_ATTR irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
-#else
-void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
+#if defined(ESP8266) || defined(ESP32)
+IRAM_ATTR
 #endif
+void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
 {
 #if defined(IRMP_IRSND_ALLOW_DYNAMIC_PINS)
     if(irmp_irsnd_LedFeedbackPin != 0) {
@@ -103,19 +109,15 @@ void irmp_irsnd_SetFeedbackLED(bool aSwitchLedOn)
         }
     }
 #elif defined(IRMP_FEEDBACK_LED_PIN)
-#  if defined(__AVR__) // As far as I know, there is no active-low built in LED for AVR platform boards
-    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
-#  else
-        // hope this is fast enough on other platforms
-#    if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
+#  if defined(FEEDBACK_LED_IS_ACTIVE_LOW)
     // If the built in LED on the board is active LOW
-    digitalWrite(IRMP_FEEDBACK_LED_PIN, !aSwitchLedOn);
-#    else
-    digitalWrite(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
-#    endif
+    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, !aSwitchLedOn);
+#  else
+    digitalWriteFast(IRMP_FEEDBACK_LED_PIN, aSwitchLedOn);
 #  endif
 #endif
 }
 
-#endif // IR_FEEDBACK_LED_CPP_H
+#endif // !defined(NO_LED_FEEDBACK_CODE)
 #endif // defined(ARDUINO)
+#endif // _IR_FEEDBACK_LED_HPP

@@ -6,6 +6,10 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/EthernetWebServer.svg)](http://github.com/khoih-prog/EthernetWebServer/issues)
 
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
+
+
 ---
 ---
 
@@ -13,6 +17,28 @@
 
 
 * [Changelog](#changelog)
+  * [Releases v2.4.1](#releases-v241)
+  * [Releases v2.4.0](#releases-v240)
+  * [Releases v2.3.0](#releases-v230)
+  * [Releases v2.2.4](#releases-v224)
+  * [Releases v2.2.3](#releases-v223)
+  * [Releases v2.2.2](#releases-v222)
+  * [Releases v2.2.1](#releases-v221)
+  * [Releases v2.2.0](#releases-v220)
+  * [Releases v2.1.3](#releases-v213)
+  * [Releases v2.1.2](#releases-v212)
+  * [Releases v2.1.1](#releases-v211)
+  * [Releases v2.1.0](#releases-v210)
+  * [Releases v2.0.2](#releases-v202)
+  * [Releases v2.0.1](#releases-v201)
+  * [Major Releases v2.0.0](#major-releases-v200)
+  * [Releases v1.8.6](#releases-v186)
+  * [Releases v1.8.5](#releases-v185)
+  * [Releases v1.8.4](#releases-v184)
+  * [Releases v1.8.3](#releases-v183)
+  * [Releases v1.8.2](#releases-v182)
+  * [Releases v1.8.1](#releases-v181)
+  * [Major Releases v1.8.0](#major-releases-v180)
   * [Releases v1.7.1](#releases-v171)
   * [Major Releases v1.7.0](#major-releases-v170)
   * [Major Releases v1.6.0](#major-releases-v160)
@@ -38,6 +64,129 @@
 ---
 
 ## Changelog
+
+### Releases v2.4.1
+
+1. Add support to `WIZNet W6100` using IPv4
+
+### Releases v2.4.0
+
+1. Fix compile errors for new ESP32 core `v2.0.6`
+
+### Releases v2.3.0
+
+1. Add new features, such as `CORS`, etc.
+2. Add example [EthernetWebServer_BigData](https://github.com/khoih-prog/EthernetWebServer/tree/master/examples/EthernetWebServer_BigData) to demo how to send larger data than `2/4/8/16K` buffer
+3. Modify example [AdvancedWebServer](https://github.com/khoih-prog/EthernetWebServer/tree/master/examples/AdvancedWebServer) to demo how to send larger data than `2/4/8/16K` buffer
+4. Update code
+5. Update `Packages' Patches`
+
+### Releases v2.2.4
+
+1. Add support to Seeeduino nRF52840-based boards such as **Seeed XIAO_NRF52840 and XIAO_NRF52840_SENSE**, etc. using Seeed `mbed` or `nRF52` core
+2. Add astyle using `allman` style. Restyle the library
+3. Display warning only when `_ETHERNET_WEBSERVER_LOGLEVEL_` > 3
+4. Update examples
+5. Update `Packages' Patches` to add Seeeduino `nRF52` core
+
+### Releases v2.2.3
+
+1. Add support to AVR Dx (AVR128Dx, AVR64Dx, AVR32Dx, etc.) using [DxCore](https://github.com/SpenceKonde/DxCore)
+2. Update `Packages' Patches`
+
+### Releases v2.2.2
+
+1. Slow SPI clock for old W5100 shield or SAMD Zero
+2. Use correct Debug Terminal `Serial` for so-called **SAMD21 Zero** boards from Arduino as well as Adafruit
+3. Update `Packages' Patches`
+
+### Releases v2.2.1
+
+1. Auto-select SPI(s) `SS/CS` pins according to board package if available
+2. Update `Packages' Patches`
+
+
+### Releases v2.2.0
+
+1. Add support to SPI1, SPI2 for Teensy using W5x00 with [Ethernet_Generic library](https://github.com/khoih-prog/Ethernet_Generic)
+2. Add support to custom SPI for Mbed RP2040, Portenta-H7, etc. using W5x00 with [Ethernet_Generic library](https://github.com/khoih-prog/Ethernet_Generic)
+3. Add examples [AdvancedWebServer_Teensy4x_SPI1](examples/AdvancedWebServer_Teensy4x_SPI1) to demo new feature
+4. Add examples [AdvancedWebServer_RP2040_SPI1](examples/AdvancedWebServer_RP2040_SPI1) to demo new feature
+
+### Releases v2.1.3
+
+1. Change from `arduino.cc` to `arduino.tips` in examples
+
+### Releases v2.1.2
+
+1. Add support to SPI1 for RP2040 using [arduino-pico core](https://github.com/earlephilhower/arduino-pico)
+2. Drop `EthernetWrapper`
+3. Rewrite all the examples to support new features
+4. Add example [multiFileProject](examples/multiFileProject) to demo how to avoid `multiple-definitions` linker error for multiple-file project
+5. Update `Packages' Patches`
+
+### Releases v2.1.1
+
+1. Fix compiler error for Portenta_H7 using Portenta Ethernet
+
+### Releases v2.1.0
+
+1. Use new [Ethernet_Generic library](https://github.com/khoih-prog/Ethernet_Generic) as default for W5x00.
+2. Support SPI2 for ESP32
+3. Add examples and rewrite all the examples to support new features
+4. Update `Packages' Patches`
+
+### Releases v2.0.2
+
+1. Fix bug when using `QNEthernet` staticIP. Check [QNEthernet and NativeEthernet staticIP not working with WS Server #39](https://github.com/khoih-prog/WebSockets2_Generic/issues/39)
+2. Simplify and add staticIP option to `NativeEthernet` examples
+3. Add support to SAMD21/SAMD51 boards using [Fab_SAM_Arduino core](https://github.com/qbolsee/ArduinoCore-fab-sam)
+4. Add `Packages' Patches` for [Fab_SAM_Arduino core](https://github.com/qbolsee/ArduinoCore-fab-sam)
+5. Update `Packages' Patches`
+
+### Releases v2.0.1
+
+1. Fix decoding error bug when using special `&` in data fields. Check [Decoding Error. two times called urlDecode in Parsing-impl.h. #17](https://github.com/khoih-prog/WiFiWebServer/issues/17)
+2. Update `Packages' Patches`
+
+### Major Releases v2.0.0
+
+1. Make **breaking** changes to permit coexistence with `ESP32 WebServer` and `ESP8266 ESP8266WebServer` libraries
+2. Add and modified examples
+
+### Releases v1.8.6
+
+1. Fix bug not supporting boards. Check [Missing ESP definitions ..... #45](https://github.com/khoih-prog/EthernetWebServer/issues/45)
+
+### Releases v1.8.5
+
+1. Restore support to AVR Mega2560
+2. Add support to megaAVR boards such as `Arduino Nano Every`, `UNO WiFi Rev 2` using `ATmega4809` MPU
+3. Fix libb64 fallthrough compile warning
+
+### Releases v1.8.4
+
+1. Fix libb64 compile error for ESP8266. Check [multiple definition of base64 error with ver. 1.8.3 #44](https://github.com/khoih-prog/EthernetWebServer/issues/44)
+2. Update `Packages' Patches`
+
+### Releases v1.8.3
+
+1. Fix authenticate issue caused by libb64
+
+### Releases v1.8.2
+
+1. Fix wrong http status header bug. Check [fix for wrong http status header #42](https://github.com/khoih-prog/EthernetWebServer/pull/42)
+
+
+### Releases v1.8.1
+
+1. Fix bug related to String in library and examples
+
+### Major Releases v1.8.0
+
+1. Reduce usage of Arduino String with std::string
+2. Optimize library code and examples by using **reference-passing instead of value-passing**.
+3. Update `Packages' Patches`
 
 ### Releases v1.7.1
 

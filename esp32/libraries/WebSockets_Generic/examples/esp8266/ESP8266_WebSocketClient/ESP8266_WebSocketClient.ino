@@ -13,13 +13,15 @@
 *****************************************************************************************************************************/
 
 #if !defined(ESP8266)
-#error This code is intended to run only on the ESP8266 boards ! Please check your Tools->Board setting.
+  #error This code is intended to run only on the ESP8266 boards ! Please check your Tools->Board setting.
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_     4
+#define _WEBSOCKETS_LOGLEVEL_     2
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
+
+#include <ArduinoJson.h>
 
 #include <WebSocketsClient_Generic.h>
 
@@ -31,33 +33,57 @@ WebSocketsClient webSocket;
 #define USE_SSL         false
 
 #if USE_SSL
+  // Deprecated echo.websocket.org to be replaced
   #define WS_SERVER           "wss://echo.websocket.org"
   #define WS_PORT             443
 #else
-
+  // To run a local WebSocket Server
   #define WS_SERVER           "192.168.2.30"
   #define WS_PORT             8080
-  //#define WS_SERVER           "ws://echo.websocket.org"
-  //#define WS_PORT             80
 #endif
 
 bool alreadyConnected = false;
 
+String messageToSend = "From " ARDUINO_BOARD;
+
 void sendTXTMessage()
 {
-  static unsigned long sendTXTMessage_timeout = 0;
+  static uint64_t sendTXTMessage_timeout = 0;
+
+  uint64_t now = millis();
 
   //KH
-#define HEARTBEAT_INTERVAL    20000L
-  // Print hearbeat every HEARTBEAT_INTERVAL (20) seconds.
-  if ((millis() > sendTXTMessage_timeout) || (sendTXTMessage_timeout == 0))
+#define SEND_INTERVAL         30000L
+
+  // sendTXTMessage every SEND_INTERVAL (30) seconds.
+  if (now > sendTXTMessage_timeout)
   {
-    webSocket.sendTXT("message here");
-    sendTXTMessage_timeout = millis() + HEARTBEAT_INTERVAL;
+    //webSocket.sendTXT("message here");
+    // creat JSON message
+    DynamicJsonDocument doc(1024);
+    JsonArray array = doc.to<JsonArray>();
+
+    array.add(messageToSend);
+
+    // add payload (parameters) for the event
+    JsonObject param1 = array.createNestedObject();
+    param1["now"]     = (uint32_t) now;
+
+    // JSON to String (serializion)
+    String output;
+    serializeJson(doc, output);
+
+    // Send event
+    webSocket.sendTXT(output);
+
+    // Print JSON for debugging
+    Serial.println(output);
+
+    sendTXTMessage_timeout = millis() + SEND_INTERVAL;
   }
 }
 
-void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
+void webSocketEvent(const WStype_t& type, uint8_t * payload, const size_t& length)
 {
   switch (type)
   {
@@ -69,24 +95,27 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
       }
 
       break;
+
     case WStype_CONNECTED:
-      {
-        alreadyConnected = true;
+    {
+      alreadyConnected = true;
 
-        Serial.print("[WSc] Connected to url: ");
-        Serial.println((char *) payload);
+      Serial.print("[WSc] Connected to url: ");
+      Serial.println((char *) payload);
 
-        // send message to server when Connected
-        webSocket.sendTXT("Connected");
-      }
-      break;
+      // send message to server when Connected
+      webSocket.sendTXT("Connected");
+    }
+    break;
+
     case WStype_TEXT:
       Serial.printf("[WSc] get text: %s\n", payload);
 
       // send message to server
-      sendTXTMessage();
-      
+      //sendTXTMessage();
+
       break;
+
     case WStype_BIN:
       Serial.printf("[WSc] get binary length: %u\n", length);
       hexdump(payload, length);
@@ -99,6 +128,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length)
       // pong will be send automatically
       Serial.printf("[WSc] get ping\n");
       break;
+
     case WStype_PONG:
       // answer to a ping we send
       Serial.printf("[WSc] get pong\n");
@@ -120,11 +150,13 @@ void setup()
 {
   // Serial.begin(921600);
   Serial.begin(115200);
+
   while (!Serial);
 
   delay(200);
 
-  Serial.println("\nStart ESP8266_WebSocketClient on " + String(ARDUINO_BOARD));
+  Serial.print("\nStart ESP8266_WebSocketClient on ");
+  Serial.println(ARDUINO_BOARD);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   //Serial.setDebugOutput(true);
@@ -179,4 +211,6 @@ void setup()
 void loop()
 {
   webSocket.loop();
+
+  sendTXTMessage();
 }

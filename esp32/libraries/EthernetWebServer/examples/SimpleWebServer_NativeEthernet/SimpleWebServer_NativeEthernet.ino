@@ -39,16 +39,16 @@
 #include <SPI.h>
 #include <NativeEthernet.h>
 
-#define LOCAL_DEBUG           true
+#define LOCAL_DEBUG           1
 
 #define USING_STATIC_IP       true
 
 byte mac[] = { 0xFE, 0xED, 0xDE, 0xAD, 0xBE, 0xEF }; //physical mac address
 
 #if USING_STATIC_IP
-IPAddress ip        (192, 168, 2, 222);
-IPAddress gateway   (192, 168, 2, 1);
-IPAddress subnet    (255, 255, 255, 0);
+  IPAddress ip        (192, 168, 2, 222);
+  IPAddress gateway   (192, 168, 2, 1);
+  IPAddress subnet    (255, 255, 255, 0);
 #endif
 
 EthernetServer server(80); //server port
@@ -63,11 +63,11 @@ String readString;
 
 #define ETHERNET_SS_PIN     10
 
-#define BUFFER_SIZE         400
-char htmlBuffer[BUFFER_SIZE];
-
 void handleRoot()
 {
+#define BUFFER_SIZE     512
+
+  char temp[BUFFER_SIZE];
   int sec = millis() / 1000;
   int min = sec / 60;
   int hr = min / 60;
@@ -75,7 +75,7 @@ void handleRoot()
 
   hr = hr % 24;
 
-  snprintf(htmlBuffer, BUFFER_SIZE - 1,
+  snprintf(temp, BUFFER_SIZE - 1,
            "<html>\
 <head>\
 <meta http-equiv='refresh' content='5'/>\
@@ -91,44 +91,63 @@ body { background-color: #cccccc; font-family: Arial, Helvetica, Sans-Serif; Col
 </body>\
 </html>", BOARD_NAME, BOARD_NAME, day, hr % 24, min % 60, sec % 60);
 
-#if LOCAL_DEBUG
-  Serial.print(F("R"));
-  Serial.println(htmlBuffer);
-#endif
-
-  client.println(htmlBuffer);
+  client.println(temp);
 }
 
-//////////////////////
-
-//String out;
+#define ORIGINAL_STR_LEN        2048
 
 void drawGraph()
 {
-  String out;
-  out.reserve(3000);
+  static String out;
+  static uint16_t previousStrLen = ORIGINAL_STR_LEN;
+
+  if (out.length() == 0)
+  {
+    Serial.print(F("String Len = 0, extend to"));
+    Serial.println(ORIGINAL_STR_LEN);
+    out.reserve(ORIGINAL_STR_LEN);
+  }
+
+  out = F( "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n" \
+           "<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"3\" stroke=\"rgb(0, 0, 0)\" />\n" \
+           "<g stroke=\"blue\">\n");
+
   char temp[70];
 
-  out += F("<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" width=\"310\" height=\"150\">\n");
-  out += F("<rect width=\"310\" height=\"150\" fill=\"rgb(250, 230, 210)\" stroke-width=\"1\" stroke=\"rgb(0, 0, 0)\" />\n");
-  out += F("<g stroke=\"black\">\n");
   int y = rand() % 130;
 
   for (int x = 10; x < 300; x += 10)
   {
     int y2 = rand() % 130;
-    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"1\" />\n", x, 140 - y, x + 10, 140 - y2);
+    sprintf(temp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" stroke-width=\"2\" />\n", x, 140 - y, x + 10, 140 - y2);
     out += temp;
     y = y2;
   }
+
   out += F("</g>\n</svg>\n");
 
-#if LOCAL_DEBUG
-  Serial.print(F("D"));
-  Serial.println(out);
+#if (LOCAL_DEBUG > 1)
+  Serial.print(F("String Len = "));
+  Serial.println(out.length());
 #endif
 
-  client.println(out);
+  if (out.length() > previousStrLen)
+  {
+#if LOCAL_DEBUG
+    Serial.print(F("String Len > "));
+    Serial.print(previousStrLen);
+    Serial.print(F(", extend to"));
+    Serial.println(out.length() + 48);
+#endif
+
+    previousStrLen = out.length() + 48;
+
+    out.reserve(previousStrLen);
+  }
+  else
+  {
+    client.println(out);
+  }
 }
 
 //////////////////////
@@ -137,6 +156,7 @@ void setup()
 {
   //enable serial data print
   Serial.begin(115200);
+
   while (!Serial);
 
   Serial.print("SimpleWebServer_NativeEthernet on ");
@@ -146,9 +166,13 @@ void setup()
   // Static IP
   //Ethernet.begin(mac, ip, gateway, subnet);
   Ethernet.begin(mac, ip);
+
+  delay(2000);
 #else
   // DHCP
   Ethernet.begin(mac);
+
+  delay(1000);
 #endif
 
   server.begin();
@@ -157,7 +181,7 @@ void setup()
   Serial.println(Ethernet.localIP());
 }
 
-void heartBeatPrint(void)
+void heartBeatPrint()
 {
   static int num = 1;
 

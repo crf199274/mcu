@@ -2,7 +2,7 @@
 .\obj\i2c.o: Public\I2C.h
 .\obj\i2c.o: .\Libraries\CMSIS\stm32f10x.h
 .\obj\i2c.o: .\Libraries\CMSIS\core_cm3.h
-.\obj\i2c.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\obj\i2c.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
 .\obj\i2c.o: .\Libraries\CMSIS\system_stm32f10x.h
 .\obj\i2c.o: .\User\stm32f10x_conf.h
 .\obj\i2c.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h

@@ -1,0 +1,10 @@
+stm32303xe_eval\stm3210e_eval.o: ../../../Utilities/STM32_EVAL/STM3210E_EVAL/stm3210e_eval.c
+stm32303xe_eval\stm3210e_eval.o: ../../../Utilities/STM32_EVAL/STM3210E_EVAL/stm3210e_eval.h
+stm32303xe_eval\stm3210e_eval.o: E:\software\keil5_v5\ARM\Packs\Keil\STM32F1xx_DFP\2.4.0\Device\Include\stm32f10x.h
+stm32303xe_eval\stm3210e_eval.o: E:\software\keil5_v5\ARM\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\core_cm3.h
+stm32303xe_eval\stm3210e_eval.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
+stm32303xe_eval\stm3210e_eval.o: E:\software\keil5_v5\ARM\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_version.h
+stm32303xe_eval\stm3210e_eval.o: E:\software\keil5_v5\ARM\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_compiler.h
+stm32303xe_eval\stm3210e_eval.o: E:\software\keil5_v5\ARM\Packs\ARM\CMSIS\5.9.0\CMSIS\Core\Include\cmsis_armcc.h
+stm32303xe_eval\stm3210e_eval.o: E:\software\keil5_v5\ARM\Packs\Keil\STM32F1xx_DFP\2.4.0\Device\Include\system_stm32f10x.h
+stm32303xe_eval\stm3210e_eval.o: ../inc/stm32f10x_conf.h

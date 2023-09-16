@@ -1,13 +1,13 @@
 /****************************************************************************************************************************
   WebSocketClientSocketIO_ENC.ino
   For boards using ENC28J60 Shield/Module
-  
+
   Based on and modified from WebSockets libarary https://github.com/Links2004/arduinoWebSockets
   to support other boards such as  SAMD21, SAMD51, Adafruit's nRF52 boards, etc.
-  
+
   Built by Khoi Hoang https://github.com/khoih-prog/WebSockets_Generic
   Licensed under MIT license
-  
+
   Created on: 06.06.2016
   Author: Markus Sattler
  *****************************************************************************************************************************/
@@ -16,7 +16,7 @@
   // Default pin 10 to SS/CS
   #define USE_THIS_SS_PIN       10
   #define BOARD_TYPE      "SAM DUE"
-#elif ( defined(CORE_TEENSY) )  
+#elif ( defined(CORE_TEENSY) )
   #error You have to use examples written for Teensy
 #endif
 
@@ -24,10 +24,10 @@
   #define BOARD_NAME    BOARD_TYPE
 #endif
 
-#define _WEBSOCKETS_LOGLEVEL_     3
-#define WEBSOCKETS_NETWORK_TYPE   NETWORK_ENC28J60
+#define _WEBSOCKETS_LOGLEVEL_     2
 
-#define SHIELD_TYPE               "ENC28J60 using UIPEthernet Library"
+#define WEBSOCKETS_NETWORK_TYPE   NETWORK_ETHERNET_ENC
+#define SHIELD_TYPE               "ENC28J60 using EthernetENC Library"
 
 #include <ArduinoJson.h>
 
@@ -70,56 +70,69 @@ IPAddress clientIP(192, 168, 2, 225);
 IPAddress serverIP(192, 168, 2, 30);
 uint16_t  serverPort = 8080;
 
-//IPAddress serverIP(10, 11, 100, 100);
-//uint16_t  serverPort = 8880;
-
-void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length) 
+void socketIOEvent(const socketIOmessageType_t& type, uint8_t * payload, const size_t& length)
 {
-  switch (type) 
+  switch (type)
   {
     case sIOtype_DISCONNECT:
       Serial.println("[IOc] Disconnected");
       break;
+
     case sIOtype_CONNECT:
       Serial.print("[IOc] Connected to url: ");
       Serial.println((char*) payload);
 
       // join default namespace (no auto join in Socket.IO V3)
       socketIO.send(sIOtype_CONNECT, "/");
-      
+
       break;
+
     case sIOtype_EVENT:
       Serial.print("[IOc] Get event: ");
       Serial.println((char*) payload);
-      
+
       break;
+
     case sIOtype_ACK:
       Serial.print("[IOc] Get ack: ");
       Serial.println(length);
-      
+
       //hexdump(payload, length);
       break;
+
     case sIOtype_ERROR:
       Serial.print("[IOc] Get error: ");
       Serial.println(length);
-      
+
       //hexdump(payload, length);
       break;
+
     case sIOtype_BINARY_EVENT:
       Serial.print("[IOc] Get binary: ");
       Serial.println(length);
-      
+
       //hexdump(payload, length);
       break;
+
     case sIOtype_BINARY_ACK:
-       Serial.print("[IOc] Get binary ack: ");
+      Serial.print("[IOc] Get binary ack: ");
       Serial.println(length);
-      
+
       //hexdump(payload, length);
       break;
-      
+
+    case sIOtype_PING:
+      Serial.println("[IOc] Get PING");
+
+      break;
+
+    case sIOtype_PONG:
+      Serial.println("[IOc] Get PONG");
+
+      break;
+
     default:
-      break;  
+      break;
   }
 }
 
@@ -127,10 +140,12 @@ void setup()
 {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
+
   while (!Serial);
 
   Serial.print("\nStart WebSocketClientIO_ENC on " + String(BOARD_NAME));
-  Serial.println(" with " + String(SHIELD_TYPE));
+  Serial.print(" with ");
+  Serial.println(SHIELD_TYPE);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   Serial.println("Used/default SPI pinout:");
@@ -142,7 +157,7 @@ void setup()
   Serial.println(SCK);
   Serial.print("SS:");
   Serial.println(SS);
- 
+
   // start the ethernet connection and the server:
   // Use DHCP dynamic IP and random mac
   uint16_t index = millis() % NUMBER_OF_MAC;
@@ -175,13 +190,13 @@ void setup()
 
 unsigned long messageTimestamp = 0;
 
-void loop() 
+void loop()
 {
   socketIO.loop();
 
   uint64_t now = millis();
 
-  if (now - messageTimestamp > 30000) 
+  if (now - messageTimestamp > 30000)
   {
     messageTimestamp = now;
 

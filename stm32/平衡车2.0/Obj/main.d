@@ -3,7 +3,7 @@
 .\obj\main.o: .\APP\pid.h
 .\obj\main.o: .\Libraries\CMSIS\stm32f10x.h
 .\obj\main.o: .\Libraries\CMSIS\core_cm3.h
-.\obj\main.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\obj\main.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
 .\obj\main.o: .\Libraries\CMSIS\system_stm32f10x.h
 .\obj\main.o: .\User\stm32f10x_conf.h
 .\obj\main.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h
@@ -31,7 +31,7 @@
 .\obj\main.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_wwdg.h
 .\obj\main.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\misc.h
 .\obj\main.o: .\APP\usart.h
-.\obj\main.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+.\obj\main.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdio.h
 .\obj\main.o: .\Public\delay.h
 .\obj\main.o: .\APP\Output.h
 .\obj\main.o: .\APP\inv_mpu.h

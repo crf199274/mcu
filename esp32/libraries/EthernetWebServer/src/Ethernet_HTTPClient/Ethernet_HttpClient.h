@@ -1,26 +1,31 @@
 /****************************************************************************************************************************
-   Ethernet_HttpClient.h - Dead simple HTTP WebClient.
-   For Ethernet shields
+  Ethernet_HttpClient.h - Dead simple HTTP WebClient.
+  For Ethernet shields
 
-   EthernetWebServer is a library for the Ethernet shields to run WebServer
+  EthernetWebServer is a library for the Ethernet shields to run WebServer
 
-   Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
-   Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
-   Licensed under MIT license
+  Based on and modified from ESP8266 https://github.com/esp8266/Arduino/releases
+  Built by Khoi Hoang https://github.com/khoih-prog/EthernetWebServer
+  Licensed under MIT license
 
-   Original author:
-   @file       Esp8266WebServer.h
-   @author     Ivan Grokhotkov
-   
-   Version: 1.7.1
+  Original author:
+  @file       Esp8266WebServer.h
+  @author     Ivan Grokhotkov
 
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-    1.0.0   K Hoang      13/02/2020 Initial coding for Arduino Mega, Teensy, etc to support Ethernetx libraries
-    ...
-    1.6.0   K Hoang      04/09/2021 Add support to QNEthernet Library for Teensy 4.1
-    1.7.0   K Hoang      09/09/2021 Add support to Portenta H7 Ethernet
-    1.7.1   K Hoang      04/10/2021 Change option for PIO `lib_compat_mode` from default `soft` to `strict`. Update Packages Patches
+  Version: 2.4.1
+
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.0.0   K Hoang      13/02/2020 Initial coding for Arduino Mega, Teensy, etc to support Ethernetx libraries
+  ...
+  2.2.0   K Hoang      05/05/2022 Add support to custom SPI for Teensy, Mbed RP2040, Portenta_H7, etc.
+  2.2.1   K Hoang      25/08/2022 Auto-select SPI SS/CS pin according to board package
+  2.2.2   K Hoang      06/09/2022 Slow SPI clock for old W5100 shield or SAMD Zero. Improve support for SAMD21
+  2.2.3   K Hoang      17/09/2022 Add support to AVR Dx (AVR128Dx, AVR64Dx, AVR32Dx, etc.) using DxCore
+  2.2.4   K Hoang      26/10/2022 Add support to Seeed XIAO_NRF52840 and XIAO_NRF52840_SENSE using `mbed` or `nRF52` core
+  2.3.0   K Hoang      15/11/2022 Add new features, such as CORS. Update code and examples to send big data
+  2.4.0   K Hoang      22/12/2022 Fix compile errors for new ESP32 core v2.0.6
+  2.4.1   K Hoang      06/01/2023 Add support to `WIZNet W6100` using IPv4
  *************************************************************************************************************************************/
 
 // Class to simplify HTTP fetching on Arduino
@@ -28,6 +33,9 @@
 // Released under Apache License, version 2.0
 
 #pragma once
+
+#ifndef ETHERNET_HTTP_CLIENT_H
+#define ETHERNET_HTTP_CLIENT_H
 
 #include <Arduino.h>
 #include <IPAddress.h>
@@ -310,13 +318,13 @@ class EthernetHttpClient : public Client
       @return true if we are now at the end of the body, else false
     */
     bool endOfBodyReached();
-    
-    virtual bool endOfStream() 
+
+    virtual bool endOfStream()
     {
       return endOfBodyReached();
     };
-    
-    virtual bool completed() 
+
+    virtual bool completed()
     {
       return endOfBodyReached();
     };
@@ -332,7 +340,7 @@ class EthernetHttpClient : public Client
     /** Returns if the response body is chunked
       @return true if response body is chunked, false otherwise
     */
-    int isResponseChunked() 
+    int isResponseChunked()
     {
       return iIsChunked;
     }
@@ -355,77 +363,78 @@ class EthernetHttpClient : public Client
     // Inherited from Print
     // Note: 1st call to these indicates the user is sending the body, so if need
     // Note: be we should finish the header first
-    virtual size_t write(uint8_t aByte) 
+    virtual size_t write(uint8_t aByte)
     {
-      if (iState < eRequestSent) 
+      if (iState < eRequestSent)
       {
         finishHeaders();
       };
-      
+
       return iClient-> write(aByte);
     };
-    
-    virtual size_t write(const uint8_t *aBuffer, size_t aSize) 
+
+    virtual size_t write(const uint8_t *aBuffer, size_t aSize)
     {
-      if (iState < eRequestSent) 
+      if (iState < eRequestSent)
       {
         finishHeaders();
       };
+
       return iClient->write(aBuffer, aSize);
     };
-    
+
     // Inherited from Stream
     virtual int available();
-    
+
     /** Read the next byte from the server.
       @return Byte read or -1 if there are no bytes available.
     */
     virtual int read();
     virtual int read(uint8_t *buf, size_t size);
-    
-    virtual int peek() 
+
+    virtual int peek()
     {
       return iClient->peek();
     };
-    
-    virtual void flush() 
+
+    virtual void flush()
     {
       iClient->flush();
     };
 
     // Inherited from Client
-    virtual int connect(IPAddress ip, uint16_t port) 
+    virtual int connect(IPAddress ip, uint16_t port)
     {
       return iClient->connect(ip, port);
     };
-    
-    virtual int connect(const char *host, uint16_t port) 
+
+    virtual int connect(const char *host, uint16_t port)
     {
       return iClient->connect(host, port);
     };
-    
+
     virtual void stop();
-    
-    virtual uint8_t connected() 
+
+    virtual uint8_t connected()
     {
       return iClient->connected();
     };
-    
-    virtual operator bool() 
+
+    virtual operator bool()
     {
       return bool(iClient);
     };
-    
-    virtual uint32_t httpResponseTimeout() 
+
+    virtual uint32_t httpResponseTimeout()
     {
       return iHttpResponseTimeout;
     };
-    
-    virtual void setHttpResponseTimeout(uint32_t timeout) 
+
+    virtual void setHttpResponseTimeout(uint32_t timeout)
     {
       iHttpResponseTimeout = timeout;
     };
-    
+
   protected:
     /** Reset internal state data back to the "just initialised" state
     */
@@ -446,10 +455,10 @@ class EthernetHttpClient : public Client
     /** Reading any pending data from the client (used in connection keep alive mode)
     */
     void flushClientRx();
-   
+
     static const char* kContentLengthPrefix;
     static const char* kTransferEncodingChunked;
-    
+
     typedef enum
     {
       eIdle,
@@ -493,3 +502,5 @@ class EthernetHttpClient : public Client
     bool iSendDefaultRequestHeaders;
     String iHeaderLine;
 };
+
+#endif  // ETHERNET_HTTP_CLIENT_H

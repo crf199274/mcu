@@ -124,7 +124,7 @@ void setup()
 
   // Start Serial and wait until it is ready.
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   Serial.print("\nStart SocketAndHttp_Teensy41_Server on "); Serial.print(BOARD_NAME);
   Serial.print(" "); Serial.println(SHIELD_TYPE);
@@ -163,11 +163,11 @@ void setup()
 
   if (!Ethernet.waitForLocalIP(5000))
   {
-    Serial.println(F("Failed to configure Ethernet"));
+    Serial.println("Failed to configure Ethernet");
 
     if (!Ethernet.linkStatus())
     {
-      Serial.println(F("Ethernet cable is not connected."));
+      Serial.println("Ethernet cable is not connected.");
     }
 
     // Stay here forever
@@ -176,11 +176,24 @@ void setup()
       delay(1);
     }
   }
+
+  if (!Ethernet.waitForLink(5000))
+  {
+    Serial.println(F("Failed to wait for Link"));
+  }
   else
   {
-    Serial.print(F("Connected! IP address:")); Serial.println(Ethernet.localIP());
+    Serial.print("IP Address = ");
+    Serial.println(Ethernet.localIP());
   }
 
+#endif
+
+// give the Ethernet shield minimum 1 sec for DHCP and 2 secs for staticP to initialize:
+#if USING_DHCP
+  delay(1000);
+#else  
+  delay(2000);
 #endif
 
   // Start websockets server.

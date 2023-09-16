@@ -25,8 +25,6 @@
 #include <WebSocketsClient_Generic.h>
 #include <SocketIOclient_Generic.h>
 
-#include <Hash.h>
-
 SocketIOclient socketIO;
 
 /////////////////////////////////////////////
@@ -47,9 +45,7 @@ IPAddress myDNS(8, 8, 8, 8);
 
 /////////////////////////////////////////////
 
-bool eth_connected = false;
-
-void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
+void hexdump(const void *mem, const uint32_t& len, const uint8_t& cols = 16)
 {
   const uint8_t* src = (const uint8_t*) mem;
 
@@ -65,101 +61,74 @@ void hexdump(const void *mem, uint32_t len, uint8_t cols = 16)
     Serial.printf("%02X ", *src);
     src++;
   }
+
   Serial.printf("\n");
 }
 
-void socketIOEvent(socketIOmessageType_t type, uint8_t * payload, size_t length) 
+void socketIOEvent(const socketIOmessageType_t& type, uint8_t * payload, const size_t& length)
 {
-  switch (type) 
+  switch (type)
   {
     case sIOtype_DISCONNECT:
       Serial.println("[IOc] Disconnected");
+
       break;
+
     case sIOtype_CONNECT:
       Serial.print("[IOc] Connected to url: ");
       Serial.println((char*) payload);
 
       // join default namespace (no auto join in Socket.IO V3)
       socketIO.send(sIOtype_CONNECT, "/");
-      
+
       break;
+
     case sIOtype_EVENT:
       Serial.print("[IOc] Get event: ");
       Serial.println((char*) payload);
-      
+
       break;
+
     case sIOtype_ACK:
       Serial.print("[IOc] Get ack: ");
       Serial.println(length);
-      
+
       hexdump(payload, length);
+
       break;
+
     case sIOtype_ERROR:
       Serial.print("[IOc] Get error: ");
       Serial.println(length);
-      
+
       hexdump(payload, length);
+
       break;
+
     case sIOtype_BINARY_EVENT:
       Serial.print("[IOc] Get binary: ");
       Serial.println(length);
-      
+
       hexdump(payload, length);
+
       break;
+
     case sIOtype_BINARY_ACK:
-       Serial.print("[IOc] Get binary ack: ");
+      Serial.print("[IOc] Get binary ack: ");
       Serial.println(length);
-      
+
       hexdump(payload, length);
-      break;
-      
-    default:
-      break;  
-  }
-}
-
-void WiFiEvent(WiFiEvent_t event)
-{
-  switch (event)
-  {
-    case SYSTEM_EVENT_ETH_START:
-      Serial.println("\nETH Started");
-      //set eth hostname here
-      ETH.setHostname("WT32-ETH01");
-      break;
-    case SYSTEM_EVENT_ETH_CONNECTED:
-      Serial.println("ETH Connected");
-      break;
-
-    case SYSTEM_EVENT_ETH_GOT_IP:
-      if (!eth_connected)
-      {
-        Serial.print("ETH MAC: ");
-        Serial.print(ETH.macAddress());
-        Serial.print(", IPv4: ");
-        Serial.print(ETH.localIP());
-
-        if (ETH.fullDuplex())
-        {
-          Serial.print(", FULL_DUPLEX");
-        }
-
-        Serial.print(", ");
-        Serial.print(ETH.linkSpeed());
-        Serial.println("Mbps");
-        eth_connected = true;
-      }
 
       break;
 
-    case SYSTEM_EVENT_ETH_DISCONNECTED:
-      Serial.println("ETH Disconnected");
-      eth_connected = false;
+    case sIOtype_PING:
+      Serial.println("[IOc] Get PING");
+
       break;
 
-    case SYSTEM_EVENT_ETH_STOP:
-      Serial.println("\nETH Stopped");
-      eth_connected = false;
+    case sIOtype_PONG:
+      Serial.println("[IOc] Get PONG");
+
       break;
 
     default:
@@ -167,20 +136,26 @@ void WiFiEvent(WiFiEvent_t event)
   }
 }
 
-void setup() 
+void setup()
 {
   // Serial.begin(921600);
   Serial.begin(115200);
+
   while (!Serial);
 
-  Serial.print("\nStarting WT32_ETH01_WebSocketClientSocketIO on " + String(ARDUINO_BOARD));
-  Serial.println(" with " + String(SHIELD_TYPE));
+  Serial.print("\nStart WT32_ETH01_WebSocketClientSocketIO on ");
+  Serial.print(ARDUINO_BOARD);
+  Serial.print(" with ");
+  Serial.println(SHIELD_TYPE);
   Serial.println(WEBSERVER_WT32_ETH01_VERSION);
   Serial.println(WEBSOCKETS_GENERIC_VERSION);
 
   Serial.setDebugOutput(true);
 
-  //bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO, 
+  // To be called before ETH.begin()
+  WT32_ETH01_onEvent();
+
+  //bool begin(uint8_t phy_addr=ETH_PHY_ADDR, int power=ETH_PHY_POWER, int mdc=ETH_PHY_MDC, int mdio=ETH_PHY_MDIO,
   //           eth_phy_type_t type=ETH_PHY_TYPE, eth_clock_mode_t clk_mode=ETH_CLK_MODE);
   //ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER, ETH_PHY_MDC, ETH_PHY_MDIO, ETH_PHY_TYPE, ETH_CLK_MODE);
   ETH.begin(ETH_PHY_ADDR, ETH_PHY_POWER);
@@ -189,10 +164,7 @@ void setup()
   //bool config(IPAddress local_ip, IPAddress gateway, IPAddress subnet, IPAddress dns1 = 0, IPAddress dns2 = 0);
   ETH.config(myIP, myGW, mySN, myDNS);
 
-  WiFi.onEvent(WiFiEvent);
-
-  while (!eth_connected)
-    delay(100);
+  WT32_ETH01_waitForConnect();
 
   // Client address
   Serial.print("WebSockets Client started @ IP address: ");
@@ -220,13 +192,13 @@ void setup()
 
 unsigned long messageTimestamp = 0;
 
-void loop() 
+void loop()
 {
   socketIO.loop();
 
   uint64_t now = millis();
 
-  if (now - messageTimestamp > 30000) 
+  if (now - messageTimestamp > 30000)
   {
     messageTimestamp = now;
 

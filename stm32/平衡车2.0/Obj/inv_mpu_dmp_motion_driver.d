@@ -1,9 +1,9 @@
 .\obj\inv_mpu_dmp_motion_driver.o: APP\inv_mpu_dmp_motion_driver.c
-.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
-.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
-.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
-.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
-.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\math.h
+.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdio.h
+.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
+.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdlib.h
+.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\string.h
+.\obj\inv_mpu_dmp_motion_driver.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\math.h
 .\obj\inv_mpu_dmp_motion_driver.o: APP\inv_mpu.h
 .\obj\inv_mpu_dmp_motion_driver.o: .\Libraries\CMSIS\stm32f10x.h
 .\obj\inv_mpu_dmp_motion_driver.o: .\Libraries\CMSIS\core_cm3.h

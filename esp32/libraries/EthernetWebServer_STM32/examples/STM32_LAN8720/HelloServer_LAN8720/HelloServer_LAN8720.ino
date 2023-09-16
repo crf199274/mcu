@@ -51,7 +51,7 @@ void handleNotFound()
   digitalWrite(led, 0);
 }
 
-void setup(void)
+void setup()
 {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
@@ -67,6 +67,9 @@ void setup(void)
   //Ethernet.begin(mac[index], ip);
   Ethernet.begin(mac[index]);
   
+  Serial.print(F("Connected! IP address: "));
+  Serial.println(Ethernet.localIP());
+  
   server.on("/", handleRoot);
 
   server.on("/inline", []() {
@@ -81,7 +84,7 @@ void setup(void)
   Serial.println(Ethernet.localIP());
 }
 
-void loop(void)
+void loop()
 {
   server.handleClient();
 }

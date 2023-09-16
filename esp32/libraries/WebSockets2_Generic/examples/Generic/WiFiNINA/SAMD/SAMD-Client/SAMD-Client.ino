@@ -64,7 +64,7 @@ void onEventsCallback(WebsocketsEvent event, String data)
 void setup() 
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
   Serial.println("\nStarting SAMD-Client with WiFiNINA on " + String(BOARD_NAME));
   Serial.println(WEBSOCKETS2_GENERIC_VERSION);
@@ -122,7 +122,7 @@ void setup()
   sendMessage();
 }
 
-void sendMessage(void)
+void sendMessage()
 {
 // try to connect to Websockets server
   bool connected = client.connect(websockets_server_host, websockets_server_port, "/");

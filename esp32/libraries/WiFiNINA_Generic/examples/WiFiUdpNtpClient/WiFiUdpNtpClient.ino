@@ -44,11 +44,17 @@
 
 // To eliminate FW warning when using not latest nina-fw version
 // To use whenever WiFi101-FirmwareUpdater-Plugin is not sync'ed with nina-fw version
-#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.5"
+#define WIFI_FIRMWARE_LATEST_VERSION        "1.4.8"
 
 #include <SPI.h>
-#include <WiFiNINA_Generic.h>
-#include <WiFiUdp_Generic.h>
+
+#if USING_WIFI101
+  #include <WiFi101_Generic.h>
+  #include <WiFiUdp.h>
+#else
+  #include <WiFiNINA_Generic.h>
+  #include <WiFiUdp_Generic.h>
+#endif
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = SECRET_SSID;        // your network SSID (name)
@@ -60,7 +66,7 @@ int status = WL_IDLE_STATUS;
 
 unsigned int localPort = 2390;        // local port to listen for UDP packets
 
-IPAddress timeServer(129, 6, 15, 28); // time.nist.gov NTP server
+IPAddress timeServer(132, 163, 96, 1); // time.nist.gov NTP server
 
 const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
 
@@ -73,20 +79,29 @@ void setup()
 {
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
-  while (!Serial);
 
-  Serial.print(F("\nStart WiFiUdpNtpClient on ")); Serial.println(BOARD_NAME);
+  while (!Serial && millis() < 5000);
+
+  Serial.print(F("\nStart WiFiUdpNtpClient on "));
+  Serial.println(BOARD_NAME);
+
+// check for the WiFi module:
+#if USING_WIFI101
+  if (WiFi.status() == WL_NO_SHIELD)
+#else
   Serial.println(WIFININA_GENERIC_VERSION);
-
-  // check for the WiFi module:
+  
   if (WiFi.status() == WL_NO_MODULE)
+#endif
   {
     Serial.println(F("Communication with WiFi module failed!"));
+
     // don't continue
     while (true);
   }
 
   String fv = WiFi.firmwareVersion();
+
   if (fv < WIFI_FIRMWARE_LATEST_VERSION)
   {
     Serial.print(F("Your current firmware NINA FW v"));
@@ -117,11 +132,11 @@ void setup()
 void loop()
 {
   sendNTPpacket(timeServer); // send an NTP packet to a time server
-  
+
   // wait to see if a reply is available
   delay(1000);
-  
-  if (Udp.parsePacket()) 
+
+  if (Udp.parsePacket())
   {
     Serial.println(F("Packet received"));
     // We've received a packet, read the data from it
@@ -151,24 +166,25 @@ void loop()
     Serial.print(F("The UTC time is "));       // UTC is the time at Greenwich Meridian (GMT)
     Serial.print((epoch  % 86400L) / 3600); // print the hour (86400 equals secs per day)
     Serial.print(':');
-    
-    if (((epoch % 3600) / 60) < 10) 
+
+    if (((epoch % 3600) / 60) < 10)
     {
       // In the first 10 minutes of each hour, we'll want a leading '0'
       Serial.print('0');
     }
-    
+
     Serial.print((epoch  % 3600) / 60); // print the minute (3600 equals secs per minute)
     Serial.print(':');
-    
-    if ((epoch % 60) < 10) 
+
+    if ((epoch % 60) < 10)
     {
       // In the first 10 seconds of each minute, we'll want a leading '0'
       Serial.print('0');
     }
-    
+
     Serial.println(epoch % 60); // print the second
   }
+
   // wait ten seconds before asking for the time again
   delay(10000);
 }
@@ -198,7 +214,7 @@ void sendNTPpacket(IPAddress& address)
   Udp.endPacket();
 }
 
-void printWiFiStatus() 
+void printWiFiStatus()
 {
   // print the SSID of the network you're attached to:
   Serial.print(F("SSID: "));

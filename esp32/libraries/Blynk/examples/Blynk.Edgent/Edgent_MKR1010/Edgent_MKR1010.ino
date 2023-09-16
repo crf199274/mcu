@@ -1,25 +1,6 @@
-
-// Fill-in information from your Blynk Template here
-//#define BLYNK_TEMPLATE_ID           "TMPLxxxxxx"
-//#define BLYNK_DEVICE_NAME           "Device"
-
-#define BLYNK_FIRMWARE_VERSION        "0.1.0"
-
-#define BLYNK_PRINT Serial
-//#define BLYNK_DEBUG
-
-#define APP_DEBUG
-
-#include "BlynkEdgent.h"
-
-void setup()
-{
-  Serial.begin(115200);
-  delay(2000);
-
-  BlynkEdgent.begin();
-}
-
-void loop() {
-  BlynkEdgent.run();
-}
+/*
+ * Arduino 33 IoT and Arduino MKR1010 are no longer supported by Blynk.Edgent.
+ * Blynk now offers a better solution for Dual-MCU boards. Please use Blynk.NCP:
+ *  https://github.com/blynkkk/BlynkNcpExample
+ *
+ */

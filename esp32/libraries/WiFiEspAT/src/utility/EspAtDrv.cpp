@@ -374,15 +374,17 @@ bool EspAtDrvClass::joinAP(const char* ssid, const char* password, const uint8_t
 #ifdef WIFIESPAT1
   if (persistent) {
 #endif
-    cmd->print(F("AT+CWJAP=\""));
+    cmd->print(F("AT+CWJAP"));
 #ifdef WIFIESPAT1
   } else {
-    cmd->print(F("AT+CWJAP_CUR=\""));
+    cmd->print(F("AT+CWJAP_CUR"));
   }
 #endif
+ if (ssid) {
+  cmd->print(F("=\""));
   cmd->print(ssid);
+  cmd->print((FSH_P) QOUT_COMMA_QOUT);
   if (password) {
-    cmd->print((FSH_P) QOUT_COMMA_QOUT);
     cmd->print(password);
     if (bssid) {
       cmd->print((FSH_P) QOUT_COMMA_QOUT);
@@ -398,6 +400,7 @@ bool EspAtDrvClass::joinAP(const char* ssid, const char* password, const uint8_t
     }
   }
   cmd->print('"');
+ }
   if (!sendCommand())
     return false;
   if (persistent) {
@@ -550,15 +553,13 @@ bool EspAtDrvClass::softApIp(const IPAddress& ip, const IPAddress& gw, const IPA
   }
 #endif
   ip.printTo(*cmd);
-  cmd->print((FSH_P) QOUT_COMMA_QOUT);
   if (gw[0]) {
+    cmd->print((FSH_P) QOUT_COMMA_QOUT);
     gw.printTo(*cmd);
     if (nm[0]) {
       cmd->print((FSH_P) QOUT_COMMA_QOUT);
       nm.printTo(*cmd);
     }
-  } else {
-    ip.printTo(*cmd);
   }
   cmd->print('"');
   bool ok = sendCommand();
@@ -724,12 +725,19 @@ bool EspAtDrvClass::serverEnd() {
   return simpleCommand(PSTR("AT+CIPSERVER=0"));
 }
 
-uint8_t EspAtDrvClass::clientLinkId(bool accept) {
+uint8_t EspAtDrvClass::clientLinkId(uint16_t serverPort, bool accept) {
   maintain();
   for (int linkId = 0; linkId < LINKS_COUNT; linkId++) {
     LinkInfo& link = linkInfo[linkId];
     if (link.isConnected() && link.isIncoming() && !link.isClosing() && !link.isAccepted()
         && (link.available || accept)) {
+#ifdef WIFIESPAT_MULTISERVER
+      if (!link.localPort) {
+        checkLinks();
+      }
+      if (serverPort != link.localPort)
+        continue;
+#endif
       LOG_INFO_PRINT_PREFIX();
       LOG_INFO_PRINT(F("incoming linkId "));
       LOG_INFO_PRINTLN(linkId);
@@ -742,12 +750,19 @@ uint8_t EspAtDrvClass::clientLinkId(bool accept) {
   return NO_LINK;
 }
 
-uint8_t EspAtDrvClass::clientLinkIds(uint8_t linkIds[]) {
+uint8_t EspAtDrvClass::clientLinkIds(uint16_t serverPort, uint8_t linkIds[]) {
   maintain();
   uint8_t l = 0;
   for (int linkId = 0; linkId < LINKS_COUNT; linkId++) {
     LinkInfo& link = linkInfo[linkId];
     if (link.isConnected() && link.isIncoming() && !link.isClosing()) {
+#ifdef WIFIESPAT_MULTISERVER
+      if (!link.localPort) {
+        checkLinks();
+      }
+      if (serverPort != link.localPort)
+        continue;
+#endif
       linkIds[l] = linkId;
       l++;
     }
@@ -801,6 +816,11 @@ uint8_t EspAtDrvClass::connect(const char* type, const char* host, uint16_t port
     cmd->print(',');
     cmd->print(udpLocalPort);
     cmd->print(",2");
+#ifdef WIFIESPAT_MULTISERVER
+    link.localPort = udpLocalPort;
+  } else {
+    link.localPort = 0;
+#endif
   }
   link.flags = LINK_CONNECTED;
   if (!sendCommand()) {
@@ -842,7 +862,19 @@ bool EspAtDrvClass::close(uint8_t linkId, bool abort) {
   return sendCommand();
 }
 
-bool EspAtDrvClass::remoteParamsQuery(uint8_t linkId, IPAddress& remoteIP, uint16_t& remotePort) {
+uint16_t EspAtDrvClass::localPortQuery(uint8_t linkId) {
+#ifdef WIFIESPAT_MULTISERVER
+  if (linkInfo[linkId].localPort != 0)
+    return linkInfo[linkId].localPort;
+#endif
+  IPAddress remoteIP;
+  uint16_t remotePort;
+  uint16_t localPort = 0;
+  remoteParamsQuery(linkId, remoteIP, remotePort, localPort);
+  return localPort;
+}
+
+bool EspAtDrvClass::remoteParamsQuery(uint8_t linkId, IPAddress& remoteIP, uint16_t& remotePort, uint16_t& localPort) {
   maintain();
 
   LOG_INFO_PRINT_PREFIX();
@@ -865,6 +897,11 @@ bool EspAtDrvClass::remoteParamsQuery(uint8_t linkId, IPAddress& remoteIP, uint1
         remoteIP.fromString(tok);
         tok = strtok(NULL, delim); // <remote port>
         remotePort = atoi(tok);
+        tok = strtok(NULL, delim); // <local port>
+        localPort = atoi(tok);
+#ifdef WIFIESPAT_MULTISERVER
+        linkInfo[linkId].localPort = localPort;
+#endif
         readOK();
         return true;
       }
@@ -1218,6 +1255,10 @@ size_t EspAtDrvClass::sendData(uint8_t linkId, SendCallbackFnc callback, const c
 bool EspAtDrvClass::setHostname(const char* hostname) {
   maintain();
 
+  uint8_t mode = wifiMode | WIFI_MODE_STA; // turn on STA, leave SoftAP as it is
+  if (!setWifiMode(mode, false))
+    return false;  // can't set hostname without sta mode
+
   LOG_INFO_PRINT_PREFIX();
   LOG_INFO_PRINT(F("set hostname "));
   LOG_INFO_PRINTLN(hostname);
@@ -1291,15 +1332,13 @@ bool EspAtDrvClass::resolve(const char* hostname, IPAddress& result) {
   return readOK();
 }
 
-bool EspAtDrvClass::sntpCfg(int8_t timezone, const char* server1, const char* server2) {
+bool EspAtDrvClass::sntpCfg(const char* server1, const char* server2) {
   maintain();
 
   LOG_INFO_PRINT_PREFIX();
   LOG_INFO_PRINTLN(F("SNTP config"));
 
-  cmd->print(F("AT+CIPSNTPCFG=1,"));
-  cmd->print(timezone);
-  cmd->print(",\"");
+  cmd->print(F("AT+CIPSNTPCFG=1,0,\""));
   cmd->print(server1);
   if (server2) {
     cmd->print((FSH_P) QOUT_COMMA_QOUT);
@@ -1420,7 +1459,7 @@ bool EspAtDrvClass::readRX(PGM_P expected, bool bufferData, bool listItem) {
       timeout++;
       continue;
     }
-    timeout = 0; // AT firmware responded
+
     if (buffer[0] == '>') { // AT+CIPSEND prompt
 #ifdef WIFIESPAT1
       // AT versions 1.x send a space after >. we must clear it
@@ -1428,8 +1467,12 @@ bool EspAtDrvClass::readRX(PGM_P expected, bool bufferData, bool listItem) {
 #endif      
       buffer[1] = 0;
       l = 1;
+      timeout = 0; // AT firmware responded
     } else {
       l += serial->readBytes(buffer + l, 1); // read second byte with stream's timeout
+      if (l < 2)
+    	  continue;  // We haven't read requested 2 bytes, something went wrong
+      timeout = 0; // AT firmware responded
       if (buffer[0] == '\r' && buffer[1] == '\n') // empty line. skip it
         continue;
       char terminator = '\n';
@@ -1497,6 +1540,9 @@ bool EspAtDrvClass::readRX(PGM_P expected, bool bufferData, bool listItem) {
       LinkInfo& link = linkInfo[linkId];
       if (link.available == 0 && (!link.isConnected() || link.isClosing())) { // incoming connection (and we could miss CLOSED)
         link.flags = LINK_CONNECTED | LINK_IS_INCOMING;
+#ifdef WIFIESPAT_MULTISERVER
+        link.localPort = 0;
+#endif
         LOG_DEBUG_PRINTLN((FSH_P) PROCESSED);
       } else {
         LOG_DEBUG_PRINTLN((FSH_P) IGNORED);
@@ -1670,7 +1716,9 @@ bool EspAtDrvClass::recvLenQuery() {
   }
   return readOK();
 }
+#endif
 
+#if !defined(ESPATDRV_ASSUME_FLOW_CONTROL) || defined(WIFIESPAT_MULTISERVER)
 bool EspAtDrvClass::checkLinks() {
   maintain();
   cmd->print((FSH_P) AT_CIPSTATUS);
@@ -1680,6 +1728,15 @@ bool EspAtDrvClass::checkLinks() {
   while (readRX(CIPSTATUS, true, true)) {
     uint8_t linkId = buffer[strlen("+CIPSTATUS:")] - 48;
     ok[linkId] = true;
+#ifdef WIFIESPAT_MULTISERVER
+    const char* delim = ",\"";
+    char* tok = strtok(buffer, delim); // +CIPSTATUS:<link  ID>
+    tok = strtok(NULL, delim); // <type>
+    tok = strtok(NULL, delim); // <remote IP>
+    tok = strtok(NULL, delim); // <remote port>
+    tok = strtok(NULL, delim); // <local port>
+    linkInfo[linkId].localPort = atoi(tok);
+#endif
   }
   for (int linkId = 0; linkId < LINKS_COUNT; linkId++) {
     LinkInfo& link = linkInfo[linkId];

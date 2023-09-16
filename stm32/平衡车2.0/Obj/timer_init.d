@@ -2,7 +2,7 @@
 .\obj\timer_init.o: APP\timer_init.h
 .\obj\timer_init.o: .\Libraries\CMSIS\stm32f10x.h
 .\obj\timer_init.o: .\Libraries\CMSIS\core_cm3.h
-.\obj\timer_init.o: E:\software\keil5_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\obj\timer_init.o: E:\software\keil5_v5\ARM\AC5\Bin\..\include\stdint.h
 .\obj\timer_init.o: .\Libraries\CMSIS\system_stm32f10x.h
 .\obj\timer_init.o: .\User\stm32f10x_conf.h
 .\obj\timer_init.o: .\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h

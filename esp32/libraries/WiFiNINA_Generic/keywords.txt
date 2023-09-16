@@ -64,6 +64,16 @@ noLowPowerMode	KEYWORD2
 ping	KEYWORD2
 setTimeout	KEYWORD2
 
+#############
+# WiFiServer
+#############
+
+available	KEYWORD2
+accept	KEYWORD2
+begin	KEYWORD2
+write	KEYWORD2
+status	KEYWORD2
+
 ################
 # WiFiSSLClient
 ################
@@ -233,4 +243,12 @@ applyOTA  KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
+
+WIFININA_GENERIC_VERSION LITERAL1
+WIFININA_GENERIC_VERSION_MAJOR LITERAL1
+WIFININA_GENERIC_VERSION_MINOR LITERAL1
+WIFININA_GENERIC_VERSION_PATCH LITERAL1
+WIFININA_GENERIC_VERSION_PATCH_MINOR LITERAL1
+
+WIFININA_GENERIC_VERSION_INT LITERAL1
 

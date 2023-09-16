@@ -69,9 +69,9 @@ void onEventsCallback(WebsocketsEvent event, String data)
 void setup() 
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial && millis() < 5000);
 
-  Serial.println("\nStarting ESP8266-RepeatingClient on " + String(ARDUINO_BOARD));
+  Serial.print("\nStart ESP8266-RepeatingClient on "); Serial.println(ARDUINO_BOARD);
   Serial.println(WEBSOCKETS2_GENERIC_VERSION);
   
   // Connect to wifi
@@ -124,10 +124,10 @@ void checkToSendMessage()
 {
   #define REPEAT_INTERVAL    10000L
   
-  static unsigned long checkstatus_timeout = 0;
+  static unsigned long checkstatus_timeout = 1000;
 
   // Send WebSockets message every REPEAT_INTERVAL (10) seconds.
-  if ((millis() > checkstatus_timeout) || (checkstatus_timeout == 0))
+  if (millis() > checkstatus_timeout)
   {
     sendMessage();
     checkstatus_timeout = millis() + REPEAT_INTERVAL;
